@@ -27,7 +27,11 @@ Theoretical issues, technical models, and exemplary works are presented in lectu
 
 By the end of the course, students will: 
 
+<<<<<<< HEAD
 * Understand the many themes of audio and multimedia programming, how they have been applied in interactive arts, and how it may be extrapolated into future culture technologies. 
+=======
+* Understand the many themes of audio and multimedia programming, how they have been applied in generative and interactive arts, and how it may be extrapolated into future culture technologies. 
+>>>>>>> 20182a94690248bf203bfe0b6a05c3f4b88552ec
 * Be able to apply these techniques for tasks of problem-solving as well as interactive and creative works, as demonstrated in a project portfolio.
 
 ### Prerequisites
