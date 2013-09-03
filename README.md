@@ -1,5 +1,5 @@
 GCT633
 ======
 
-[Website](http://grrrwaaa.github.com/gct633/)
+[Go to website](http://grrrwaaa.github.com/gct633/)
 

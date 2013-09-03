@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Audio</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+# Audio Programming
+
+> "Music is a secret calculation done by the soul unwaware that it is counting", W. Leibniz.
+
+This part of the course is all about generating audio by writing code. The audio might be music, it might be sound design, it might be transformations of existing sounds or generative production of genuinely new sounds. Whatever it is, it will be partially defined by the creation of an algorithm expressed as code. We'll also be biased toward creative expression through code, for the sheer fun of it.
+
+> It isn't a course about DSP (Digital Signal Processing); to learn more about that fascinating field take a look at [Julius Smith's online resources](https://ccrma.stanford.edu/~jos/) or any DSP course in Electrical Engineering, for example. But we will encounter some DSP principles and examples along the way. Similarly, it isn't about music or sound design as such, though we may also visit some musical concepts and a bit of computer music history as we go.
+
+Today we spend half of our lives listening to computer mediated sound. Research questions include how to better control that sound in intuitive or interesting ways; how to generate sound that more closely approximates the real; or alternatively to generate sounds that we have never heard before; how to distribute sound more effectively (in physical or virtual spaces); how to process it more efficiently; how to analyze and reconstruct sound intelligently; and so on. 
+
+## Digital representation of sound
+
+Sound recording/playback technology requires a mechanism to transform the ephemeral undulations of sound pressure (what we can hear) into a persistent record, and another mechanism to the transcribe this record back into waves of sound pressure. In the phonograph (below), introduced in 1877, vibrations in the air are amplified by the horn to vibrate a stylus, etching patterns into a rotating cylinder. The same mechanism can be used for recording and playback.
+
+![phonograph](http://upload.wikimedia.org/wikipedia/commons/a/a0/EdisonPhonograph.jpg)
+
+The modern record player adds an electronic amplifier to drive the movements of a loudspeaker cone, but otherwise follow the same princple. Here are vinyl record grooves under an electron microscope:
+
+![http://www.synthgear.com/2010/audio-gear/record-grooves-electron-microscope/](http://www.synthgear.com/wp-content/uploads/2010/02/record_grooves.jpg)
+
+These grooves are smooth and continuous, since records are an **analog** representation of sound, which is theoretically ideal. Unfortunately it is susceptible to noise and gradual degradation. The **digital** representation of sound on the other hand is completely discrete:
+
+![A CD under the electron microscope](http://www.synthgear.com/wp-content/uploads/2010/02/cd_pits.jpg)
+
+At the simplest level, sounds are represented digitally as **a discrete sequence of (binary encoded) numbers**, representing a time series of quantized amplitude values that relate to the variations of compression an expansion in the air pressure waves we hear as sound. It is bound by the sampilng theorem and other aspects of [information theory](http://en.wikipedia.org/wiki/Information_theory), just like any other digital representation. 
+
+> This has important implications in the field of data compression. An MP3 file encodes the content of a sound file by removing parts of the sound that are less significant to perception, requiring much less memory to represent a sound. **Lossless** codecs (such as FLAC) compress sound without audible reduction in quality at all. However, to play back a compressed file we must first uncompress it again, returning it to a simple series of discrete amplitude values. 
+
+----
+
+## General Resources
+
+Online (free) texts:
+
+- [Julius Smith's online DSP books](https://ccrma.stanford.edu/~jos/)
+- [Miller Puckette's book](http://crca.ucsd.edu/~msp/techniques.htm)
+
+Non-free texts:
+
+- [Audio Programming Book](https://mitpress.mit.edu/books/audio-programming-book)
+- [Computer Music Tutorial](http://books.google.co.kr/books/about/The_Computer_Music_Tutorial.html?id=nZ-TetwzVcIC&redir_esc=y)
+- [Musimathics](http://www.musimathics.com/)
+- [Understanding DSP](http://www.amazon.com/Understanding-Digital-Processing-Edition-ebook/dp/B004DI7JIQ/ref=sr_1_1)
+
+Forums
+
+- [KVR (a lot of DSP and plugin development stuff, since years ago!)](http://www.kvraudio.com/forum/)
+- [Create Digital Noise](http://createdigitalnoise.com/)
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>		
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<br/>
+		<a href="time.html">Time</a><br/>
+		<a href="audio.html">Audio</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter();
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>

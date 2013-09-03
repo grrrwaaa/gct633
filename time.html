@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Time</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+# Programming and time
+
+Computation is an inherently temporal medium: it comprises information processes that can be described abstractly but which unfold in actuality over time. Sound is likewise inherently temporal, as is any other perceptual or interactive medium.
+
+But what is time? How do we represent and reason with it? How do we experience and create with it? Are there parallels in the treatment of time between art and computing? Are there differences we can learn from?
+
+## Static and dynamic (unity and change)
+
+The first division we can make separates that which changes from that which does not. Any time-based art (music, film, etc.) can be broken down into the "vertical" and "horizontal" structure. Similarly computations can be broken down into the unchanging "static" and variable "dynamic" components.
+
+### Unity and change in time-based arts
+
+**Vertical**: The vertical structure provides unity: that which remains relatively constant throughout, and thus encompasses the qualities of the whole. Since it influences all parts, vertical structure is often largely outlined in early stages of a work.
+
+- Medum, macroform, frame, style
+- Materials, technologies, techniques, constraints, rules
+- Composed by associative, metaphorical, normative and hierarchical relations
+- Semantics, intentions. Vertical elements of unity may be chosen to best convey the idea, feel, atmosphere, message; or as an experiment to liberate new creativity.
+
+**Horizontal** structure refers to the temporal form of change: difference, movement, repetition, contrast, affinity, resolution.
+
+- Composed of progressions: beginning as one thing and becoming another.
+- Also reflections, recollections, repetitions.
+- In parallel mixtures of rates and proportions (fast and slow, faster than and slower than).
+- Bifurcating and coalescing.
+- Continuous (gradual) or discrete (sudden).
+- Quantitative (change in size, extent, proportion, measurable, numeric) vs. qualitative (change in kind, nature, tendency, individuality) aspects.
+- Positive or negative, attractive or repulsive, convergent (affinity) or divergent (contrast).
+- Effects, causes, intentions, story, destiny, chance.
+- Negative space of change includes those aspects which endure; identity. The most enduring are the vertical aspects.
+
+Eisenstein believed that “art is always conflict”, the opposition of forces that motivates and shapes action. The opposed forces are dissonance/consonance or tension/release. The premise of many audio-visual aesthetics is that the resolution of tension moves us through time, whether this is narrative/logical, visual or sonic/musical tension. We can also understand change perceptually in these terms. Contrast tends to increase visual intensity while affinity attenuates it. The temporal changes of any element can be described in this way. The components that construct tension may be based upon known perceptual principles, or principles established during the progress of the work.
+
+![Contrast & affinity](img/illustration2.gif)
+
+Contrast and affinity can also be understood in terms of the ‘wrongness’ or visual dissonance, and ‘rightness’ or visual consonance, of an image. A dissonant image is a visually active moment of tension. Progressing from dissonance to consonance, tension to release, is a natural progression akin to musical resolution or cadence. As in music, most of the intensity and energy is usually devoted to the tension and particularly the climactic portions before release. Using these notions, we can move dynamically and musically through time. Complexity can be seen as a multitude of contrast (and simplicity the lack of it); dynamism as the amount of contrast over time, etc.
+
+Story deserves special treatment. Narrative in film theory usually refers to a temporal macro-structure (the highest level of unity and contrast), the elements and driving forces, objectively characterized as:
+
+- Exposition aka beginning
+	- establishing themes and the facts necessary, setting the micro-world into motion:
+- Conflict and Climax aka middle
+	- increasing intensity; revealing/focusing the question of the work; leading up to the peak conflict in the subject
+	- Man vs. Beast, Race against Time, Brain vs. Brawn, Resist or Comply, Last Chance, Find the Killer, Solve the Riddle, ...
+- Resolution aka end
+	- a return to the 'real world' from the micro-world of the work:
+	- completion, wrapping up incomplete elements,
+	- giving space for recovery, leaving trailing thoughts etc.
+
+Each component and subsection of a work may also mirror this structure.
+
+![Narrative structure](img/illustration3.gif)
+
+Of course, structure need not be so linearly defined; we may find sub-plots, unanswered questions. A complete work is a holistic experience whose dynamics may be artfully managed in such a way that, for example, what would normally be the least intense by itself becomes the most intense in the complete composition. A plain white screen may become the most powerful image of all, with the correct preparation, just as silence can become the most intense sound in a composition.
+
+In art the distinction between horizontal and vertical, and between constrast and affinity, need not be hard and fast. Principles of unity in a work may be guidelines fit to be broken when needed, or a work may pass through phases of different unities or even thread multiple unities into a story. Excessive contrast leads to irritation or numbness. All of these aspects relate to how we perceive in time.
+
+### Static and dynamic components in computing
+
+Programming also involves a division of static and dynamic components. The rules of a programming language are usually **static**: they are not expected to change during the run-time of the program. On the other hand, the flow of control is partly determined as a program runs, and values in memory can change ("variables") or be allocated and freed as it goes; these are examples of **dynamic** components. Computing inherits from mathematical logic a rigorous attitude toward definitions, thus static and dynamic divisions tend to be more sharply discriminated and pedantically adhered to.
+
+However there are times where exceptions are desirable or necessary.
+
+![Jacquard Loom](http://upload.wikimedia.org/wikipedia/commons/8/8e/Jacquard.loom.hooks.jpg)
+![Enigma](http://upload.wikimedia.org/wikipedia/commons/a/ae/Enigma.jpg)
+
+From its industrial lineage computing inherited a linear task-oriented character: a program's job is well defined in advance. Turing used the analogy of a recipe: a series of instructions to perform. From mathematics and cryptography computing inherited the notion that a program's job is to compute an answer. One of the first principles in the theory of computation regards whether a program will or will not terminate with an answer; irrespective of how long that might actually take.
+
+As mainframe computing became established in the 1950's, this evolved into "batch" oriented computing, in which control programs sequentially dispatch to other task oriented "job" programs, for reliability and efficiency. Dumb terminals (in modern terminology, "thin clients") are used to input data for new jobs and monitor output. Terminals present a pseudo-conversation, prompting the user for input when required by the running job, or waiting for commands to start a new job.
+
+![A Teletype Model 33 ASR teleprinter, usable as a terminal](http://upload.wikimedia.org/wikipedia/commons/7/76/ASR-33_1.jpg)
+
+Gradually the terminal evolved into a complex interactive interface. The UNIX terminal (still present in MacOSX and Linux operating systems) allows jobs to be created in which the output of one is fed to the input of another (via "pipes"), and more complex jobs with conditional components defined by authoring scripts. Many modern programming languages also offer a terminal-like interface, called a Read-Eval-Print-Loop (REPL).
+
+### Programming in time
+
+Most programs that we consciously interact with today are not linear, task-oriented procedures invoked to compute an answer; instead they create a working environment in which we can switch between multiple concurrent tasks and levels of attention, running for as long as we might be interested in them. An operating system, a web server, may continue running for days or years. It might have various different users during this time, possibly many at a time, and might also have parts of itself replaced while it runs.
+
+#### Real-time
+
+Nevertheless, computing history has often neglected time; it is sometimes easier to theorize without it. Unfortunately, for audio and multimedia, the practical constraints of real-time are unavoidable. (In theory, there's no significant difference between theory and practice; but in practice there usually is.) 
+
+To be **timely**, an operation must produce results in less time than the playback of the results requires. E.g. filling a 30fps video frame must complete in less than 1/30th of a second. An operation takes place in real-time only if it can *always* perform its task in a timely manner with respect to the larger dynamical system of which it is a part. Any failure to do so results in a break in the output. "Time waits for no man."
+
+The amount of time it takes for an input trigger to pass through the computing system and cause experienceable output is the **latency**. Interactive software requires low latency (fractions of a second) to feel natural. Gaming and especially musical applications require especially low latency. 
+
+#### Run-time
+
+Furthermore, in the conventional view, software development occurs before and after a program runs but not during. But with server programming, in-app scripting, shell scripting, in-game development, live coding etc. this assumption breaks down. Programming for real-time performance, and supporting run-time programming, are both difficult; but the potential benefits for human-centered experience are profound. 
+
+#### With-time
+
+To truly program media in time is to architect, orchestrate and choreograph a sequence of transformations and computations with as much precision as desired. The design of the language interface should incorporate a natural representation of temporal flow, which is often lacking in many general purpose languages and systems. The computer music community has been especially active in elevating time to a first-class citizen in programming. Further discussion here:
+
+- [Computing needs Time](http://www.eecs.berkeley.edu/Pubs/TechRpts/2009/EECS-2009-30.pdf)
+- [Programming With Time](http://impromptu.moso.com.au/extras/sorensen_ow_2010.pdf)
+
+## The representation of time
+
+### Linear, cyclic, non-linear, finite or infinite
+
+A spatial metaphor of time forms a line from past to future. The line could be **ordinal** (a sequence or list, such as the script for a play) or **metric**, in which ecah event has a numeric position and each duration has a measurable length. Finite linear time has a definite beginning (zero time) and end; infinite linear time has no definite beginning or end. For example, a pre-recorded DVD encodes finite linear time, while the real-time video stream from a CCTV camera has no definite end. Cyclic or circular time represents a period that repeats; such as a clock face. Linear and cyclic time can be compbined by representation as a spiral. Linearizing time suggests the ability to navigate around it: rewind, fast-forward, skipping, scrubbing, scratching.
+
+### Continuous vs. discrete
+
+A **continuous** representation of time is one in which any period can be further subdivided into smaller periods, ad infinitum. No matter how short the duration, smaller durations can be described within it. This is the representation of time used in understanding analog systems, and the calculus of differential equations (such as function derivatives and integrals). For example, the function ```sin(t)``` is continuous (where ```t``` represents a real-valued variable such as time).
+
+A **discrete** representation of time has a lowest temporal resolution below which shorter durations cannot be represented. It describes a **time series**, a sequence of discrete values. Discrete series are sometimes indicated using square brackets, such as ```f[n]``` (where ```f``` is an arbitrary function and ```n``` is the discrete integer series). It requires a different branch of mathematics: the calculus of difference equations and finite differences.
+
+We do not know if nature is at root temporally continuous or discrete (it has been debated since at least the time of the early Greek philosophers), however we do know that if time is discrete, it is so on a scale so vastly smaller than what we can perceive, thus for practical purposes it may be considered continuous.
+
+But we do know that computers are fundamentally discrete. This applies in two ways:
+
+1. All values in memory are represented using **discrete encoding** (ultimately binary). Binary representations of number impose limits due to finite memory. Integers are limited to a certain range (for example, 8-bit unsigned integers can represent whole numbers between 0 and 255 inclusive), and floating point numbers are limited to a certain resolution, unable to represent small differences between very large numbers. Complex data is represented by composition of smaller elements: for example an animation is made of several frames, each frame of several pixels, each pixel of several colors, represented by number. The number of colors, pixels and frames is also discrete and limited by available memory.
+2. Computation proceeds in **discrete steps**, moving from one instruction to the next. Although this occurs extremely fast (millions of steps per second in current hardware), it remains discrete. The entire logic of computation is built upon a discrete series of instruction flow.
+
+Thus although we can represent continuous *functions* in the computer (e.g. by name), we cannot accurately represent continuous signals they produce, as they would a) require infinite memory or b) require infinitely fast computation to produce each infinitessimal value in sequence. Is this a problem?
+
+Instead we can **sample** a function so rapidly that we produce a series of values that are perceptually continuous. This is exactly how digital audio signals are produced. It is also how the rapid frame-rates of video (and earlier forms of animation) can produce the illusion of continuous motion (the persistence of vision effect).
+
+How fast is fast enough? If the function changes continuously but only very slowly, only a few samples per second are enough to reconstruct a function's curve. You do not need to look at the sun every millisecond to see how it moves; checking once per minute would be more than enough. But if we didn't check fast enough, we might miss important information. If we checked the sun's position once every 26 hours, we might not be able to precisely understand the repetition of its movement.
+
+### Frequency
+
+An event that occurs repeatedly, like the sun rising and setting, can be described in terms of its repetition period, or cyclic frequency (the one is the inverse of the other).
+
+	period = 1 / frequency
+
+	frequency = 1 / period
+
+In units:
+
+	seconds = 1 / Hertz
+
+	Hertz = 1 / seconds
+
+- The sun's traversal of the Earth's sky has a period of 1 day (approximately 93,600 seconds), which is 0.00001068376 cycles per second (Hz). Long periods imply low frequencies.
+- The heart beats around 60-100 times a minute (bpm). This also happens to be the typical range of frequencies for musical meter. 60bpm is a frequency of 1 cycle per second (1Hz).
+- The lowest frequencies that we perceive as tones begin at around 20 cycles per second (20Hz). That is, every 0.05 seconds (50 milliseconds). The region between rhythm and tone, around 8-20Hz is very interesting: this is where most vibrato modulation is found.
+- The persistence of vision effect which allows image sequences to appear as continuous motion begins at around 10-20 frames per second (Hz), depending on content. Cinema traditionally used 24 or 30 frames per second. Rapid movements in modern gaming may demand frame rates of up to 60Hz or more.
+- Human singing ranges over fundamental frequencies of about 80Hz to about 1100Hz.
+- What we perceive as timbre, or sound color, consists mostly of frequencies above 100Hz well into the thousands of Hz (kHz). For example, we distinguish between different vowel sounds according to proportions of frequencies (called formants) in the range of 240 to 2500 Hz. A high hat cymbal is largely made of a complexity of much higher frequencies.
+- Human auditory perception begins to trail off above 10000 - 20000 Hz (10 - 20kHz), depending greatly on age. Sounds above these frequencies are audible to many other species. A high frequency of 20kHz implies a cyclic duration of just 0.00005 seconds. High frequencies imply short durations.
+
+The fact that the whole gamut of musical phenomena, from an entire composition of movements, to meter and rhythm, to pitch and finally sound color can be described by a single continuum of time has been noted by composers such as Charles Ives, Henry Cowell, Iannis Xenakis and Karlheinz Stockhausen.
+
+Stockhausen 1972 Oxford lectures (YouTube)
+
+### Sampling Theorem
+
+So how fast is fast enough? How often must you check the sun's position to know its period? Once sample per day would not be enough: the sun would appear to not be moving at all. One sample every 23 hours would only see a complete cycle every 24 days, and would make the sun appear to be slowly moving backwards! In fact the minimum period necessary to correctly measure the sun's frequency is 12 hours: enough to capture both night and day (or sunrise and sunset). Sampling more frequently would more accurately capture the actual curve traversed, but 12 hours is enough to capture the frequency.
+
+The (Nyquist-Shannon) sampling theorem states that a sampling of a certain frequency R is able to represent frequencies of up to one half of R. Frequencies above one half of R may be represented incorrectly due to aliasing. A classic example of aliasing is the "wagon wheel effect".
+
+Standard audio CDs are encoded at a sampling rate of 44100Hz, which means a frequency of 44100 samples per second. That implies they can represent frequencies of up to 22050Hz, close to the limit of human perception. DVD audio uses a higher sampling rate of 48000Hz.
+
+#### Oversampling
+
+## The action of time
+
+### Control flow
+
+0. Halt / exit
+1. Unconditional jump (label & goto)
+2. Choice: conditional jump / if / switch
+3. Loops: Repeat / while / for / foreach / break / continue
+4. Non-local: subroutines / functions / callbacks / coroutines / continuations / exceptions
+5. Parallelism: interrupts / Signals / Multi-threading
+6. Dynamic code (Eval)
+
+### Difference
+
+What about functions that do not have regular periods? There are functions that have irregular perids, complex periods, and even functions whose period is so long that it is indistinguishable from a completely non-repetitive, random stream.
+
+### Rhythm
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>		
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<br/>
+		<a href="time.html">Time</a><br/>
+		<a href="audio.html">Audio</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter();
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>
