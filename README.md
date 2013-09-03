@@ -1,7 +1,7 @@
 GCT633
 ======
 
-Here is sample code for *GCT633: Audio and Multimedia Programming*, at the GSCT, KAIST, Korea (Fall 2013). The [course content is here](http://grrrwaaa.github.com/gct633/).
+Here is sample code for *GCT633: Audio and Multimedia Programming*, at the GSCT, KAIST, Korea (Fall 2013). The [course content is here](http://grrrwaaa.github.com/gct633/index.html).
 
 ## Download
 
