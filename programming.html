@@ -55,18 +55,120 @@ There are thousands of programming languages in use today. From a purely abstrac
 
 ### Hello, world
 
-~~Since the K&R book~~ ["The C Programming Language"](http://cm.bell-labs.com/cm/cs/cbook/), many language tutorials begin with the ["hello, world"](http://en.wikipedia.org/wiki/Hello_world_program) program: a program that simply prints "hello, world" and exits.
+Since the K&R book ["The C Programming Language"](http://cm.bell-labs.com/cm/cs/cbook/), many language tutorials begin with the ["hello, world"](http://en.wikipedia.org/wiki/Hello_world_program) program: a program that simply prints "hello, world" and exits.
 
 ```cpp
 // hello, world in C:
 int main() {
-	printf("hello, world");
+	printf("hello, world\n");
 	return 0;
 }
 ```
 
+```java
+// hello, world in Java:
+public class HelloWorld {
+	public static void main(String [] args) {
+		System.out.println("hello, world");
+	}
+}
+```
+
+```php
+// hello, world in PHP:
+&lt;?php echo("hello, world"); ?&gt;
+```
+
+```javascript
+// hello, world in JavaScript:
+console.log("hello, world");
+```
+
+```python
+# hello, world in Python:
+print("hello, world")
+```
+
+```lua
+-- hello, world in lua:
+print("hello, world")
+```
+
+See [more examples at codepad.org](http://codepad.org/hello-world)
+
+## Compiled language example: C
+
+The **C** programming language is one of the oldest still in wide use today, originally developed between 1969 and 1973 at AT&T Bell Labs. It became the 'de facto' language for system development in UNIX, and continues to be a primary language for software, operating systems, hardware devices, etc. today. It aims to provide a higher-level language that nevertheless does not obscure details of the underlying system. It is extremely well-defined and thus also serves as a consistent application binary interface (ABI) for operating between different programs and languages. For example, [LuaJIT can easily inter-operate with C via a foreign-function interface (FFI)](http://luajit.org/ext_ffi.html). 
+
+Programs written in C stored in text files (with ".c" extension) and converted to binary applications (and libraries) using a **compiler** such as ```gcc``` or ```clang```; or simply invoked by the alias ```cc```. The following terminal command tells the compiler to compile the file ```hello.c``` and save the binary executable output (via the ```-o``` flag) to be called ```hello```:
+
+	cc hello.c -o hello
+	
+Now we can run this file like so:
+
+	./hello
+	
+On Windows [it looks slightly different](http://msdn.microsoft.com/en-us/library/ms235639.aspx):
+
+	cl hello.c
+	hello
+	
+### Linking with a library	
+
+What if the standard C run-time library doesn't offer capabilities we need? Then we can search for a library that already exists and link to that (so long as the license fits our needs). For example, C doesn't know how to read and write sound files, but the [libsndfile](https://github.com/erikd/libsndfile) library is designed to do just that. So the first thing we need to do is download & install it. 
+
+	...
+	
+Once installed, we need to tell the compiler where to find it. There are two parts to a library: the **binaries** which contain the actual machine code, and the **headers**, which are text files definining functions and types that tell you (and the compiler) how you can use the binaries. For example, library binaries might be installed into */usr/lib* or */usr/local/lib* on OSX/Linux, and headers into */usr/include* or */usr/local/include*. We can tell the compiler where to look using the **-I** and **-L** flags (**/I** and **/link /LIBPATH** on Windows):
+
+	cc -I/usr/local/include hello.c -L/usr/local/lib -o hello
+	
+But that only tells the compiler where to look. To actually use the headers we need to **#include** them in the source:
+
+	&#35;include &lt;sndfile.h&gt;
 
 
+And we also must tell the compiler to link the binary in our command, using the **-l** flag (or just the library name on Windows):
+
+	cc -I/usr/local/include hello.c -L/usr/local/lib -lsndfile -o hello
+
+Sometimes the header file of a library is enough to understand how to use it, but usually we also want to refer to human-friendly [documentation and tutorial material](http://www.mega-nerd.com/libsndfile/api.html). 
+
+This is only a *very very very basic* introduction to compiling C from the command line; reality can be *far far far more complicated*. Too complicated, really.
+
+-----
+
+## Setting up a C development environment
+
+** THIS SECTION IS INCOMPLETE **
+
+Your operating system might not come with a compiler built-in, and it probably doesn't have all the libraries you need. Here's some quick notes on getting set up:
+
+### Linux
+
+Getting a compiler:
+
+	sudo apt-get install gcc
+	
+For any other libraries, you can often get them with
+
+	sudo apt-get install &lt;libraryname&gt;
+
+In this case, *sudo* means execute with administrative privileges, *apt-get* is a program for installing software and libraries (a "package manager"), *install* is the action for apt-get, and *gcc* is the application we will install (it will also install all dependencies).
+
+### OSX
+
+Getting a compiler: For recent versions of OSX you must install command line tools manually. [You can do this from inside Xcode, or as a direct download from Apple](http://stackoverflow.com/questions/9329243/xcode-4-4-command-line-tools). Either way you will need to register with the Apple developer center. 
+
+For any other libraries: There is no built-in "package manager" for OSX, but there are several that people have written. I currently recommend using one called "brew", which you can install by [following the instructions here](http://brew.sh). Once installed, run *brew doctor* to ensure your system is properly configured; do whatever it says until it is happy. Then, to install librares:
+
+	brew install &lt;libraryname&gt;
+
+### Windows
+
+Install a recent Visual Studio (e.g. Visual Studio 2012); this includes a compiler and a command line, found in the Start menu under "Visual Studio command prompt".
+
+Package managers for Windows are less usual; many libraries provide binaries or installers directly instead.
 
 </div>
 <div id="wrapper">
