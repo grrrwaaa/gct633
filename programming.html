@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Programming</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/highlight.pack.js"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<script src="js/extensions/github.js" type="text/javascript"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+# Programming
+
+> [wikipedia:](http://en.wikipedia.org/wiki/Programming_language) A programming language is a formal language designed to communicate instructions to a machine, particularly a computer. Programming languages can be used to create programs that control the behavior of a machine and/or to express algorithms precisely. The earliest programming languages preceded the invention of the computer, and were used to direct the behavior of machines such as Jacquard looms and [player pianos](http://en.wikipedia.org/wiki/Player_piano). Thousands of different programming languages have been created, mainly in the computer field, and still many are being created every year. Most programming languages describe computation in an imperative style, i.e., as a sequence of commands, although some languages, such as those that support functional programming or logic programming, use alternative forms of description.
+
+When using a natural language to communicate with other people, human authors and speakers can be ambiguous and make small errors, and still expect their intent to be understood. However, figuratively speaking, computers "do exactly what they are told to do", and cannot "understand" what code the programmer intended to write. The combination of the language definition, a program, and the program's inputs must fully specify the external behavior that occurs when the program is executed. To make this easier, programming languages and implementations may provide many tools of specification and abstraction, and many libraries of re-usable routines and capabilities.
+
+## Semiotics
+
+Programming languages and implementations can be understood in terms of semiotics: the syntax, semantics and pragmatics.
+
+### Syntax
+
+**The relations among signs in formal structures.** Syntax specifies all possible (valid) combinations of the surface form. Usually textual, but can also be graphical. May be described using a grammar. 
+
+A syntax checker verifies the input text matches the syntax rules, or may indicate an error otherwise. A syntactically correct piece of code is not necessarily semantically correct, just as a syntactically correct English sentence does not necessarily have a logical meaning ([E.g. Chomsky's "Colourless Green Ideas Sleep Furiously"](http://en.wikipedia.org/wiki/Colorless_green_ideas_sleep_furiously))
+
+> The study of grammar, the rules of correct structure of language, can be traced back two and half thousand years in ancient India, where the belief had been held that the correct structure and intonation of words had power.
+
+### Semantics
+
+**The relation between signs and meaning (the things to which they refer).** Semantics maps from program language syntax to program behavior. Some semantic constraints can be analyzed from the source code, others may only be detectable once the program runs. Industry languages tend to include more features aimed to detect semantic errors at compile-time, such as strict type systems.
+
+### Pragmatics
+
+**The relation between signs and sign-using agents (e.g. programmers!).** In linguistics, pragmatics describes the relation between signs and the agent using them, and the way context relates to meaning. In computing, this may encompass the hardware (or virtual machine implementation) that a program runs on, the available libraries and resources, as well as real-world interactions and performance. 
+
+The standard library and run-time system provided by a language implementation can be more important than the language itself.
+
+## Programming languages
+
+There are thousands of programming languages in use today. From a purely abstract, mathematical point of view, most of them have equivalent computing power (delimited by the [universal Turing machine](http://en.wikipedia.org/wiki/Turing-computable_function#Models_equivalent_to_the_Turing_machine_model)). Practically however the choice of language/implementation to use may depend on factors of performance, familiarity, the quality of documentation and supporting libraries, ease of distribution, and so on. 
+
+### Try out different languages in the browser
+
+- [Codepad.org](http://codepad.org/)
+- [Repl.it](http://www.repl.it/languages)
+
+### Hello, world
+
+~~Since the K&R book~~ ["The C Programming Language"](http://cm.bell-labs.com/cm/cs/cbook/), many language tutorials begin with the ["hello, world"](http://en.wikipedia.org/wiki/Hello_world_program) program: a program that simply prints "hello, world" and exits.
+
+```cpp
+// hello, world in C:
+int main() {
+	printf("hello, world");
+	return 0;
+}
+```
+
+
+
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="time.html">Time</a><br/>
+		<a href="audio.html">Audio</a><br/>
+		<br/>		
+		<a href="programming.html">Programming</a><br/>
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter({ extensions: "g" });
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>
