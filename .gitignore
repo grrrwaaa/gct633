@@ -2,10 +2,7 @@
 *.slo
 *.lo
 *.o
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
+*.obj
 
 # Compiled Static libraries
 *.lai
