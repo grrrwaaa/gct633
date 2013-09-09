@@ -8,3 +8,6 @@
 *.lai
 *.la
 *.a
+
+# Raw data
+*.wav
