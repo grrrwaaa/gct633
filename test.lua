@@ -1,6 +1,3 @@
-print("started")
-
-
 local ffi = require "ffi"
 local len = 44100 * 3
 local buf = ffi.new("float[?]", len)
@@ -12,5 +9,4 @@ local s = sndfile("tmp.wav", "w")
 s:write(buf, len)
 s:close()
 
---io.popen("start tmp.wav")
---os.exit()
+print("done")
