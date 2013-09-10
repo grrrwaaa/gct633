@@ -17,7 +17,9 @@ end
 
 if ffi.os == "OSX" then
 
-	print(cmda("clang++ -fno-stack-protector -O3 -Wall -fPIC -DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ av_audio.cpp RtAudio.cpp /usr/local/lib/libsndfile.a -framework CoreFoundation -framework CoreAudio -shared -o libaudio.dylib"))
+	print(cmda("clang++ -fno-stack-protector -O3 -Wall -fPIC -DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -I/usr/local/include -I/usr/local/include/luajit-2.0 av.cpp av_audio.cpp RtAudio.cpp  -pagezero_size 10000 -image_base 100000000 -force_load /usr/local/lib/libsndfile.a /usr/local/lib/libluajit-5.1.a -framework CoreFoundation -framework CoreAudio -o av_osx"))
+	
+	print(cmda("mv av_osx .."))
 	
 elseif ffi.os == "Windows" then
 	

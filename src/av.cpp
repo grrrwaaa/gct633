@@ -41,6 +41,8 @@ void getpaths(int argc, char ** argv) {
 			AV_SNPRINTF(workpath, AV_PATH_MAX, "%s", apppath);
 		}
 	#else
+		
+		
 		char wd[AV_PATH_MAX];
 		if (AV_GETCWD(wd, AV_PATH_MAX) == 0) {
 			printf("could not derive working path\n");
@@ -110,10 +112,10 @@ void getpaths(int argc, char ** argv) {
 		}
 		#endif
 	#endif
-	//printf("launchpath %s\n", launchpath);
-	//printf("apppath %s\n", apppath);
-	//printf("workpath %s\n", workpath);
-	//printf("mainfile %s\n", mainfile);
+	printf("launchpath %s\n", launchpath);
+	printf("apppath %s\n", apppath);
+	printf("workpath %s\n", workpath);
+	printf("mainfile %s\n", mainfile);
 }
 
 int traceback(lua_State * L) {
@@ -192,8 +194,10 @@ int initlua(int argc, char * argv[]) {
 	char initscript[initscriptsize];
 	#ifdef AV_WINDOWS 
 		AV_SNPRINTF(initscript, initscriptsize, "package.path = [[%sav\\?.lua;%sav\\?\\init.lua;]] .. package.path; package.cpath = [[%sav\\?.dll;]] .. package.cpath", apppath, apppath, apppath);
+	#else
+		AV_SNPRINTF(initscript, initscriptsize, "package.path = [[%sav/?.lua;%sav/?/init.lua;]] .. package.path; package.cpath = [[%sav/?.so;]] .. package.cpath", apppath, apppath, apppath);
 	#endif
-	//printf("initscript %s\n", initscript);
+	printf("initscript %s\n", initscript);
 	return dostring(initscript);
 }
 							

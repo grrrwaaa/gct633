@@ -1,6 +1,11 @@
 local ffi = require "ffi"
-local lib = ffi.load("libsndfile-1.dll")
 
+local lib
+if ffi.os == "Windows" then
+	lib = ffi.load("libsndfile-1.dll")
+else
+	lib = ffi.C
+end
 
 ffi.cdef [[
 
