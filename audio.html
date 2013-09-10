@@ -44,6 +44,72 @@ At the simplest level, sounds are represented digitally as **a discrete sequence
 
 > This has important implications in the field of data compression. An MP3 file encodes the content of a sound file by removing parts of the sound that are less significant to perception, requiring much less memory to represent a sound. **Lossless** codecs (such as FLAC) compress sound without audible reduction in quality at all. However, to play back a compressed file we must first uncompress it again, returning it to a simple series of discrete amplitude values. 
 
+Computers are fundamentally discrete. This applies in two ways:
+
+1. All values in memory are represented using **discrete encoding** (ultimately binary). Binary representations of number impose limits due to finite memory. Integers are limited to a certain range (for example, 8-bit integers (***char***) can represent whole numbers between 0 and 255 inclusive, or -128 and 127 inclusive in the signed variant), and floating point numbers are limited to a certain resolution, unable to represent small differences between very large numbers. Complex data is represented by composition of smaller elements: for example an animation is made of several frames, each frame of several pixels, each pixel of several colors, represented by number. The number of colors, pixels and frames is also discrete and limited by available memory.
+2. Computation proceeds in **discrete steps**, moving from one instruction to the next. Although this occurs extremely fast (millions of steps per second in current hardware), it remains discrete. The entire logic of computation is built upon a discrete series of instruction flow.
+
+Thus although we can represent continuous *functions* in the computer (e.g. by name), we cannot accurately represent continuous signals they produce, as they would a) require infinite memory or b) require infinitely fast computation to produce each infinitessimal value in sequence. Is this a problem?
+
+Instead we can **sample** a function so rapidly that we produce a series of values that are perceptually continuous. This is exactly how digital audio signals work. Digitized audio a discrete-time, discrete-level signal of a previous electrical signal. Samples are quantized to a specific bit depth and encoded in series at a specific rate.
+
+![Sampling](http://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Analog_digital_series.svg/220px-Analog_digital_series.svg.png)
+
+How fast is fast enough? If the function changes continuously but only very slowly, only a few samples per second are enough to reconstruct a function's curve. You do not need to look at the sun every millisecond to see how it moves; checking once per minute would be more than enough. But if we didn't check fast enough, we might miss important information. If we checked the sun's position once every 26 hours, we might not be able to precisely understand the repetition of its movement.
+
+### Frequency
+
+An event that occurs repeatedly, like the sun rising and setting, can be described in terms of its repetition period, or cyclic frequency (the one is the inverse of the other).
+
+	period = 1 / frequency
+
+	frequency = 1 / period
+
+In units:
+
+	seconds = 1 / Hertz
+
+	Hertz = 1 / seconds
+
+- The sun's traversal of the Earth's sky has a period of 1 day (approximately 93,600 seconds), which is 0.00001068376 cycles per second (Hz). Long periods imply low frequencies.
+- The heart beats around 60-100 times a minute (bpm). This also happens to be the typical range of frequencies for musical meter. 60bpm is a frequency of 1 cycle per second (1Hz).
+- The lowest frequencies that we perceive as tones begin at around 20 cycles per second (20Hz). That is, every 0.05 seconds (50 milliseconds). The region between rhythm and tone, around 8-20Hz is very interesting: this is where most vibrato modulation is found.
+- The persistence of vision effect which allows image sequences to appear as continuous motion begins at around 10-20 frames per second (Hz), depending on content. Cinema traditionally used 24 or 30 frames per second. Rapid movements in modern gaming may demand frame rates of up to 60Hz or more.
+- Human singing ranges over fundamental frequencies of about 80Hz to about 1100Hz.
+- What we perceive as timbre, or sound color, consists mostly of frequencies above 100Hz well into the thousands of Hz (kHz). For example, we distinguish between different vowel sounds according to proportions of frequencies (called formants) in the range of 240 to 2500 Hz. A high hat cymbal is largely made of a complexity of much higher frequencies.
+- Human auditory perception begins to trail off above 10000 - 20000 Hz (10 - 20kHz), depending greatly on age. Sounds above these frequencies are audible to many other species. A high frequency of 20kHz implies a cyclic duration of just 0.00005 seconds. High frequencies imply short durations.
+
+The fact that the whole gamut of musical phenomena, from an entire composition of movements, to meter and rhythm, to pitch and finally sound color can be described by a single continuum of time has been noted by composers such as Charles Ives, Henry Cowell, Iannis Xenakis and Karlheinz Stockhausen.
+
+Stockhausen 1972 Oxford lectures (YouTube)
+
+### Sampling Theorem
+
+So how fast is fast enough? How often must you check the sun's position to know its period? Once sample per day would not be enough: the sun would appear to not be moving at all. One sample every 23 hours would only see a complete cycle every 24 days, and would make the sun appear to be slowly moving backwards! The incorrect reperesentation of frequency due to insufficient sampling is called **Aliasing**.
+
+![Aliasing](http://upload.wikimedia.org/wikipedia/commons/thumb/a/af/CPT-sound-nyquist-thereom-1.5percycle.svg/250px-CPT-sound-nyquist-thereom-1.5percycle.svg.png)
+
+In fact the minimum period necessary to correctly measure the sun's frequency is 12 hours: enough to capture both night and day (or sunrise and sunset). Sampling more frequently would more accurately capture the actual curve traversed, but 12 hours is enough to capture the frequency.
+
+The (Nyquist-Shannon) sampling theorem states that a sampling of a certain frequency R is able to represent frequencies of up to one half of R. Frequencies above one half of R may be represented incorrectly due to aliasing. A classic example of aliasing is the "wagon wheel effect".
+
+Standard audio CDs are encoded at a sampling rate of 44100Hz, which means a frequency of 44100 samples per second. That implies they can represent frequencies of up to 22050Hz, close to the limit of human perception. The bit depth of CD audio is 16 bits. DVD audio uses a higher sampling rate of 48000Hz. Many audio devices support up to 192kHz and 24 bits. (When processing audio in the CPU however, we generally use 32 or 64 bit representations.)
+
+A more detailed explanation with diagrams [in the dspguide here](http://www.dspguide.com/ch3/2.htm)
+
+### Bit depth
+
+The quantization bit depth of the representation determines the signal to noise ratio (SNR), or dynamic range. Every bit of resolution gives about 6dB of dynamic range, so a 24 bit audio representation has 144dB. 
+
+The [decibel](http://en.wikipedia.org/wiki/Decibel) (dB) is a logarithmic unit to represent a ratio between to quantities of intensity. "The number of decibels is ten times the logarithm to base 10 of the ratio of the two power quantities." (IEEE Standard 100 Dictionary of IEEE Standards Terms). A change by a factor of 10 is a 10dB change, and a change by a factor of 2 is about a 3dB change.
+
+Decibels are frequently used in two ways in audio: 
+
+1. To represent the acoustic power of a signal, relative to a standard measure approximating the minimum theshold of perception. The loudness of different sound-making devices can be measured in decibels, which will typically be positive (louder than the reference threshold).
+2. To represent the signal-to-noise ratio of a digital representation. In this case signals are measured in reference to the *maximum* power signal (amplitude value of +/- 1), and thus are typically negative. OdB indicates full power. Positive dB indicates signals above the representation range, which will be clipped, and negative dB indicates quieter signals. The range between full power and the smallest representable (nonzero) signal specificies the signal-to-noise ratio of a representation. 
+
+The human ear can discriminate around 120dB of dynamic range, though this is frequency dependent. A 16 bit depth (standard CDs) provides around 120dB. However when operating and transforming audio greater headroom is needed.
+
 ----
 
 ## General Resources
@@ -71,9 +137,8 @@ Forums
 		<h1>GCT 633</h1>
 		<a href="index.html">Overview</a><br/>
 		<a href="time.html">Time</a><br/>
-		<a href="audio.html">Audio</a><br/>
-		<br/>		
 		<a href="programming.html">Programming</a><br/>
+		<a href="audio.html">Audio</a><br/>
 		<a href="lua.html">Lua Tutorial</a><br/>
 		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>
 	</div>
