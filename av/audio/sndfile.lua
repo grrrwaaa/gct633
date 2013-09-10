@@ -580,7 +580,10 @@ ffi.metatype("SNDFILE", {
 	__gc = lib.sf_close,
 	__index = {
 		write = function(self, buf, len)
-			if ffi.istype(buf, ffi.typeof("float *")) or ffi.istype(buf, ffi.typeof("float []")) then
+			if type(buf) == "number" then
+				local f = ffi.new("double[1]", buf)
+				lib.sf_write_double(self, f, 1)
+			elseif ffi.istype(buf, ffi.typeof("float *")) or ffi.istype(buf, ffi.typeof("float []")) then
 				lib.sf_write_float(self, buf, len)
 			elseif ffi.istype(buf, ffi.typeof("double *")) or ffi.istype(buf, ffi.typeof("double []")) then
 				lib.sf_write_double(self, buf, len)
