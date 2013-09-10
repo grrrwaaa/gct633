@@ -15,7 +15,7 @@
 #include <sndfile.h>
 
 // the "main" function is where the program starts running
-int main() {
+int main(int argc, char * argv[]) {
 	// declare a variable of type "int" which we will use in this function:
 	int i;
     
