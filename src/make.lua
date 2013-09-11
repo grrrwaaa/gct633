@@ -27,8 +27,9 @@ if ffi.os == "OSX" then
 	local SRC = "av.cpp av_audio.cpp RtAudio.cpp "
 	local LINK = "clang++ "
 	local LDFLAGS = "-w -keep_private_externs "
+				.. "-mmacosx-version-min=10.6 "
 				.. "-Losx/lib "
-	local LIBS = "osx/lib/libluajit.a -framework CoreFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework GLUT -framework OpenGL -framework IOKit "
+	local LIBS = "osx/lib/libluajit.a -framework CoreFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework GLUT -framework OpenGL -framework IOKit -force_load osx/lib/libsndfile.a"
 	local OUT = "-o av_osx"
 	
 	local build32 = { CC, "-arch i386 ", CFLAGS, SRC, LDFLAGS, LIBS, "-o av32" }
@@ -40,7 +41,7 @@ if ffi.os == "OSX" then
 	print(cmda("lipo -create av32 av64 -output av_osx && rm av32 && rm av64 && mv av_osx ../"))
 	
 	
-	--print(cmda("clang++ -arch i386 -arch x86_64 -I/usr/local/include -I/usr/local/include/luajit-2.0 av.cpp av_audio.cpp RtAudio.cpp  -pagezero_size 10000 -image_base 100000000 -force_load /usr/local/lib/libsndfile.a /usr/local/lib/libluajit-5.1.a -framework CoreFoundation -framework CoreAudio -o av_osx"))
+	--print(cmda("clang++ -arch i386 -arch x86_64 -I/usr/local/include -I/usr/local/include/luajit-2.0 av.cpp av_audio.cpp RtAudio.cpp  -pagezero_size 10000 -image_base 100000000 /usr/local/lib/libluajit-5.1.a -framework CoreFoundation -framework CoreAudio -force_load /usr/local/lib/libsndfile.a  -o av_osx"))
 	
 	--print(cmda("mv av_osx .."))
 	
