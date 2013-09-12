@@ -16,6 +16,10 @@ char workpath[AV_PATH_MAX+1];
 // filename of the main script:
 char mainfile[AV_PATH_MAX+1];
 
+
+#define DEBUG_PRINTF(args ...)
+//#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
+
 void getpaths(int argc, char ** argv) {
 	#ifdef AV_WINDOWS
 		{
@@ -112,10 +116,10 @@ void getpaths(int argc, char ** argv) {
 		}
 		#endif
 	#endif
-	printf("launchpath %s\n", launchpath);
-	printf("apppath %s\n", apppath);
-	printf("workpath %s\n", workpath);
-	printf("mainfile %s\n", mainfile);
+	DEBUG_PRINTF("launchpath %s\n", launchpath);
+	DEBUG_PRINTF("apppath %s\n", apppath);
+	DEBUG_PRINTF("workpath %s\n", workpath);
+	DEBUG_PRINTF("mainfile %s\n", mainfile);
 }
 
 int traceback(lua_State * L) {
@@ -181,14 +185,19 @@ HMODULE dll(const char * name) {
 
 int initlua(int argc, char * argv[]) {
 	L = lua_open();
+	DEBUG_PRINTF("L %p\n", L);
 	if (!L) return -1;
 	luaL_openlibs(L);
+	
+	DEBUG_PRINTF("opened libs\n");
 	
 	lua_createtable(L, argc, 0);
 	for (int i=0; i<argc; i++) {
 		lua_pushstring(L, argv[i]); lua_rawseti(L, -2, i);
 	}
 	lua_setglobal(L, "arg");
+	
+	DEBUG_PRINTF("set arg\n");
 	
 	#define initscriptsize 100000
 	char initscript[initscriptsize];
@@ -197,7 +206,7 @@ int initlua(int argc, char * argv[]) {
 	#else
 		AV_SNPRINTF(initscript, initscriptsize, "package.path = [[%sav/?.lua;%sav/?/init.lua;]] .. package.path; package.cpath = [[%sav/?.so;]] .. package.cpath", apppath, apppath, apppath);
 	#endif
-	printf("initscript %s\n", initscript);
+	DEBUG_PRINTF("initscript %s\n", initscript);
 	return dostring(initscript);
 }
 							
