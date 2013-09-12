@@ -17,8 +17,8 @@ char workpath[AV_PATH_MAX+1];
 char mainfile[AV_PATH_MAX+1];
 
 
-#define DEBUG_PRINTF(args ...)
-//#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
+//#define DEBUG_PRINTF(args ...)
+#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
 
 void getpaths(int argc, char ** argv) {
 	#ifdef AV_WINDOWS
@@ -223,6 +223,7 @@ int main(int argc, char * argv[]) {
 	//glutInit(&argc, argv);
 	
 	initlua(argc, argv);
+	printf("------------------------------------------------------------\n");
 	
 	if (argc > 1) {
 		dofile(argv[1]);
