@@ -17,8 +17,8 @@ char workpath[AV_PATH_MAX+1];
 char mainfile[AV_PATH_MAX+1];
 
 
-//#define DEBUG_PRINTF(args ...)
-#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
+#define DEBUG_PRINTF(args ...)
+//#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
 
 void getpaths(int argc, char ** argv) {
 	#ifdef AV_WINDOWS
