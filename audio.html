@@ -114,7 +114,7 @@ The human ear can discriminate around 120dB of dynamic range, though this is fre
 
 Many early electronic and computer music composers were attracted to the medium for the apparently unlimited range of possible timbres it could produce. One hundred years ago the avant-garde of Western music were experimenting by broadening the sonic palette of Western music, to the point that Italian Futurist composer Luigi Russolo conceived of "noise music" concerts, new noise instruments ("Intonarumori") and the manifesto "The Art of Noises"; in part responding to the industrial revolution, in part continuing the trend of breaking down classical music principles, and no doubt in part also the sheer fun of it...
 
-![Intonarumori](intonarumori.jpeg) 
+![Intonarumori](img/intonarumori.jpeg) 
 
 In addition to the potential to find [the new sound](http://www.youtube.com/watch?v=pQLlR4pvhyg), the computer was also attractive to composers as an precise, accurate and (perhaps more attractively) obedient performer. Never before could a composer realize such control over every tiny detail of a composition. The computer will perfectly reproduce the commands issued to it. 
 
@@ -130,7 +130,7 @@ The benefits of his approach included both flexibility (a vast diversity of inst
 
 He noted that streams are mostly formed from approximately periodic signals, whose most important properties are period (frequency), duration, amplitude and wave shape (timbre); and he also noted exceptions (such as noise). Furthermore he noted that we are sensitive to modulations of these parameters: vibrato, tremelo, attack and decay characteristics. 
 
-![Unit generator](ugen.png)
+![Unit generator](img/ugen.png)
 
 To provide these basic characteristics, without overly constraining the artist, he conceived the highly influential **unit generator** concept. Each unit generator type produces a stream of samples according to an underlying algorithm (such as a sine wave) and input parameters. Unit generators (or simply "ugens") can be combined together, by mapping the output of one ugen to an input parameter of another, to create more complex sound generators, and ultimately, define the instruments of an orchestra. Example unit generators include:
 
@@ -144,7 +144,7 @@ To provide these basic characteristics, without overly constraining the artist, 
 
 Modern computer music software may have hundreds of different unit generators. CSound and SuperCollider are particularly plentiful.
 
-![Unit generator graph](ugen2.png)
+![Unit generator graph](img/ugen2.png)
 
 In Music-III a unit generator graph, or *instrument*, as above would be specified by a series of macro instructions: first to define the unit generators (type, parameters, output connections), and to specify which note parameters map to which unit generator inputs. Although the syntax is very different (and we no longer need to punch holes in card!), the same principles are clearly visible in modern computer music languages, such as the SynthDef construct in [SuperCollider](http://en.wikipedia.org/wiki/SuperCollider).
 
