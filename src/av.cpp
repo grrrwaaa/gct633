@@ -189,6 +189,11 @@ int initlua(int argc, char * argv[]) {
 	if (!L) return -1;
 	luaL_openlibs(L);
 	
+	lua_getglobal(L, "package");
+    lua_getfield(L, -1, "preload");
+    //lua_pushcfunction(L, luaopen_pack); lua_setfield(L, -2, "pack");
+    lua_pop(L, 2);
+	
 	DEBUG_PRINTF("opened libs\n");
 	
 	lua_createtable(L, argc, 0);
@@ -208,6 +213,25 @@ int initlua(int argc, char * argv[]) {
 	#endif
 	DEBUG_PRINTF("initscript %s\n", initscript);
 	return dostring(initscript);
+}
+
+extern "C" double av_time() {
+		timeval t;
+		gettimeofday(&t, NULL);
+		return (double)t.tv_sec + (((double)t.tv_usec) * 1.0e-6);
+}	
+
+extern "C" void av_sleep(double seconds) {
+	#ifdef AV_WINDOWS
+		Sleep((DWORD)(seconds * 1.0e3));
+	#else
+		time_t sec = (time_t)seconds;
+		long long int nsec = 1.0e9 * (seconds - (double)sec);
+		timespec tspec = { sec, nsec };
+		while (nanosleep(&tspec, &tspec) == -1) {
+			continue;
+		}
+	#endif
 }
 							
 int main(int argc, char * argv[]) {

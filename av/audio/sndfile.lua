@@ -575,6 +575,7 @@ void	sf_write_sync	(SNDFILE *sndfile) ;
 
 ]]
 
+local buffer = require "audio.buffer"
 
 ffi.metatype("SNDFILE", {
 	__gc = lib.sf_close,
@@ -613,8 +614,20 @@ local sndfile = function(path, mode, config)
 		end
 		
 		return ffi.gc(sf, lib.sf_close)
+	elseif mode == "rw" then
+		error("READWRITE not yet implemented")
 	else
-		error("file reading TODO")
+		local info = ffi.new("SF_INFO")
+		local sf = lib.sf_open(path, lib.SFM_READ, info)
+		if sf == nil then
+			error(ffi.string(lib.sf_strerror(nil)))
+		end
+		-- allocate a buffer for it:
+		local buf = buffer(info.frames, info.channels)
+		-- read it in:
+		local n = lib.sf_read_double(sf, buf.samples, info.frames)
+		assert(n == info.frames, "unable to read whole file")
+		return buf
 	end
 end
 

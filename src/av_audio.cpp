@@ -38,6 +38,7 @@ int av_rtaudio_callback(void *outputBuffer,
 	float * dst = audio.output;
 	float * src = audio.buffer + audio.blockread * audio.blocksize * audio.outchannels;
 	memcpy(dst, src, size * audio.outchannels);
+	memset(src, 0, size * audio.outchannels);
 	// advance the read head:
 	audio.blockread++;
 	if (audio.blockread >= audio.blocks) audio.blockread = 0;

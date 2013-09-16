@@ -24,18 +24,17 @@ local format = string.format
 local ffi = require "ffi"
 ffi.cdef [[
 
-	typedef struct audio_buffer {
-		int frames, channels;
-		double samples [?];
-	} audio_buffer;
-	
+typedef struct audio_buffer {
+	int frames, channels;
+	double samples [?];
+} audio_buffer;
+
 ]]
 
 function new(frames, channels) 
 	assert(frames and frames > 0, "buffer length (frames) required")
 	channels = channels and (max(channels, 1)) or 1
 	local buf = ffi.new("audio_buffer", frames*channels, frames, channels)
-	print(buf, buf.frames, buf.channels)
 	return buf
 end
 
@@ -44,6 +43,20 @@ buffer.__index = buffer
 
 function buffer:__tostring()
 	return format("audio.buffer(%dx%d, %p)", self.frames, self.channels, self)
+end
+
+function buffer:write(func, start, dur)
+	local start = start or 0
+	local dur = dur or self.frames
+	local chans = self.channels
+	-- this is not optimized at all.
+	for i = start, dur-1 do
+		local idx = i * chans
+		local frame = { func() }
+		for c = 0, chans-1 do
+			self.samples[idx + c] = frame[(c % #frame) + 1]
+		end
+	end	
 end
 
 --[[

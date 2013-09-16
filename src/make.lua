@@ -25,7 +25,6 @@ if ffi.os == "OSX" then
 				.. "-DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ "
 				.. "-Iosx/include"
 	local SRC = "av.cpp av_audio.cpp RtAudio.cpp "
-	local LINK = "clang++ "
 	local LDFLAGS = "-w -keep_private_externs "
 				.. "-mmacosx-version-min=10.6 "
 				.. "-Losx/lib "
