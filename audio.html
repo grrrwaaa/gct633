@@ -110,10 +110,52 @@ Decibels are frequently used in two ways in audio:
 
 The human ear can discriminate around 120dB of dynamic range, though this is frequency dependent. A 16 bit depth (standard CDs) provides around 120dB. However when operating and transforming audio greater headroom is needed.
 
-# Homework 1
+## The Great Computer Music Problem
 
-The digital representation of sound, with sufficient sampling rate and bit depth, can represent any audible sound. For our purposes we will use 44100kHz sampling rate and standard Lua numbers (64-bit). The combinatoric space of possible sounds in just one second is in the billions. Your task is to find an interesting one, by creating a program that maps time (sample number or seconds) to amplitude (between -1 and 1) for each sample. You can look at the "sep12.lua" example in the "classfiles" folder of the repo for an example. 
+Many early electronic and computer music composers were attracted to the medium for the apparently unlimited range of possible timbres it could produce. One hundred years ago the avant-garde of Western music were experimenting by broadening the sonic palette of Western music, to the point that Italian Futurist composer Luigi Russolo conceived of "noise music" concerts, new noise instruments ("Intonarumori") and the manifesto "The Art of Noises"; in part responding to the industrial revolution, in part continuing the trend of breaking down classical music principles, and no doubt in part also the sheer fun of it...
 
+![Intonarumori](intonarumori.jpeg) 
+
+In addition to the potential to find [the new sound](http://www.youtube.com/watch?v=pQLlR4pvhyg), the computer was also attractive to composers as an precise, accurate and (perhaps more attractively) obedient performer. Never before could a composer realize such control over every tiny detail of a composition. The computer will perfectly reproduce the commands issued to it. 
+
+Unfortunately, although the space of possible sounds in just one second of CD-quality audio is practically infinite, the vast majority of them are uninteresting. For example, as we heard already, simply selecting the samples randomly results in psychologically indistinguishable white noise. So, with all the infinite possibilities of sounds available, how *should* one navigate and control the interesting ones? (This is precisely the problem posed in Homework 1: how to design an interesting function to map from discrete time to an interesting sequence of audio samples.)
+
+One of the most influential solutions to this problem was developed by Max Mathews at Bell Labs in the late 1950's, in his **Music-N** series of computer music languages. The influence of his work lives on today both in name (Max in [Max/MSP](http://en.wikipedia.org/wiki/Max_(software)) refers to Max Mathews) and in design (the [CSound](http://en.wikipedia.org/wiki/Csound) language in particular directly inherits the Music-N design). 
+
+- [Mathews, M. An Acoustic Compiler for Music and Psychological Stimuli](http://ia601505.us.archive.org/7/items/bstj40-3-677/bstj40-3-677.pdf)
+
+Mathews' approach exemplifies the "divide and conquer" principle, with a little inspiration from the Western music tradition. A computer music composition is composed of an orchestra of instruments, and a score, but these are represented as data and program code. Music-III is a **compiler**, that is, a program that receives code in some form, and produces a program as output. (More generally, programs that create programs are called *metaprograms*). Given **orchestra** specification data, the Music-III compiler produces programs for each of the **instruments**. A separate program, called the **sequencer**, receives data in the form of a list of **note** events. For each note, the sequencer "plays" the corresponding instrument program, with the note parameters to specify frequency, volume, duration etc. The outputs of each note program are mixed into an output stream, which is finally converted into sound.
+
+The benefits of his approach included both flexibility (a vast diversity of instruments, orchestrae, scores can be produced), efficiency (at $100 per minute!), and suitability to producing interesting sounds. Throughout his life Mathews was also deeply concerned with the psychology of listening: what sounds we respond to, and why. He was aware that we perceive time in combinations both events and streams; abstracted into his "note" and "instrument" schema. The "score" reflects the fact that we perceive multiple streams simultaneously. 
+
+He noted that streams are mostly formed from approximately periodic signals, whose most important properties are period (frequency), duration, amplitude and wave shape (timbre); and he also noted exceptions (such as noise). Furthermore he noted that we are sensitive to modulations of these parameters: vibrato, tremelo, attack and decay characteristics. 
+
+![Unit generator](ugen.png)
+
+To provide these basic characteristics, without overly constraining the artist, he conceived the highly influential **unit generator** concept. Each unit generator type produces a stream of samples according to an underlying algorithm (such as a sine wave) and input parameters. Unit generators (or simply "ugens") can be combined together, by mapping the output of one ugen to an input parameter of another, to create more complex sound generators, and ultimately, define the instruments of an orchestra. Example unit generators include:
+
+- **Triangle ramp**. A simple rising signal that wraps in the range [0, 1). In Max/MSP this is called [phasor]. 
+	- In Music-II this is not a bandlimited triangle, and may sound harsh or incorrect at high frequencies. 
+- **Wavetable playback**. For the sake of simplicity and efficiency, Music-III also featured the ability to generate **wavetables**, basic wave functions stored in memory that unit generators can refer to. The most commonly used unit generator simply reads from the wavetable according to the input frequency (or rate), looping at the boundaries to create an arbitary periodic waveform. In Max/MSP this could be [cycle~] or [groove~]. 
+	- In Music-III this does not appear to use interpolation, and thus may suffer aliasing artifacts. 
+- **Adder**. The output of this ugen is simply the addition of the inputs. In Max/MSP this is [+~]. 
+- **Random generator**. Returns a stream of random numbers. In Max/MSP this is called [noise~].
+- **Acoustic output**. Any input to this ugen is mixed to the global acoustic output. This represents the *root* of the ugen graph. In Max/MSP this is called [dac~]. 
+
+Modern computer music software may have hundreds of different unit generators. CSound and SuperCollider are particularly plentiful.
+
+![Unit generator graph](ugen2.png)
+
+In Music-III a unit generator graph, or *instrument*, as above would be specified by a series of macro instructions: first to define the unit generators (type, parameters, output connections), and to specify which note parameters map to which unit generator inputs. Although the syntax is very different (and we no longer need to punch holes in card!), the same principles are clearly visible in modern computer music languages, such as the SynthDef construct in [SuperCollider](http://en.wikipedia.org/wiki/SuperCollider).
+
+However, as a *compiler*, Music-III converts each instrument specification into a program. Then the score is input, to drive creation of the final composition. Score events include:
+
+- Specifying the generation of *wavetables*.
+- Specifying the time scale / tempo.
+- Specify note events (with parameters including instrument ID, duration, and other instrument-specific controls). 
+- Punctuation with rests, synchronization points, or ending the work.
+
+With modern languages we can overcome many of the limitations in the 1950's programming environment, allowing us to create a much richer and friendlier "acoustic compiler". 
 
 
 ----
