@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>AV</h1>
+
+<ul>
+  <li><a href="../reference.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_SNDFILE">Class SNDFILE </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul>
+  <li><a href="../modules/audio.html">audio</a></li>
+  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
+  <li><strong>audio.sndfile</strong></li>
+  <li><a href="../modules/math.html">math</a></li>
+  <li><a href="../modules/string.html">string</a></li>
+  <li><a href="../modules/table.html">table</a></li>
+  <li><a href="../modules/util.html">util</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>audio.sndfile</code></h1>
+
+<p>Read and write audio files.</p>
+<p>
+The sndfile module can also be invoked directly, e.g.
+<p> 	sndfile("mysound.wav", "w")
+<p>to create/open a file for writing.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#create">create&nbsp;(path, config)</a></td>
+	<td class="summary">Create (or re-open) a soundfile for writing.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#read">read&nbsp;(path)</a></td>
+	<td class="summary">Read in a sound file and return an audio.buffer object.</td>
+	</tr>
+</table>
+<h2><a href="#Class_SNDFILE">Class SNDFILE </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#SNDFILE:write">SNDFILE:write&nbsp;(buf, len)</a></td>
+	<td class="summary">Write data to a sound file.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#SNDFILE:close">SNDFILE:close&nbsp;()</a></td>
+	<td class="summary">Close a sound file.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Functions"></a>Functions</h2>
+    <dl class="function">
+    <dt>
+    <a name = "create"></a>
+    <strong>create&nbsp;(path, config)</strong>
+    </dt>
+    <dd>
+    Create (or re-open) a soundfile for writing.
+ The config table options include "channels" (default 2), "samplerate" (default 44100).
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="../modules/string.html#">string</a></span>
+         filename or full filepath of file to create</li>
+        <li><span class="parameter">config</span>
+            <span class="types">optional <a class="type" href="../modules/table.html#">table</a></span>
+         configuration options</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/audio.sndfile.html#Class_SNDFILE">SNDFILE</a></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "read"></a>
+    <strong>read&nbsp;(path)</strong>
+    </dt>
+    <dd>
+    Read in a sound file and return an audio.buffer object.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="../modules/string.html#">string</a></span>
+         filename or full filepath of file to read</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/audio.buffer.html#">audio.buffer</a></span>
+        buffer
+    </ol>
+
+
+    <h3>see also:</h3>
+    <ul>
+         <a href="../modules/audio.buffer.html#">audio.buffer</a>
+    </ul>
+
+
+</dd>
+</dl>
+    <h2><a name="Class_SNDFILE"></a>Class SNDFILE </h2>
+        A sound file class.
+    <dl class="function">
+    <dt>
+    <a name = "SNDFILE:write"></a>
+    <strong>SNDFILE:write&nbsp;(buf, len)</strong>
+    </dt>
+    <dd>
+    Write data to a sound file.
+ If buf is a number, len is ignored and a single sample is written.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buf</span>
+        </li>
+        <li><span class="parameter">len</span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "SNDFILE:close"></a>
+    <strong>SNDFILE:close&nbsp;()</strong>
+    </dt>
+    <dd>
+    Close a sound file.
+ Closing a soundfile is important to allow other programs to use it. However, it is not always necessary, as garbage collection will automatically close the file.
+ Warning: the soundfile reference should not be used after calling close()
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.3.12</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
