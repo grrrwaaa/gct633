@@ -39,9 +39,10 @@ typedef struct audio_buffer {
 local buffer = {}
 buffer.__index = buffer
 
---- Create a new audio_buffer
+--- Create a new audio_buffer filled with silence.
 -- @tparam int frames The number of frames (sample length) of the buffer
 -- @tparam ?int channels The number of channels per frame
+-- @treturn SNDFILE
 function buffer.create(frames, channels) 
 	assert(frames and frames > 0, "buffer length (frames) required")
 	channels = channels and (max(channels, 1)) or 1
@@ -49,7 +50,16 @@ function buffer.create(frames, channels)
 	return buf
 end
 
+-- handy local reference
 local new = buffer.create
+
+--- Create a new audio_buffer from an audio file on disk.
+-- @tparam string filename The name or full path of a soundfile to load.
+-- @treturn SNDFILE
+function buffer.load(filename) 
+	local sndfile = require "audio.sndfile"
+	return sndfile.read(filename)
+end
 
 
 --- A sound file class.
@@ -60,7 +70,7 @@ function buffer:__tostring()
 end
 
 --- Write values into a buffer
--- @tparam function func A function that will be called to set each frame of the buffer.
+-- @tparam function func A function that will be called to set each frame of the buffer. For a multi-channel buffer, this function should return multiple values (one for each channel).
 -- @tparam ?int start The starting index to write data (default 0)
 -- @tparam ?int dur The number of frames to write (default all frames of the buffer)
 -- @treturn audio_buffer self
