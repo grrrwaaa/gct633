@@ -63,7 +63,11 @@
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#create">create&nbsp;(frames, channels)</a></td>
-	<td class="summary">Create a new audio_buffer</td>
+	<td class="summary">Create a new audio_buffer filled with silence.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#load">load&nbsp;(filename)</a></td>
+	<td class="summary">Create a new audio_buffer from an audio file on disk.</td>
 	</tr>
 </table>
 <h2><a href="#Class_audio_buffer">Class audio_buffer </a></h2>
@@ -85,7 +89,7 @@
     <strong>create&nbsp;(frames, channels)</strong>
     </dt>
     <dd>
-    Create a new audio_buffer
+    Create a new audio_buffer filled with silence.
 
     <h3>Parameters:</h3>
     <ul>
@@ -97,6 +101,37 @@
          The number of channels per frame</li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">SNDFILE</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "load"></a>
+    <strong>load&nbsp;(filename)</strong>
+    </dt>
+    <dd>
+    Create a new audio_buffer from an audio file on disk.
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">filename</span>
+            <span class="types"><a class="type" href="../modules/string.html#">string</a></span>
+         The name or full path of a soundfile to load.</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><span class="type">SNDFILE</span></span>
+
+    </ol>
 
 
 
@@ -117,7 +152,7 @@
     <ul>
         <li><span class="parameter">func</span>
             <span class="types"><span class="type">function</span></span>
-         A function that will be called to set each frame of the buffer.</li>
+         A function that will be called to set each frame of the buffer. For a multi-channel buffer, this function should return multiple values (one for each channel).</li>
         <li><span class="parameter">start</span>
             <span class="types">optional <span class="type">int</span></span>
          The starting index to write data (default 0)</li>
