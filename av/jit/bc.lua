@@ -1,3 +1,6 @@
+--- read and write audio files
+-- @module bc
+
 ----------------------------------------------------------------------------
 -- LuaJIT bytecode listing module.
 --

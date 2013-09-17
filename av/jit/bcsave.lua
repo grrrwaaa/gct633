@@ -1,3 +1,6 @@
+--- read and write audio files
+-- @module jit.bcsave
+
 ----------------------------------------------------------------------------
 -- LuaJIT module to save/list bytecode.
 --

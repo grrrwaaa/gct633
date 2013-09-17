@@ -1,3 +1,15 @@
+--[[--
+Read and write audio files. 
+The sndfile module can also be invoked directly, e.g. 
+
+ 	sndfile("mysound.wav", "w") 
+
+to create/open a file for writing.
+--]]
+-- @module audio.sndfile
+
+
+
 local ffi = require "ffi"
 
 local lib
@@ -577,58 +589,91 @@ void	sf_write_sync	(SNDFILE *sndfile) ;
 
 local buffer = require "audio.buffer"
 
-ffi.metatype("SNDFILE", {
-	__gc = lib.sf_close,
-	__index = {
-		write = function(self, buf, len)
-			if type(buf) == "number" then
-				local f = ffi.new("double[1]", buf)
-				lib.sf_write_double(self, f, 1)
-			elseif ffi.istype(buf, ffi.typeof("float *")) or ffi.istype(buf, ffi.typeof("float []")) then
-				lib.sf_write_float(self, buf, len)
-			elseif ffi.istype(buf, ffi.typeof("double *")) or ffi.istype(buf, ffi.typeof("double []")) then
-				lib.sf_write_double(self, buf, len)
-			end
-		end,
-		close = function(self)
-			ffi.gc(self, nil)
-			lib.sf_close(self)
-		end,
-	},
+
+local sndfile = {}
+
+
+--- Create (or re-open) a soundfile for writing.
+-- The config table options include "channels" (default 2), "samplerate" (default 44100).
+-- @tparam string path filename or full filepath of file to create
+-- @tparam ?table config configuration options
+-- @treturn SNDFILE
+function sndfile.create(path, config)
+	config = config or {}
+		
+	local info = ffi.new("SF_INFO")
+	info.samplerate = config.samplerate or 44100
+	info.channels = config.channels or 1
+	info.format = bit.bor(lib.SF_FORMAT_WAV, lib.SF_FORMAT_PCM_16)
+	local sf = lib.sf_open(path, lib.SFM_WRITE, info)
+	
+	if sf == nil then
+		error(ffi.string(lib.sf_strerror(nil)))
+	end
+	
+	return ffi.gc(sf, lib.sf_close)
+end
+
+--- Read in a sound file and return an audio.buffer object.
+-- @tparam string path filename or full filepath of file to read
+-- @treturn audio.buffer buffer
+-- @see audio.buffer
+function sndfile.read(path)
+	local info = ffi.new("SF_INFO")
+	local sf = lib.sf_open(path, lib.SFM_READ, info)
+	if sf == nil then
+		error(ffi.string(lib.sf_strerror(nil)))
+	end
+	-- allocate a buffer for it:
+	local buf = buffer(info.frames, info.channels)
+	-- read it in:
+	local n = lib.sf_read_double(sf, buf.samples, info.frames)
+	assert(n == info.frames, "unable to read whole file")
+	return buf
+end
+
+setmetatable(sndfile, {
+	__call = function(s, path, mode, config)
+		if mode == "w" then
+			return sndfile.create(path, config)
+		elseif mode == "rw" then
+			error("READWRITE not yet implemented")
+		else
+			return sndfile.read(path, config)
+		end
+	end,
 })
 
-local sndfile = function(path, mode, config)
-	local info = ffi.new("SF_INFO")
-	
-	if mode == "w" then
-		config = config or {}
-		
-		local info = ffi.new("SF_INFO")
-		info.samplerate = config.samplerate or 44100
-		info.channels = config.channels or 1
-		info.format = bit.bor(lib.SF_FORMAT_WAV, lib.SF_FORMAT_PCM_16)
-		local sf = lib.sf_open(path, lib.SFM_WRITE, info)
-		
-		if sf == nil then
-			error(ffi.string(lib.sf_strerror(nil)))
-		end
-		
-		return ffi.gc(sf, lib.sf_close)
-	elseif mode == "rw" then
-		error("READWRITE not yet implemented")
-	else
-		local info = ffi.new("SF_INFO")
-		local sf = lib.sf_open(path, lib.SFM_READ, info)
-		if sf == nil then
-			error(ffi.string(lib.sf_strerror(nil)))
-		end
-		-- allocate a buffer for it:
-		local buf = buffer(info.frames, info.channels)
-		-- read it in:
-		local n = lib.sf_read_double(sf, buf.samples, info.frames)
-		assert(n == info.frames, "unable to read whole file")
-		return buf
+--- A sound file class.
+-- @type SNDFILE
+local SNDFILE = {
+	__gc = lib.sf_close,
+}
+SNDFILE.__index = SNDFILE
+
+--- Write data to a sound file.
+-- If buf is a number, len is ignored and a single sample is written.
+-- @return self
+function SNDFILE:write(buf, len)
+	if type(buf) == "number" then
+		local f = ffi.new("double[1]", buf)
+		lib.sf_write_double(self, f, 1)
+	elseif ffi.istype(buf, ffi.typeof("float *")) or ffi.istype(buf, ffi.typeof("float []")) then
+		lib.sf_write_float(self, buf, len)
+	elseif ffi.istype(buf, ffi.typeof("double *")) or ffi.istype(buf, ffi.typeof("double []")) then
+		lib.sf_write_double(self, buf, len)
 	end
+	return self
 end
+
+--- Close a sound file.
+-- Closing a soundfile is important to allow other programs to use it. However, it is not always necessary, as garbage collection will automatically close the file.
+-- Warning: the soundfile reference should not be used after calling close()
+function SNDFILE:close()
+	ffi.gc(self, nil)
+	lib.sf_close(self)
+end
+
+ffi.metatype("SNDFILE", SNDFILE)
 
 return sndfile

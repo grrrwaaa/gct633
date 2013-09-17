@@ -1,3 +1,6 @@
+--- interact with the audio system
+-- @module audio
+
 local ffi = require "ffi"
 local C = ffi.C
 
@@ -95,6 +98,8 @@ function audio.script(generate)
 	end
 end
 
+--- Play an audio_buffer.
+-- @tparam audio_buffer buffer The buffer to play
 function audio.play(buffer)
 	local count = 0	
 	local chans = buffer.channels
