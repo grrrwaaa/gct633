@@ -170,6 +170,8 @@ local function dict_keystr(k, ind)
 	end
 end	
 
+local table_tostring
+
 local function dict_valstr(v, ind, memo)
 	if type(v) == "string" then	-- TODO: and no invalid chars!
 		return format("%q", v)
@@ -184,11 +186,10 @@ local function list_tostring(t, ind, ind1)
 	
 end
 
-
 -- TODO: handle multiple references without error (but not recursion)
 -- TODO: handle recursion without error
 -- TODO: handle functions, etc.
-local table_tostring
+
 table_tostring = function(t, ind, memo)
 	if type(t) == "table" then
 		-- memoization to trap multiple refs/recursion

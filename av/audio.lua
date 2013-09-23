@@ -60,7 +60,7 @@ function audio.start()
 end
 audio.start()
 
-function audio.script(generate)
+function audio.run(generate)
 	if generate then
 		local blocksize = driver.blocksize
 		local w = driver.blockwrite
@@ -75,8 +75,8 @@ function audio.script(generate)
 				local out = driver.buffer + w * driver.blockstep
 				for i = 0, blocksize-1 do
 					local l, r = generate()
-					out[i*2] = l
-					out[i*2+1] = r or l
+					out[i*2] = l or 0
+					out[i*2+1] = r or l or 0
 				end
 				done = done + 1
 				w = w + 1
@@ -87,8 +87,8 @@ function audio.script(generate)
 			local out = driver.buffer + w * driver.blockstep
 			for i = 0, blocksize-1 do
 				local l, r = generate()
-				out[i*2] = l
-				out[i*2+1] = r or l
+				out[i*2] = l or 0
+				out[i*2+1] = r or l or 0
 			end
 			done = done + 1
 			w = w + 1
@@ -98,25 +98,52 @@ function audio.script(generate)
 	end
 end
 
---- Play an audio_buffer.
--- @tparam audio_buffer buffer The buffer to play
-function audio.play(buffer)
-	local count = 0	
-	local chans = buffer.channels
-	local frames = buffer.frames
-	local playback = function()
-		if count < frames then
-			local l = buffer.samples[count*chans]
-			local r = chans > 1 and buffer.samples[count*chans+1] or l
-			count = count + 1
-			return l, r
-		else
-			return 0
+--- Play a function or audio_buffer.
+-- @param content The buffer or function to play
+-- @param duration seconds to play
+function audio.play(content, duration)
+	local buffer = require "audio.buffer"
+	if type(content) == "number" then
+		error("cannot play a number")
+	elseif type(content) == "function" then
+		local f = content
+		local count = 0
+		local frames = driver.samplerate * (duration or 1)
+		content = function()
+			if count < frames then
+				count = count + 1
+				return f()
+			end
 		end
-	end
-	while count < frames do	
-		audio.script(playback)
-		lib.av_sleep(0.01)
+		while count < frames do	
+			audio.run(content)
+			lib.av_sleep(0.01)
+		end
+	elseif type(content) == "cdata" and buffer.isbuffer(content) then
+		local count = 0	
+		local buf = content
+		local chans = buf.channels
+		local frames = buf.frames
+		if duration then
+			frames = math.min(frames, driver.samplerate * duration)
+		end
+
+		content = function()
+			if count < frames then
+				local l = buf.samples[count*chans]
+				local r = chans > 1 and buf.samples[count*chans+1] or l
+				count = count + 1
+				return l, r
+			else
+				return 0
+			end
+		end
+		while count < frames do	
+			audio.run(content)
+			lib.av_sleep(0.01)
+		end
+	else
+		error("bad type for audio.play")
 	end
 end
 

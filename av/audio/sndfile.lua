@@ -606,11 +606,9 @@ function sndfile.create(path, config)
 	info.channels = config.channels or 1
 	info.format = bit.bor(lib.SF_FORMAT_WAV, lib.SF_FORMAT_PCM_16)
 	local sf = lib.sf_open(path, lib.SFM_WRITE, info)
-	
 	if sf == nil then
 		error(ffi.string(lib.sf_strerror(nil)))
 	end
-	
 	return ffi.gc(sf, lib.sf_close)
 end
 

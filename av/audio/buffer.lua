@@ -39,6 +39,11 @@ typedef struct audio_buffer {
 local buffer = {}
 buffer.__index = buffer
 
+function buffer.isbuffer(t)
+	return ffi.istype(t, ffi.typeof("audio_buffer *"))
+		or ffi.istype(t, ffi.typeof("audio_buffer"))
+end
+
 --- Create a new audio_buffer filled with silence.
 -- @tparam int frames The number of frames (sample length) of the buffer
 -- @tparam ?int channels The number of channels per frame
@@ -61,6 +66,18 @@ function buffer.load(filename)
 	return sndfile.read(filename)
 end
 
+function buffer:save(filename) 
+	local sndfile = require "audio.sndfile"
+	local s = sndfile.create(filename, { channels = self.channels })
+	s:write(self.samples, self.frames)
+	return self
+end
+
+function buffer:play()
+	local audio = require "audio"
+	audio.play(self)
+	return self
+end
 
 --- A sound file class.
 -- @type audio_buffer
