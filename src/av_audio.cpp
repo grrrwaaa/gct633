@@ -1,9 +1,27 @@
 #include "av.hpp"
 #include "RtAudio.h"
 
-extern "C" {
-	#include "av.h"
-}
+typedef struct av_Audio {
+	unsigned int blocksize;
+	unsigned int frames;	
+	unsigned int indevice, outdevice;
+	unsigned int inchannels, outchannels;		
+	
+	double time;		// in seconds
+	double samplerate;
+	double lag;			// in seconds
+	
+	// a big buffer for main-thread audio generation
+	float * buffer;
+	// the buffer alternates between channels at blocksize periods:
+	int blocks, blockread, blockwrite, blockstep;
+	
+	// only access from audio thread:
+	float * input;
+	float * output;	
+	void (*onframes)(struct av_Audio * self, double sampletime, float * inputs, float * outputs, int frames);
+	
+} av_Audio;
 
 //#define AV_AUDIO_MSGBUFFER_SIZE_DEFAULT (1024 * 1024)
 
@@ -53,7 +71,7 @@ int av_rtaudio_callback(void *outputBuffer,
 	return 0;
 }
 
-void av_audio_start() {
+AV_EXPORT void av_audio_start() {
 	if (rta.isStreamRunning()) {
 		rta.stopStream();
 	}
@@ -110,7 +128,7 @@ void av_audio_start() {
 	}
 }
 
-av_Audio * av_audio_get() {
+AV_EXPORT av_Audio * av_audio_get() {
 	static bool initialized = false;
 	if (!initialized) {
 		initialized = true;

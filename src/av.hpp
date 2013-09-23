@@ -10,7 +10,7 @@
 	#include <gl\glu.h> 
 	#include <glut.h>
 	
-	#define AV_EXPORT __declspec(dllexport)
+	#define AV_EXPORT extern "C" __declspec(dllexport) 
 	#define AV_PATH_MAX MAX_PATH
 	#define AV_GETCWD _getcwd
 	#define AV_SNPRINTF _snprintf

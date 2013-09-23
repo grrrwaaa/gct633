@@ -1,4 +1,5 @@
 local sndfile = require "audio.sndfile"
+local audio = require "audio"
 
 local s = sndfile("tmp.wav", "w")
 
