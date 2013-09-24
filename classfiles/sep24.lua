@@ -25,34 +25,23 @@ end
 --audio.play(hihat, 1)
 
 local score = {
+	-- three notes:
 	{ start=0, dur=0.5, amp=0.5, freq=400, instr=make_hihat },
-	{ start=0.4, 		amp=0.25 },
-	{ iot=0.1, dur=0.01, },
-	{ iot=0.1, dur=0.03, },
-	{ iot=0.1, dur=0.05, },
-	{ iot=0.1, dur=0.07, },
-	{ iot=0.1, dur=0.09, },
+	--{ dur=0.2, instr=0 },	-- a rest
+	{ start=0.4, dur=0.5, amp=0.25, freq=500, instr=make_hihat },
+	{ start=0.5, dur=0.01, amp=0.25, freq=600, instr=make_hihat },
+	{ start=0.6, dur=0.03, amp=0.25, freq=600, instr=make_hihat },
+	{ start=0.7, dur=0.05, amp=0.25, freq=600, instr=make_hihat },
+	{ start=0.8, dur=0.07, amp=0.25, freq=600, instr=make_hihat },
+	{ start=0.9, dur=0.09, amp=0.25, freq=600, instr=make_hihat },
 }
 
 local sequencer = function(score)
 	-- pre-process the score:
 	-- create instruments:
-	local prevnote
 	for key, note in ipairs(score) do
-		-- generate absolute start time:
-		if note.iot then note.start = prevnote.start + note.iot end
-		
-		-- fill in defaults:
-		if not note.amp then note.amp = prevnote.amp end
-		if not note.freq then note.freq = prevnote.freq end
-		if not note.dur then note.dur = prevnote.dur end
-		if not note.instr then note.instr = prevnote.instr end
-		if not note.start then note.start = prevnote.start end
-		
 		-- construct the note instruments:
 		note.sound = note.instr(note)
-		-- update the previous note:
-		prevnote = note
 	end	
 	-- current sample:
 	local count = 0
@@ -84,11 +73,3 @@ end
 
 -- run it!
 sequencer(score)
-
-
-
-
-
-
-
---]]
