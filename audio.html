@@ -207,6 +207,77 @@ With modern languages we can overcome many of the limitations in the 1950's prog
 
 > Is this the only way to structure a composition? Is it the only/best solution to the great computer music problem? What cannot be expressed in this form? What alternatives could be considered?
 
+### The Software Development Process
+
+[We found that](https://github.com/grrrwaaa/gct633/blob/master/classfiles/sep17.lua) we could define unit generators as **constructor** functions that return sample-making functions. The assumption is that the input arguments to a unit generator constructor are also sample-making functions:
+
+```
+-- construct a unit generator f
+-- inputs a and b are sample-making functions:
+function make_adder(a, b)
+	-- the unit generator function created:
+	return function()
+		-- compute the next values of the two sample-making inputs
+		-- then return their sum:
+		return a() + b()
+	end
+end
+```
+
+As is often the case in programming, this is not the only way to do it. It might not be the most efficient; it might not scale well; but it happens to be a fairly simple one to write. This is an important heuristic in [agile software development](http://agilemanifesto.org/):
+
+1. **Make it work** (i.e. satisfy the minimum requirement to be able to use it)
+2. **Make it right** (i.e. eliminate errors, handle special cases, begin to generalize)
+3. **Make it fast** (i.e. avoid waste)
+
+> What this means is always solve problem (1) first, before moving on to (2) and later (3), if needed. This far from the only principle of [Agile development](http://en.wikipedia.org/wiki/Agile_software_development), but it does reflect the importance of fast turnaround and evaluation for *informed* development.
+
+Although it may not be obvious, our current plan fails on point 1. After playing around with it for a while, you might find a problem in the following case. The result should be a louder 1000Hz signal, but what we get instead is a 2000Hz signal. *Why?*
+
+```
+-- create an instrument that adds two 1000Hz sinewaves at 50% amplitude:
+local u1 = make_sine(const(1000), const(0.5))
+local u2 = make_adder(u1, u1)
+```
+
+One value of developing in the Agile style is that this problem is encountered early, before a huge infrastructure has been created. This problem requires a major change to the system, which would be costly (or boring) if encountered at a later stage.
+
+Similarly, we can build the sequencer component in the simplest and most naive way first, to make sure it works; then by using it we may find what special cases it does not handle, what additional features may be desirable, and whether the performance needs to be improved.
+
+The sequencer's basic requirements:
+
+- Support a **score** (list) of note events. 
+	- Both score, and note events, could be modeled as Lua tables.
+	- Each note refers to an instrument
+	- Each note may have other parameters
+- The **sequencer** function should mix the score's notes into the output
+	- This means iterating through the list of notes, and playing those that should be active at any time.
+		- This means invoking the instrument somehow
+		- Including variation according to the note parameters
+	- The outputs of concurrently playing notes should be added together.
+
+----
+
+## Lazy Programming
+
+Many programmers are lazy, and many programmers like laziness. Laziness is one of the great motivators for innovation. For example, abstraction appeals to our desire to be lazy, as it makes future revisions easier.
+
+[Lazy evaluation](http://en.wikipedia.org/wiki/Lazy_evaluation) is a technique of software design in which values are computed as late as possible: only when they are needed. Lazy evaluation also implies not repeating the same computation twice (sharing results instead). It is sometimes referred to as **call by need**.
+
+Rather than computing each intermediate value on the way to a result, we can instead collect a description of the steps required, and only at the last moment actually execute them. This is also known as **deferred evaluation**. If we discover as we go that some of these steps were not necessary, we can remove them before executing. It also means that we can refer to values before they have been computed (these are called **futures**). 
+
+In addition to improving performance (reducing waste), lazy evaluation can be used to represent potentially infinite data structures (you can add more on the end when you need them), and to define control flow in abstract rather than primitive forms. 
+
+### Lazy reaction
+
+Consider the orchestra/score. The score contains an ordered list of pairs, mapping discrete times to note objects. At each one of these times, the running *state* (the active set of notes) changes, but between these times it does not change. Between these times the (relatively) continuous behaviors of the notes generate changing sound, but the behaviors themselves do not change. 
+
+Conal Elliot described a "reactive" appraoch to programming in a similar way: "Observed over time, a reactive behavior consists of a sequence of non-reactive phases, punctuated by events." [Elliot, C. Push-Pull Functional Reactive Programming
+](http://conal.net/papers/push-pull-frp/push-pull-frp.pdf)
+
+
+
+
 ----
 
 ## General Resources

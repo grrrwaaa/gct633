@@ -41,7 +41,13 @@
   <li><a href="../modules/audio.html">audio</a></li>
   <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
   <li><a href="../modules/audio.sndfile.html">audio.sndfile</a></li>
+  <li><a href="../modules/coroutine.html">coroutine</a></li>
+  <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/global.html">global</a></li>
+  <li><a href="../modules/io.html">io</a></li>
   <li><strong>math</strong></li>
+  <li><a href="../modules/os.html">os</a></li>
+  <li><a href="../modules/package.html">package</a></li>
   <li><a href="../modules/string.html">string</a></li>
   <li><a href="../modules/table.html">table</a></li>
   <li><a href="../modules/util.html">util</a></li>
@@ -78,6 +84,7 @@
 	<tr>
 	<td class="name" nowrap><a href="#atan2">atan2&nbsp;(y, x)</a></td>
 	<td class="summary">Returns the arc tangent of `y/x` (in radians), but uses the signs
+
  of both parameters to find the quadrant of the result.</td>
 	</tr>
 	<tr>
@@ -107,11 +114,13 @@
 	<tr>
 	<td class="name" nowrap><a href="#fmod">fmod&nbsp;(x, y)</a></td>
 	<td class="summary">Returns the remainder of the division of `x` by `y` that rounds the
+
  quotient towards zero.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#frexp">frexp&nbsp;(x)</a></td>
 	<td class="summary">Returns `m` and `e` such that *x = m2^e*, `e` is an integer and the
+
  absolute value of `m` is in the range *[0.5, 1)* (or zero when `x` is zero).</td>
 	</tr>
 	<tr>
@@ -137,6 +146,7 @@
 	<tr>
 	<td class="name" nowrap><a href="#modf">modf&nbsp;(x)</a></td>
 	<td class="summary">Returns two numbers, the integral part of `x` and the fractional part of
+
  `x`.</td>
 	</tr>
 	<tr>
@@ -150,11 +160,13 @@
 	<tr>
 	<td class="name" nowrap><a href="#random">random&nbsp;(m, n)</a></td>
 	<td class="summary">This function is an interface to the simple pseudo-random generator
+
  function `rand` provided by ANSI C.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#randomseed">randomseed&nbsp;(x)</a></td>
 	<td class="summary">Sets `x` as the "seed" for the pseudo-random generator: equal seeds
+
  produce equal sequences of numbers.</td>
 	</tr>
 	<tr>
@@ -263,8 +275,11 @@
     </dt>
     <dd>
     Returns the arc tangent of `y/x` (in radians), but uses the signs
+
  of both parameters to find the quadrant of the result.  (It also handles
+
  correctly the case of `x` being zero.)
+
 
     <h3>Parameters:</h3>
     <ul>
@@ -393,6 +408,7 @@
     </dt>
     <dd>
     Returns the remainder of the division of `x` by `y` that rounds the
+
  quotient towards zero.
 
     <h3>Parameters:</h3>
@@ -414,6 +430,7 @@
     </dt>
     <dd>
     Returns `m` and `e` such that *x = m2^e*, `e` is an integer and the
+
  absolute value of `m` is in the range *[0.5, 1)* (or zero when `x` is zero).
 
     <h3>Parameters:</h3>
@@ -529,6 +546,7 @@
     </dt>
     <dd>
     Returns two numbers, the integral part of `x` and the fractional part of
+
  `x`.
 
     <h3>Parameters:</h3>
@@ -548,7 +566,9 @@
     </dt>
     <dd>
     Returns *x^y*.  (You can also use the expression `x^y` to compute this
+
  value.)
+
 
     <h3>Parameters:</h3>
     <ul>
@@ -587,13 +607,21 @@
     </dt>
     <dd>
     This function is an interface to the simple pseudo-random generator
+
  function `rand` provided by ANSI C.  (No guarantees can be given for its
+
  statistical properties.)
+
  When called without arguments, returns a uniform pseudo-random real
+
  number in the range *[0,1)*. When called with an integer number `m`,
+
  `math.random` returns a uniform pseudo-random integer in the range *[1,
+
  m]*. When called with two integer numbers `m` and `n`, `math.random`
+
  returns a uniform pseudo-random integer in the range *[m, n]*.
+
 
     <h3>Parameters:</h3>
     <ul>
@@ -614,6 +642,7 @@
     </dt>
     <dd>
     Sets `x` as the "seed" for the pseudo-random generator: equal seeds
+
  produce equal sequences of numbers.
 
     <h3>Parameters:</h3>
@@ -669,7 +698,9 @@
     </dt>
     <dd>
     Returns the square root of `x`.  (You can also use the expression `x^0.5`
+
  to compute this value.)
+
 
     <h3>Parameters:</h3>
     <ul>

@@ -139,11 +139,44 @@ We do not know if nature is at root temporally continuous or discrete (it has be
 5. Parallelism: interrupts / Signals / Multi-threading
 6. Dynamic code (Eval)
 
-### Difference
+#### 0. Halt / exit
 
-What about functions that do not have regular periods? There are functions that have irregular perids, complex periods, and even functions whose period is so long that it is indistinguishable from a completely non-repetitive, random stream.
+An exit can be desired (the program has done the job or the user has terminated using it), or undesirable (the program has reached an unexpected error). A program may also fail to halt at the appropriate time (see the [Halting Problem](http://en.wikipedia.org/wiki/Halting_problem)), for example by falling into an infinite loop. For a real-time performance, interactive art installation, server application, operating system, the program is not expected to halt by itself.
 
-### Rhythm
+#### 1. Unconditional jump (label & goto)
+
+Many of the following control flows build upon the ability to jump location in code, however the raw ability by itself has been [considered harmful](http://www.cs.utexas.edu/users/EWD/ewd02xx/EWD215.PDF) and is absent from many languages.
+
+#### 2. Choice: conditional jump / if / switch
+
+Introduces the interplay between data- and control-flow, i.e. this is where things start to get interesting.
+
+#### 3. Loops: Repeat / while / for / foreach / break / continue
+
+All loops depend on the ability for conditionals to lead to jumps *backward* to earlier points of code. Loops offer an abstraction to avoid repetitive action specification in code, for example. A static loop repeats a number of times specified by values at compile-time, rather like a macro. A dynamic loop depends on run-time values: this means it may be unpredictable and even fall into an infinite loop.
+
+The combination of loop and switch gives the basic framework for an interpreter: a stream of input *tokens* (characters, words, events, notes) causes dispatch to different sections of code (implementing the semantic behavior according to the token), for as long as new input tokens continue to be available. 
+
+#### 4. Non-local: subroutines / functions / callbacks / coroutines / continuations / exceptions
+
+The non-local code abstraction allows the same instructions to be invoked from multiple locations, while retaining the ability to "jump back" to where you previously jumped from when the invocation started. So, after jumping into a function body, you return to the site where the function was called. It allows another form of abstraction minimizing code repetition. 
+
+It also allows *callbacks*, a form of inversion of control, in which new code fragments can be inserted into an already-running program at pre-designed locations. For example, audio plugins depend on the use of callbacks to redefine how an audio program processes sound.
+
+It relies on jump labels being dynamic. This can be reified further into a *continuation*: an object representing the "remaining work to be done". Coroutines use this to give the impression of a function that can be "paused" (returning to the call site), and then later "resumed" (returning to the pause site). 
+
+Note that many other control flows can be restated in terms of functions. (In functional programming, one basic formulation of a function is called *lambda*, and a series of famous papers showed lambda-the-ultimate for each one). 
+
+#### 5. Dynamic load / dynamic code (Eval)
+
+This is often not included as a form of control flow, however it is probably the most powerful. The ability to load and execute code at run-time allows a program to change itself as it runs. The simplest level is to dynamically load pre-compiled code, but more expressive is to dynamically evaluate new code and run it (*eval*). It opens up the scope for run-time metaprogramming.
+
+#### 6. Parallelism: interrupts / Signals / Multi-threading
+
+Coroutines can give the impression of multiple parallel contexts of execution, but in reality only one is active at a time. Signals (interrupts) are a low level mechanism that operates in a similar manner, typically responding to low level events to interrupt current execution and jump to a new location. They are rarely used in high level code.
+
+Multi-threading uses lower level CPU parallelism to enable truly parallel execution. This can be very difficult to code for, as even a simple operation as ```i = i + 1``` could have unexpected results if the variable ```i``` is also modified by another parallel thread. 
+
 
 </div>
 <div id="wrapper">
