@@ -21,9 +21,7 @@ print(counter2())
 print(counter1())
 --]]
 
-local sndfile = require "audio.sndfile"
 local audio = require "audio"
-local mysound = sndfile("mysound.wav", "w")
 local duration = 44100
 local samplerate = 44100
 
@@ -55,7 +53,7 @@ end
 ------------------------------------------
 
 -- define my instrument:
-local u1 = makesine(const(10), const(50))
+local u1 = makesine(const(5), const(50))
 local u2 = adder(const(440), u1)
 local out = makesine(u2, const(1))
 
@@ -64,6 +62,8 @@ audio.play(out, 1)
 
 ------------------------------------------
 --[[
+local sndfile = require "audio.sndfile"
+local mysound = sndfile("mysound.wav", "w")
 for i = 0, duration do 
 	mysound:write(out())
 end
