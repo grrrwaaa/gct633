@@ -108,16 +108,24 @@ function audio.play(content, duration)
 	elseif type(content) == "function" then
 		local f = content
 		local count = 0
-		local frames = driver.samplerate * (duration or 1)
-		content = function()
-			if count < frames then
-				count = count + 1
-				return f()
+		if duration then
+			local frames = driver.samplerate * duration
+			content = function()
+				if count < frames then
+					count = count + 1
+					return f()
+				end
 			end
-		end
-		while count < frames do	
-			audio.run(content)
-			lib.av_sleep(0.01)
+			while count < frames do	
+				audio.run(content)
+				lib.av_sleep(0.01)
+			end
+		else	
+			-- just run forever:
+			while true do
+				audio.run(f)
+				lib.av_sleep(0.01)
+			end
 		end
 	elseif type(content) == "cdata" and buffer.isbuffer(content) then
 		local count = 0	

@@ -27,7 +27,6 @@ end
 local score = {
 	-- three notes:
 	{ start=0, dur=0.5, amp=0.5, freq=400, instr=make_hihat },
-	--{ dur=0.2, instr=0 },	-- a rest
 	{ start=0.4, dur=0.5, amp=0.25, freq=500, instr=make_hihat },
 	{ start=0.5, dur=0.01, amp=0.25, freq=600, instr=make_hihat },
 	{ start=0.6, dur=0.03, amp=0.25, freq=600, instr=make_hihat },

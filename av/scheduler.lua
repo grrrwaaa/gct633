@@ -128,8 +128,7 @@ See http://lua-av.mat.ucsb.edu/blog/?p=137 for details.
 b = sequence( function() a:color(Random(), Random(), Random() end, .5))`
 --]]
 
-
-return {
+local scheduler = {
 --[[###Scheduler.panic : method
 **description** stop all coroutines from running. This method is globalized (is that a word?)
 --]]
@@ -339,3 +338,5 @@ b = sequence( function() a:color(Random(), Random(), Random()) end, .25, 10)`
 		return self
 	end,
 }
+
+return scheduler
