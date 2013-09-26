@@ -138,6 +138,79 @@ Sometimes the header file of a library is enough to understand how to use it, bu
 
 This is only a *very very very basic* introduction to compiling C from the command line; reality can be *far far far more complicated*. Too complicated, really.
 
+## Dynamic language example: Lua
+
+See [lua tutorial](lua.html)
+
+## Data structures
+
+A data structure is a way to meaningfully organize data. Principally the task is to design a layout schema for memory that provides optimal performance for the desired task(s) the data structure will be used for. 
+	
+### Contiguous memory
+
+E.g. 1D Arrays and regular structs in C. 
+	
+- If all data is local (no references or pointers to other locations), then the memory describes plain-old-data (**POD**), which can be very easily copied, stored, retrieved etc. Sometimes there may be some 'unused' space in arrays or structs, e.g. to align struct fields or array rows on certain byte-length boundaries. 
+- Multi-dimensional dense arrays. We can represent a 10x10-element **2D array** using a 100-element 1D array, simply by addressing the memory accordingly. If we consider the 2D array in terms of rows and columns, we must choose between row-major or column-major ordering, i.e. whether horizontal or vertical neighbors are contiguous. This determines how iteration loops are nested (i.e. is the inner loop over X or Y?). The same principle can be applied to 3D or higher-dimensional arrays. 
+- Nested structures. A struct describes the semantics of a block of memory: what **type** of data is to be found at a particular **offset** within the memory block. It is composable: we can create arrays of structs, and structs that embed arrays and other structs. So long as all nested structures are POD, the whole is POD. 
+- Access. Accessing a desired point in an array or struct is extremely fast and cheap, especially if the region accessed is nearby other regions that were recently accessed. This applies equally to nested structures. 
+
+### Non-contiguous memory.
+
+Any data structure that uses pointers or references. 
+
+One problem with POD data is that it cannot grow or shrink in size: the size is determined when it is allocated, because memory cannot move. For example, a list of active notes may need to dynamically vary according to performer behavior, or a list of active agents in a game varies according to player behavior. 
+
+> One POD-friendly solution is to pre-allocate enough space for a maximum number of items, and do not allow this to be exceeded. Another is to allocate a new, larger array when needed, and copy data from the old to the new, updating any references that were using it. Reallocation can be expensive and should not be used frequently.
+
+The non-contiguous solution is to create a linked data structure, such as a linked list. A **linked list** contains a variable number of nodes, each of which contains or refers to the desired objects of the list, as well as *link* references to neighbor nodes. For example, a singly-linked list:
+
+![linked list](http://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Singly-linked-list.svg/408px-Singly-linked-list.svg.png)
+
+(images courtesy of [wikipedia](http://en.wikipedia.org/wiki/Linked_list))
+
+Each node could be in a totally different area of memory, but we can easily "walk the list" by following the links. The advantage of this approach is that we can easily insert or remove an item from the middle of the list, simply by changing the link references:
+
+![linked list removal](http://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/CPT-LinkedLists-deletingnode.svg/380px-CPT-LinkedLists-deletingnode.svg.png)
+
+A **doubly linked list** nodes have references in both directions, allowing traversal in either direction as well as simplifying removal:
+
+![doubly linked list](http://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Doubly-linked-list.svg/610px-Doubly-linked-list.svg.png)
+
+A **circular linked list** maps the tail to the head, allowing infinite traversal:
+
+![circular linked list](http://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Circularly-linked-list.svg/350px-Circularly-linked-list.svg.png)
+
+By adding another link we can define structures with hierarchy, such as trees.
+
+![tree](http://cslibrary.stanford.edu/109/tree.gif)
+
+Using both arrays and linked lists we can create a number of useful data structures. Which one to use depends on the frequent and possible use cases in context. All the possible use cases must be supported, and the frequent use cases should perform optimally. Generally, if we require fast "random" access, an array is ideal, however if we require fast insertion and removal, a linked list is far better. 
+
+#### Stack
+
+With a [stack](http://en.wikipedia.org/wiki/Stack_(data_structure)) we only ever manipulate one end of the list, adding or removing items. This is also called **LIFO** (last-in, first-out). If implemented using an array, all we need is an integer to indicate where the current top of the stack is. If using a linked list, all we need is a singly-linked list and a pointer to the current top. Stacks are very important to computing, and widely used in low-level language implementations. They are also used at higher levels, such as the Undo/Redo stack in any application.
+
+![Stack](http://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Data_stack.svg/391px-Data_stack.svg.png)
+
+#### Queue
+
+A [queue](http://en.wikipedia.org/wiki/Queue_(data_structure)) is also known as a FIFO (first-in, first-out), and implements pipe and stream behavior. We always add data at one end, and remove data at the other end.  It can be implemented on a fixed-size array using two 'head' and 'tail' indices, though this limits the maximum number of elements in the queue. It can be implemented on a linked list by keeping a reference to the head and tail nodes. 
+
+![Queue](http://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Data_Queue.svg/300px-Data_Queue.svg.png)
+
+A **deque** (pronounced "deck", like a deck of cards) is a "double-ended queue", in which items can be added and removed at both ends. It can be implemented on a doubly-linked list.
+
+The elements of a **priority queue** also have an associated "priority", with which they are ordered (sorted). High priority events are served before low ones. For example, the start time of an event can be used to sort a list of events, such that earlier events are served first. Generally the two main tasks are to a) insert element with priority, and b) retrieve/remove the highest priority element. Often the list is preserved in a sorted state by being careful to only insert at the right location (a random-access insert). This is called "insertion sort". By doing so, retrieval/removal always occurs at one end. 
+
+#### Dictionary (aka Associative array or Map)
+
+A [dictionary](http://en.wikipedia.org/wiki/Associative_array) stores pairs, mapping from keys to values. Keys are unique (no key appears twice). The dictionary can be indexed at random by a key to return the value, and new pairs can be added, old pairs can be removed or old keys assigned new values. The Lua table is essentially a dictonary. Implementation challenges center on how to quickly resolve a given key, often via a *hash*.
+
+#### Other structures
+
+Sets, multisets, multimaps, trees, graphs, strings, ... 
+
 ## Live Programming, Live Coding
 
 [Zen and the art of Live Programming](http://www.infoq.com/presentations/Live-Programming)
