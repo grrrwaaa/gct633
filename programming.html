@@ -187,13 +187,13 @@ By adding another link we can define structures with hierarchy, such as trees.
 
 Using both arrays and linked lists we can create a number of useful data structures. Which one to use depends on the frequent and possible use cases in context. All the possible use cases must be supported, and the frequent use cases should perform optimally. Generally, if we require fast "random" access, an array is ideal, however if we require fast insertion and removal, a linked list is far better. 
 
-#### Stack
+### Stack
 
 With a [stack](http://en.wikipedia.org/wiki/Stack_(data_structure)) we only ever manipulate one end of the list, adding or removing items. This is also called **LIFO** (last-in, first-out). If implemented using an array, all we need is an integer to indicate where the current top of the stack is. If using a linked list, all we need is a singly-linked list and a pointer to the current top. Stacks are very important to computing, and widely used in low-level language implementations. They are also used at higher levels, such as the Undo/Redo stack in any application.
 
 ![Stack](http://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Data_stack.svg/391px-Data_stack.svg.png)
 
-#### Queue
+### Queue
 
 A [queue](http://en.wikipedia.org/wiki/Queue_(data_structure)) is also known as a FIFO (first-in, first-out), and implements pipe and stream behavior. We always add data at one end, and remove data at the other end.  It can be implemented on a fixed-size array using two 'head' and 'tail' indices, though this limits the maximum number of elements in the queue. It can be implemented on a linked list by keeping a reference to the head and tail nodes. 
 
@@ -203,11 +203,11 @@ A **deque** (pronounced "deck", like a deck of cards) is a "double-ended queue",
 
 The elements of a **priority queue** also have an associated "priority", with which they are ordered (sorted). High priority events are served before low ones. For example, the start time of an event can be used to sort a list of events, such that earlier events are served first. Generally the two main tasks are to a) insert element with priority, and b) retrieve/remove the highest priority element. Often the list is preserved in a sorted state by being careful to only insert at the right location (a random-access insert). This is called "insertion sort". By doing so, retrieval/removal always occurs at one end. 
 
-#### Dictionary (aka Associative array or Map)
+### Dictionary (aka Associative array or Map)
 
 A [dictionary](http://en.wikipedia.org/wiki/Associative_array) stores pairs, mapping from keys to values. Keys are unique (no key appears twice). The dictionary can be indexed at random by a key to return the value, and new pairs can be added, old pairs can be removed or old keys assigned new values. The Lua table is essentially a dictonary. Implementation challenges center on how to quickly resolve a given key, often via a *hash*.
 
-#### Other structures
+### Other structures
 
 Sets, multisets, multimaps, trees, graphs, strings, ... 
 
