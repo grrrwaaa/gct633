@@ -154,7 +154,7 @@ To visit **only** array-portion of a table, use one of these forms:
 
 ```lua
 for i = 1, #mytable do
-	local value = t[i]
+	local value = mytable[i]
 	-- do things with the key and value
 end
 
@@ -376,9 +376,97 @@ return foo
 
 Lua guarantees a given module is only executed once. Additional calls to *require "foo"* will always return the same table.
 
-## Going deeper
+## LuaJIT FFI
 
-We will address more complex topics of metatables, coroutines, the C API, the LuaJIT FFI and so on as we need them.
+The [Foreign-Function Interface (FFI)](http://luajit.org/ext_ffi.html) allows LuaJIT to work with C language data types and functions, and even load and use pre-compiled C libraries. Working with FFI types is usually more difficult (and dangerous!) than plain Lua, but in certain cases it can run a lot faster. To use the ffi, first:
+
+```
+local ffi = require "ffi"
+```
+
+To create a new C-type object ("cdata"), use **ffi.new()**. For example, to create C-style arrays of 64-bit floating point numbers (C-type *double*):
+
+```
+-- create an array of five numbers (initialized with zeroes by default):
+local arr = ffi.new("double[5]")
+local arr = ffi.new("double[?]", 5)
+
+-- create an array of five numbers (initialized with 1, 2, 3, 4, 5):
+local arr = ffi.new("double[5]", 1, 2, 3, 4, 5)
+local arr = ffi.new("double[?]", 5, 1, 2, 3, 4, 5)
+local arr = ffi.new("double[5]", {1, 2, 3, 4, 5})
+local arr = ffi.new("double[?]", 5, {1, 2, 3, 4, 5})
+```
+
+Arrays can be indexed just as in C. That means *it counts from zero*, unlike Lua tables that count from 1:
+
+```
+arr[2] = 4.2
+print(arr[2]) 	--> prints 4.2
+```
+
+The **ffi.cdef** function is used to define new aggregate C types (structs):
+
+```
+-- create declarations of C types in a long string:
+local cdefs = [[
+
+	typedef struct { 
+		int a;
+		double b;
+	} foo;
+
+	typedef struct {
+		foo first;
+		foo second;
+	} foopair;
+
+]]
+-- add these types the the FFI:
+ffi.cdef(cdefs)
+
+-- create a new "foo" type with all members set to zero:
+local myfoo = ffi.new("foo")
+
+-- create a new "foo" type with specific values:
+local myfoo = ffi.new("foo", { 100, 4.2 })
+
+print(myfoo.a)		 --> prints 100
+print(myfoo.b) 		--> prints 4.2
+
+-- create a new "foopair":
+local myfoopair = ffi.new("foopair", { { 100, 4.2 }, { 200, 3.14 } })
+
+print(myfoo.second.a) 	--> prints 200
+```
+
+The **ffi.load** function is used to load a precompiled library of C code. It is usually coupled with a **ffi.cdef** to declare the functions and types the library contains:
+
+```
+-- load the "libsndfile" dynamic library:
+local lib = ffi.load("libsndfile-1.dll")
+
+-- declare one of the functions exported by the library
+-- (usually we would declare them all at once, but here we just declare one for the example)
+ffi.cdef [[
+	const char * sf_version_string();
+]]
+
+-- use this function by indexing the library:
+local version = lib.sf_version_string()
+
+-- version is a cdata of type "const char *"
+-- (i.e. an immutable array of bytes)
+-- we can turn it into a Lua string using ffi.string:
+print(ffi.string(version))
+```
+
+Note that the special symbol **ffi.C** is a namespace for all the symbols exported by the application itself, including the basic C math library.
+
+We can get the type of a cdata with **ffi.typeof**, check it with **ffi.istype**, get the size of a type with **ffi.sizeof** and **ffi.offsetof**, cast cdata between types (e.g. pointer casts) using **ffi.cast**, copy or set memory (akin to memcpy and memset) with **ffi.copy** and **ffi.fill**, all basically following the usual rules in C. We can get platform information using **ffi.os**, **ffi.arch** and **ffi.abi**. We can attach special behavior to a cdata *type* using **ffi.metatype**, similar to metatables for Lua types. We can add a callback to a cdata *object* when it is garbage collected using **ffi.gc**. [See the FFI API here](http://luajit.org/ext_ffi_api.html)
+
+With these features, we can interoperate with most C libraries directly from within Lua, without unduly compromising efficiency.
+
 
 ## Help
 
