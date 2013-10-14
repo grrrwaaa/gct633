@@ -6,6 +6,9 @@
 #include "av.hpp"
 #include "RtAudio.h"
 
+// whether we are using GLUT mainloop:
+int using_glut_mainloop = 0;
+
 lua_State * L = 0;
 // the path from where it was invoked:
 char launchpath[AV_PATH_MAX+1];
@@ -17,8 +20,8 @@ char workpath[AV_PATH_MAX+1];
 char mainfile[AV_PATH_MAX+1];
 
 
-#define DEBUG_PRINTF()
-//#define DEBUG_PRINTF(args ...) fprintf(stderr, args)
+//#define DEBUG_PRINTF(...) do{ fprintf( stderr, __VA_ARGS__ ); } while( false )
+#define DEBUG_PRINTF(...) do{ } while ( false )
 
 void getpaths(int argc, char ** argv) {
 	#ifdef AV_WINDOWS
@@ -284,7 +287,43 @@ AV_EXPORT void av_sleep(double seconds) {
 		}
 	#endif
 }
-							
+
+typedef void (*av_run_callback)();
+
+typedef struct av_run_callback_node {
+	struct av_run_callback_node * next;
+	av_run_callback run;
+} av_run_callback_node;
+
+static av_run_callback_node * av_runloop_first = 0;
+
+AV_EXPORT void av_run_insert(av_run_callback cb) {
+	av_run_callback_node * node = (av_run_callback_node *)malloc(sizeof(av_run_callback_node));
+	node->run = cb;
+	node->next = av_runloop_first;
+	av_runloop_first = node;
+}
+
+// mainloop:
+AV_EXPORT void av_run_once() {
+	// visit all registered watchers:
+	av_run_callback_node * cb = av_runloop_first;
+	while (cb) {
+		cb->run();
+		cb = cb->next;
+	}
+}
+
+AV_EXPORT void av_use_glut() {
+	using_glut_mainloop = 1;
+}
+
+AV_EXPORT void av_glut_timerfunc(int id) {
+	// call back into mainloop
+	av_run_once();
+	glutTimerFunc(1000/60., av_glut_timerfunc, id);
+}
+						
 int main(int argc, char * argv[]) {
 
 	getpaths(argc, argv);
@@ -292,13 +331,14 @@ int main(int argc, char * argv[]) {
 	#ifdef AV_WINDOWS
 		dll("lua51");
 		dll("libsndfile-1");
-		//dll("glut32"); // trick didn't seem to work for GLUT
+		dll("glut32"); // trick didn't seem to work for GLUT
 	#endif
 	// configure GLUT:
-	//glutInit(&argc, argv);
+	glutInit(&argc, argv);
 	
 	initlua(argc, argv);
 	printf("------------------------------------------------------------\n");
+	fflush(stdout);
 	
 	if (argc > 1) {
 		dofile(argv[1]);
@@ -306,8 +346,20 @@ int main(int argc, char * argv[]) {
 		dofile("main.lua");
 	}
 	
+	// now drop into the mainloop:
+	if (using_glut_mainloop) {
+		glutMainLoop();
+	} else { 
+		while (av_runloop_first) {
+			av_run_once();
+			
+			// sleep a little:
+			av_sleep(0.005);
+		}
+	}
+	
 	lua_close(L);
 	printf("bye\n");
-	getchar();
+	//getchar();
 	return 0;
 }

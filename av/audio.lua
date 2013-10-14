@@ -79,9 +79,11 @@ function audio.run(generate)
 					out[i*2+1] = r or l or 0
 				end
 				done = done + 1
+				driver.blockwrite = w
 				w = w + 1
 			end
 			w = 0
+			driver.blockwrite = w
 		end
 		while w < t do
 			local out = driver.buffer + w * driver.blockstep
@@ -92,10 +94,71 @@ function audio.run(generate)
 			end
 			done = done + 1
 			w = w + 1
+			driver.blockwrite = w
 		end
-		driver.blockwrite = w
 		--print(done)
 	end
+end
+
+
+
+local is_audio_runloop_running = false
+local voices = {}
+
+local function addvoice(func, dur)
+
+	local voice = {
+		dur = dur or math.huge,
+	}
+	
+	function voice:blockfunc(self, blocksize, out)
+		for i = 0, blocksize-1 do
+			local l, r = func()
+			out[i*2] = out[i*2] + l or 0
+			out[i*2+1] = out[i*2+1] + r or l or 0
+		end
+		self.dur = self.dur - blocksize
+		return self.dur > 0
+	end
+	
+	voices[voice] = true
+end
+
+local function start_audio_runloop()
+	local runloop = require "runloop"
+	local function generateblock(blocksize, out)		
+		for v in pairs(voices) do
+			voices[v] = v:blockfunc(blocksize, out)
+		end
+	end
+	
+	local function generateblocks()
+		local blocksize = driver.blocksize
+		local w = driver.blockwrite
+		local r = driver.blockread
+		local s = driver.blocks
+		local t = (r + audio.latency) % driver.blocks
+		if w > t then
+			-- fill up & wrap around:
+			while w < s do
+				local out = driver.buffer + w * driver.blockstep
+				generateblock( blocksize, out )
+				driver.blockwrite = w
+				w = w + 1
+			end
+			w = 0
+			driver.blockwrite = w
+		end
+		while w < t do
+			local out = driver.buffer + w * driver.blockstep
+			generateblock( blocksize, out )
+			w = w + 1
+			driver.blockwrite = w
+		end
+	end
+
+	runloop.insert(generateblocks)
+	is_audio_runloop_running = true
 end
 
 --- Play a function or audio_buffer.
@@ -103,9 +166,18 @@ end
 -- @param duration seconds to play
 function audio.play(content, duration)
 	local buffer = require "audio.buffer"
+	
+	if not is_audio_runloop_running then
+		start_audio_runloop()
+	end
+	
 	if type(content) == "number" then
 		error("cannot play a number")
 	elseif type(content) == "function" then
+		
+		addvoice(content, duration and driver.samplerate * duration)
+		
+		--[[
 		local f = content
 		local count = 0
 		if duration then
@@ -127,7 +199,9 @@ function audio.play(content, duration)
 				lib.av_sleep(0.01)
 			end
 		end
+		--]]
 	elseif type(content) == "cdata" and buffer.isbuffer(content) then
+		
 		local count = 0	
 		local buf = content
 		local chans = buf.channels
@@ -146,10 +220,15 @@ function audio.play(content, duration)
 				return 0
 			end
 		end
+		
+		addvoice(content, frames)
+		
+		--[[
 		while count < frames do	
 			audio.run(content)
 			lib.av_sleep(0.01)
 		end
+		--]]
 	else
 		error("bad type for audio.play")
 	end

@@ -39,7 +39,7 @@ if ffi.os == "OSX" then
 	
 	print(cmda("lipo -create av32 av64 -output av_osx && rm av32 && rm av64 && mv av_osx ../ "))
 	print("running")
-	print(cmda("../av_osx ../test.lua"))
+	print(cmda("../av_osx ../graphics_test.lua"))
 	
 	
 	--print(cmda("clang++ -arch i386 -arch x86_64 -I/usr/local/include -I/usr/local/include/luajit-2.0 av.cpp av_audio.cpp RtAudio.cpp  -pagezero_size 10000 -image_base 100000000 /usr/local/lib/libluajit-5.1.a -framework CoreFoundation -framework CoreAudio -force_load /usr/local/lib/libsndfile.a  -o av_osx"))

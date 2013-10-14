@@ -1,11 +1,11 @@
-local sndfile = require "audio.sndfile"
-local audio = require "audio"
+local runloop = require "runloop"
 
-local s = sndfile("tmp.wav", "w")
+local ffi = require "ffi"
+local C = ffi.C
 
-local len = 44100 * 3
-for i = 1, len do 
-	s:write(math.sin(i * 0.1))
-end
-s:close()
-
+t = C.av_time()
+runloop.insert(function()
+	local t1 = C.av_time()
+	print("hello", t1 - t )
+	t = t1
+end)
