@@ -6,7 +6,7 @@ cl /MT /EHsc /O2 /D__WINDOWS_DS__ /I win32/include av.cpp av_audio.cpp RtAudio.c
 move /Y av.exe ..
 
 cd ..
-av.exe test.lua
+av.exe graphics_test.lua
 cd src
 
 @echo ok

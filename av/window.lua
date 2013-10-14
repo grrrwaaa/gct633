@@ -340,7 +340,9 @@ end
 function window:redisplay()
 	frame = frame + 1
 	
-	if firstdraw then
+	---[[
+	if firstdraw then	
+		gl.init_symbols()
 		print("OpenGL VERSION", gl.GetString(gl.VERSION))
 		print("OpenGL VENDOR", gl.GetString(gl.VENDOR))
 		print("OpenGL RENDERER", gl.GetString(gl.RENDERER))
@@ -353,12 +355,10 @@ function window:redisplay()
 		gl.Enable(gl.POINT_SMOOTH)
 		gl.Hint(gl.POINT_SMOOTH_HINT, gl.NICEST)
 		glu.assert("hints")
-		if oncreate then window:oncreate() end
+		if window.oncreate then window:oncreate() end
 		firstdraw = false
 	end
 	
-	-- set up 2D mode by default
-	-- (should we use 0..1 instead?)
 	gl.Viewport(0, 0, window.width, window.height)
 	glu.assert("viewport")
 	
@@ -386,6 +386,7 @@ function window:redisplay()
 		window.eye = 0
 		gl.DrawBuffer(gl.BACK)
 	else	
+		gl.Clear()
 		if draw then 
 			local ok, err = xpcall(draw, debug_traceback)
 			if not ok then
@@ -394,6 +395,7 @@ function window:redisplay()
 			end
 		end
 	end
+	--]]
 	
 	glut.glutSwapBuffers()
 	glut.glutPostRedisplay()

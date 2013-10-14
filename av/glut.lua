@@ -429,8 +429,8 @@ elseif ffi.os == 'Linux' then -- fallback to glut.so.3 if glut.so is not found
   local ok
   ok, glut = pcall(ffi.load, 'glut')
   if not ok then glut = ffi.load 'glut.so.3' end
-else -- just load glut library on other platforms
-  glut = ffi.load 'glut'
+elseif ffi.os == "Windows" then
+  glut = ffi.load 'glut32'
 end
 
 -- initialize GLUT

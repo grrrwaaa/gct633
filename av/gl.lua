@@ -8,46 +8,26 @@ local ffi = require 'ffi'
 local bit = require 'bit'
 local C = ffi.C
 
-print("loading OpenGL")
+-- load from active executable rather than dynamic library
+--local lib = ffi.C
 
+local libs = ffi_OpenGL_libs or {
+   OSX     = { x86 = "OpenGL.framework/OpenGL", x64 = "OpenGL.framework/OpenGL" },
+   Windows = { x86 = "OPENGL32.DLL",            x64 = "OPENGL32.DLL" },
+   Linux   = { x86 = "libGL.so",                x64 = "libGL.so", arm = "libGL.so" },
+   Linux = { x86 = "libGL.so", x64 = "libGL.so" },
+   BSD     = { x86 = "libGL.so",                x64 = "libGL.so" },
+   POSIX   = { x86 = "libGL.so",                x64 = "libGL.so" },
+   Other   = { x86 = "libGL.so",                x64 = "libGL.so" },
+}
 
+local lib = lib or ffi.load( ffi_OpenGL_lib or libs[ ffi.os ][ ffi.arch ] )
 
-local ok, lib
-if ffi.os == "Linux" then
-	
-	-- prefer to use nvidia drivers if available:	
-	local linux_libs = {
-		"/usr/lib/nvidia-319-updates/libGL.so",
-		"/usr/lib/nvidia-current-updates/libGL.so",
-		"/usr/lib/nvidia-current/libGL.so",
-		"/usr/lib/nvidia-304/libGL.so",
-		"GL",
-	}
-	
-	for i, v in ipairs(linux_libs) do
-		print("trying", i, v)
-		ok, lib = pcall(ffi.load, v)
-		if ok then
-			print("using ", v)
-			break
-		else
-			print(lib)
-		end
-	end
-	assert(ok, "failed to load libGL.so")
-	
-elseif ffi.os == "OSX" then
-	ok, lib = pcall(ffi.load, "OpenGL.framework/OpenGL")
-
-elseif ffi.os == "Windows" then
-	ok, lib = pcall(ffi.load, "OPENGL32.DLL")
+if ffi.os == "Windows" then
 	ffi.cdef[[
 		void * wglGetProcAddress(const char *);
 	]]
 end
-
--- fall back to looking in executable:
-if not ok then lib = ffi.C end
 
 ffi.cdef [[
 enum {
@@ -1044,7 +1024,6 @@ enum {
  GL_COMPRESSED_SLUMINANCE          = 0x8C4A,
  GL_COMPRESSED_SLUMINANCE_ALPHA    = 0x8C4B,
 
-
  
 GL_FRAMEBUFFER_COMPLETE           = 0x8CD5,
  GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 0x8CD6,
@@ -1071,10 +1050,6 @@ GL_FRAMEBUFFER_COMPLETE           = 0x8CD5,
  GL_DEPTH_ATTACHMENT               = 0x8D00,
  GL_STENCIL_ATTACHMENT             = 0x8D20,
  GL_FRAMEBUFFER                    = 0x8D40,
- GL_RENDERBUFFER                   = 0x8D41,
- GL_RENDERBUFFER_WIDTH             = 0x8D42,
- GL_RENDERBUFFER_HEIGHT            = 0x8D43,
- GL_RENDERBUFFER_INTERNAL_FORMAT   = 0x8D44
 };
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
@@ -1083,7 +1058,7 @@ typedef signed char GLbyte;
 typedef short GLshort;
 typedef int GLint;
 typedef int GLsizei;
-typedef uint8_t GLubyte;
+typedef unsigned char GLubyte;
 typedef unsigned short GLushort;
 typedef unsigned int GLuint;
 typedef float GLfloat;
@@ -4333,19 +4308,18 @@ if ffi.os == "Windows" then
 	]]
 end
 
-
 local function glfun(k) return lib["gl"..k] end
 
+local function wglfun(k)
+	local name = "gl"..k
+	local funcptr = lib.wglGetProcAddress(name)
+	assert(funcptr ~= nil)
+	local protoname = string.format("PFN%sPROC", name:upper())
+	local castfunc = ffi.cast(protoname, funcptr)
+	return castfunc
+end
+
 if ffi.os == "Windows" then
-	local function wglfun(k)
-		local name = "gl"..k
-		local funcptr = lib.wglGetProcAddress(name)
-		assert(funcptr ~= nil)
-		local protoname = string.format("PFN%sPROC", name:upper())
-		local castfunc = ffi.cast(protoname, funcptr)
-		return castfunc
-	end
-	
 	-- use wgl:
 	glfun = function(k)
 		local ok, fun = pcall(wglfun, k)
@@ -4356,9 +4330,9 @@ if ffi.os == "Windows" then
 	end
 end
  
-
 local function glenum(k) return lib["GL_"..k] end
 local function glindex(t, k)
+	--print("find", k)
 	-- check functions first
 	local ok, fun = pcall(glfun, k)
 	if ok then
@@ -4375,84 +4349,89 @@ local function glindex(t, k)
 	end
 	return t[k]
 end
-
-
 -- add lazy loader:
 setmetatable(gl, { __index = glindex, })
 
-local glGetString = gl.GetString
-function gl.GetString(p) 
-	local s = glGetString(p) 
-	if s == nil then error("failed to load gl (no current context)")
-	else return ffi.string(s) end
+local commonsyms = {
+	"Vertex2d",
+	"Vertex3d",
+	"Vertex4d",
+	"Color4f",
+	"Normal3d",
+	"TexCoord2d",
+	"TexCoord3d",
+	"TexCoord4d",
+	"GenBuffers",
+	"GenFramebuffers",
+	"DeleteFramebuffers",
+	"GenRenderbuffers",
+	"DeleteRenderbuffers",
+	"GenTextures",
+	"DeleteTextures",
+	"GetError",
+}
+local libgl = {}
+function gl.init_symbols()
+	print("initializing symbols")
+	for i, k in ipairs(commonsyms) do	
+		glindex(libgl, k)
+		print(k, libgl[k])
+	end
+	print("initialized symbols")
 end
 
---print("using OpenGL", gl.GetString(gl.VERSION))
-
-local glClear = gl.Clear
 function gl.Clear(...)
 	if select('#', ...) > 0 then
-		glClear(bit.bor(...))
+		lib.glClear(bit.bor(...))
 	else
-		glClear(bit.bor(gl.COLOR_BUFFER_BIT, gl.DEPTH_BUFFER_BIT))
+		lib.glClear(bit.bor(gl.COLOR_BUFFER_BIT, gl.DEPTH_BUFFER_BIT))
 	end
 end
 
-local glClearAccum = gl.ClearAccum
 function gl.ClearAccum(r, g, b, a)
 	if type(r) == "table" then r, g, b, a = unpack(r) end
-	glClearAccum(r or 0, g or 0, b or 0, a or 1)
+	lib.glClearAccum(r or 0, g or 0, b or 0, a or 1)
 end
 
-local glClearColor = gl.ClearColor
 function gl.ClearColor(r, g, b, a)
 	if type(r) == "table" then r, g, b, a = unpack(r) end
-	glClearColor(r or 0, g or 0, b or 0, a or 1)
+	lib.glClearColor(r or 0, g or 0, b or 0, a or 1)
 end
 
 function gl.Color(r, g, b, a)
 	if type(r) == "table" then r, g, b, a = unpack(r) end
-	gl.Color4f(r or 0, g or 0, b or 0, a or 1)
+	libgl.Color4f(r or 0, g or 0, b or 0, a or 1)
 end
 
-local glColorMask = gl.ColorMask
 function gl.ColorMask(r, g, b, a)
 	if type(r) == "table" then r, g, b, a = unpack(r) end
-	glColorMask(r or 0, g or 0, b or 0, a or 1)
+	lib.glColorMask(r or 0, g or 0, b or 0, a or 1)
 end
 
--- Why is this necessary? FFI bug? Clash with "End" and "end" ?
-local glEnd = gl.End
-function gl.End() glEnd() end
-
+function gl.Begin(mode) lib.glBegin(mode or gl.TRIANGLES) end
+gl["End"] = function() lib.glEnd() end
 
 function gl.Get(p) error("TODO for the array returns.") end
 
+function gl.GetString(p) return ffi.string(lib.glGetString(p)) end
+
 function gl.LoadMatrix(t) 
-	if type(t) == "table" then
-		gl.LoadMatrixd(ffi.new("GLdouble[?]", 16, unpack(t)))
-	else
-		-- hope t is a double *
-		gl.LoadMatrixd(t)
-	end
+	assert(type(t) == "table", "gl.LoadMatrix requires a table argument")
+	local m = ffi.new("GLdouble[?]", 16)
+	for i = 1, 16 do m[i-1] = t[i] end
+	gl.LoadMatrixd(m)
 end
 
 function gl.MultMatrix(t) 
-	if type(t) == "table" then
-		gl.MultMatrixd(ffi.new("GLdouble[?]", 16, unpack(t)))
-	else
-		-- hope t is a double *
-		gl.MultMatrixd(t)
-	end
+	assert(type(t) == "table", "gl.LoadMatrix requires a table argument")
+	local m = ffi.new("GLdouble[?]", 16)
+	for i = 1, 16 do m[i-1] = t[i] end
+	gl.MultMatrixd(m)
 end
 
 function gl.Normal(x, y, z)
-	if type(x) == "userdata" or type(x) == "cdata" then
-		x, y, z = x:unpack()
-	elseif type(x) == "table" then 
-		x, y, z = unpack(x) 
-	end
-	gl.Normal3d(x, y, z or 0)
+	if type(x) == "table" then x, y, z = unpack(x) end
+	libgl.Normal3d(x, y, z)
 end
 
 function gl.PixelStore(p, v) gl.PixelStoref(p, v) end
@@ -4473,11 +4452,11 @@ end
 function gl.TexCoord(x, y, z, w)
 	if type(x) == "table" then x, y, z, w = unpack(x) end
 	if w then
-		gl.TexCoord4d(x, y, z, w)
+		libgl.TexCoord4d(x, y, z, w)
 	elseif z then
-		gl.TexCoord3d(x, y, z)
+		libgl.TexCoord3d(x, y, z)
 	elseif y then
-		gl.TexCoord2d(x, y)
+		libgl.TexCoord2d(x, y)
 	else
 		error("gl.Vertex: invalid arguments")
 	end
@@ -4491,15 +4470,13 @@ end
 function gl.Vertex(x, y, z, w)
 	if type(x) == "userdata" or type(x) == "cdata" then
 		x, y, z, w = x:unpack()
-	elseif type(x) == "table" then 
-		x, y, z, w = unpack(x) 
-	end
+	elseif type(x) == "table" then x, y, z, w = unpack(x) end
 	if w then
-		gl.Vertex4d(x, y, z, w)
+		libgl.Vertex4d(x, y, z, w)
 	elseif z then
-		gl.Vertex3d(x, y, z)
+		libgl.Vertex3d(x, y, z)
 	elseif y then
-		gl.Vertex2d(x, y)
+		libgl.Vertex2d(x, y)
 	else
 		error("gl.Vertex: invalid arguments")
 	end
@@ -4536,71 +4513,64 @@ function gl.TexParameter(target, pname)
 	end
 end
 
-local glGenFramebuffers = gl.GenFramebuffers
 function gl.GenFramebuffers(n) 
 	n = n or 1
 	local arr = ffi.new("GLuint[?]", n)
-	glGenFramebuffers(n, arr)
+	libgl.GenFramebuffers(n, arr)
 	local res = {}
 	for i = 1, n do res[i] = arr[i-1] end
 	return unpack(res)
 end
 
-local glDeleteFramebuffers = gl.DeleteFramebuffers 
 function gl.DeleteFramebuffers(...)
 	local t = {...}
 	local n = #t
 	local arr = ffi.new("GLuint[?]", n)
 	for i = 1, n do arr[i-1] = t[i] end
-	glDeleteFramebuffers(n, arr)
+	libgl.DeleteFramebuffers(n, arr)
 end
 
-local glGenRenderbuffers = gl.GenRenderbuffers
 function gl.GenRenderbuffers(n) 
 	n = n or 1
 	local arr = ffi.new("GLuint[?]", n)
-	glGenRenderbuffers(n, arr)
+	libgl.GenRenderbuffers(n, arr)
 	local res = {}
 	for i = 1, n do res[i] = arr[i-1] end
 	return unpack(res)
 end
 
-local glDeleteRenderbuffers = gl.DeleteRenderbuffers
 function gl.DeleteRenderbuffers(...)
 	local t = {...}
 	local n = #t
 	local arr = ffi.new("GLuint[?]", n)
 	for i = 1, n do arr[i-1] = t[i] end
-	glDeleteRenderbuffers(n, arr)
+	libgl.DeleteRenderbuffers(n, arr)
 end
 
-local glGenBuffers = gl.GenBuffers
 function gl.GenBuffers(n) 
 	n = n or 1
 	local arr = ffi.new("GLuint[?]", n)
-	glGenBuffers(n, arr)
+	libgl.GenBuffers(n, arr)
 	local res = {}
 	for i = 1, n do res[i] = arr[i-1] end
 	return unpack(res)
 end
 
-local glGenTextures = gl.GenTextures
 function gl.GenTextures(n) 
 	n = n or 1
 	local arr = ffi.new("GLuint[?]", n)
-	glGenTextures(n, arr)
+	libgl.GenTextures(n, arr)
 	local res = {}
 	for i = 1, n do res[i] = arr[i-1] end
 	return unpack(res)
 end
 
-local glDeleteTextures = gl.DeleteTextures
 function gl.DeleteTextures(...)
 	local t = {...}
 	local n = #t
 	local arr = ffi.new("GLuint[?]", n)
 	for i = 1, n do arr[i-1] = t[i] end
-	glDeleteTextures(n, arr)
+	libgl.DeleteTextures(n, arr)
 end
 
 function gl.Shader(kind, code)
@@ -4748,16 +4718,17 @@ function sketch.quad(x, y, w, h)
 			x, y, w, h = -w/2, -h/2, w, h
 		end
 	end
-	gl.TexCoord2f(0, 0)
-	gl.Vertex3f(x, y, 0)
-	gl.TexCoord2f(1, 0)
-	gl.Vertex3f(x+w, y, 0)
-	gl.TexCoord2f(1, 1)
-	gl.Vertex3f(x+w, y+h, 0)
 	gl.TexCoord2f(0, 1)
+	gl.Vertex3f(x, y, 0)
+	gl.TexCoord2f(1, 1)
+	gl.Vertex3f(x+w, y, 0)
+	gl.TexCoord2f(1, 0)
+	gl.Vertex3f(x+w, y+h, 0)
+	gl.TexCoord2f(0, 0)
 	gl.Vertex3f(x, y+h, 0)
 	gl.End()
 end
+
 
 gl.extensions_table = false
 function gl.extensions()
@@ -4778,6 +4749,17 @@ function gl.extensions()
 	return gl.extensions_table
 end
 
+--[[
+local glu = require "glu"
+
+function gl.assert(msg)
+	local err = gl.GetError()
+	if err ~= gl.NO_ERROR then
+		local ok, str = pcall(glu.ErrorString, err)
+		error(string.format("gl error (%d): %s %s", err, msg, (ok and ffi.string(str) or "?")), 2)
+	end
+end
 --]]
+
 
 return gl

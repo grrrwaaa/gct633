@@ -90,7 +90,7 @@ function glu.assert(msg)
 	local err = gl.GetError()
 	if err ~= gl.NO_ERROR then
 		local ok, str = pcall(glu.ErrorString, err)
-		error(string.format("gl error (%d): %s %s", err, msg, (ok and ffi.string(str) or "?")), 2)
+		error(string.format("gl error (%d) on frame %d: %s %s", err, frame or -1, msg, (ok and ffi.string(str) or "?")), 2)
 	end
 end
 
