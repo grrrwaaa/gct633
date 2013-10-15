@@ -24,37 +24,40 @@
 
 <div id="navigation">
 <br/>
-<h1>ldoc</h1>
+<h1>AV</h1>
 
 <ul>
-  <li><a href="../reference.html">Index</a></li>
+  <li><a href="../index.html">Index</a></li>
 </ul>
 
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_mat4">Class mat4 </a></li>
 </ul>
 
 
 <h2>Modules</h2>
 <ul>
-  <li><a href="../modules/allosphere.html">allosphere</a></li>
   <li><a href="../modules/audio.html">audio</a></li>
-  <li><a href="../modules/audioprocess.html">audioprocess</a></li>
-  <li><a href="../modules/displaylist.html">displaylist</a></li>
-  <li><a href="../modules/draw2D.html">draw2D</a></li>
-  <li><a href="../modules/draw3D.html">draw3D</a></li>
-  <li><a href="../modules/field2D.html">field2D</a></li>
-  <li><a href="../modules/field3D.html">field3D</a></li>
+  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
+  <li><a href="../modules/audio.sndfile.html">audio.sndfile</a></li>
+  <li><a href="../modules/coroutine.html">coroutine</a></li>
+  <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/expr.html">expr</a></li>
+  <li><a href="../modules/gl.html">gl</a></li>
+  <li><a href="../modules/global.html">global</a></li>
   <li><a href="../modules/io.html">io</a></li>
   <li><strong>mat4</strong></li>
   <li><a href="../modules/math.html">math</a></li>
-  <li><a href="../modules/nav3.html">nav3</a></li>
   <li><a href="../modules/os.html">os</a></li>
+  <li><a href="../modules/package.html">package</a></li>
   <li><a href="../modules/quat.html">quat</a></li>
+  <li><a href="../modules/shader.html">shader</a></li>
   <li><a href="../modules/string.html">string</a></li>
   <li><a href="../modules/table.html">table</a></li>
   <li><a href="../modules/util.html">util</a></li>
+  <li><a href="../modules/vbo.html">vbo</a></li>
   <li><a href="../modules/vec2.html">vec2</a></li>
   <li><a href="../modules/vec3.html">vec3</a></li>
   <li><a href="../modules/vec4.html">vec4</a></li>
@@ -72,6 +75,103 @@
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#fromPositionAxis">fromPositionAxis&nbsp;(pos, ux, uy, uz)</a></td>
+	<td class="summary">Generate a matrix from a position and three unit axes</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#translate">translate&nbsp;(x, y, z)</a></td>
+	<td class="summary">Generate a matrix to apply a translation</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scale">scale&nbsp;(x, y, z)</a></td>
+	<td class="summary">Generate a matrix to re-scale</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rotateYZ">rotateYZ&nbsp;(angle)</a></td>
+	<td class="summary">Generate a matrix to rotate on the YZ plane (around X)</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rotateZX">rotateZX&nbsp;(angle)</a></td>
+	<td class="summary">Generate a matrix to rotate on the ZX plane (around Y)</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rotateXY">rotateXY&nbsp;(angle)</a></td>
+	<td class="summary">Generate a matrix to rotate on the XY plane (around Z)</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rotate">rotate&nbsp;(angle, axis)</a></td>
+	<td class="summary">Generate a matrix to rotate around an arbitrary axis</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#shearYZ">shearYZ&nbsp;(y, z)</a></td>
+	<td class="summary">Generate a matrix to apply shear on the YZ plane</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#shearZX">shearZX&nbsp;(z, x)</a></td>
+	<td class="summary">Generate a matrix to apply shear on the ZX plane</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#shearXY">shearXY&nbsp;(x, y)</a></td>
+	<td class="summary">Generate a matrix to apply shear on the XY plane</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#perspectivePlane">perspectivePlane&nbsp;(nearBL, nearBR, nearTL, eye, near, far)</a></td>
+	<td class="summary">Calculate perspective projection for near plane and eye coordinates
+ (nearBL, nearBR, nearTL, eye) all share the same coordinate system
+ (nearBR,nearBL) and (nearTL,nearBL) should form a right angle
+ (eye) can be set freely, allowing diverse off-axis projections
+ See Generalized Perspective Projection, Robert Kooima, 2009, EVL</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#perspectiveOffAxisX">perspectiveOffAxisX&nbsp;(fovy, aspect, near, far, xshift, focal)</a></td>
+	<td class="summary">Generate a matrix for off-axis perspective in X only (e.g.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#perspectiveOffAxisY">perspectiveOffAxisY&nbsp;(fovy, aspect, near, far, yshift, focal)</a></td>
+	<td class="summary">Generate a matrix for off-axis perspective in Y only (e.g.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#perspectiveOffAxis">perspectiveOffAxis&nbsp;(fovy, aspect, near, far, xshift, yshift, focal)</a></td>
+	<td class="summary">Generate a matrix for off-axis perspective (e.g.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#perspective">perspective&nbsp;(fovy, aspect, near, far)</a></td>
+	<td class="summary">Generate a matrix for perspective</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#frustum">frustum&nbsp;(l, r, b, t, near, far)</a></td>
+	<td class="summary">Generate a frustum matrix</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#unfrustum">unfrustum&nbsp;(l, r, b, t, near, far)</a></td>
+	<td class="summary">Generate the inverse of a frustum matrix</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ortho">ortho&nbsp;(l, r, b, t, near, far)</a></td>
+	<td class="summary">Generate an orthographic projection matrix</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#unortho">unortho&nbsp;(l, r, b, t, near, far)</a></td>
+	<td class="summary">Generate the inverse of an orthographic projection matrix</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#lookatu">lookatu&nbsp;(eye, ux, uy, uz)</a></td>
+	<td class="summary">Generate a modelview matrix from an eye position and unit axis vectors
+ ux, uy, uz must be unit vectors
+ remember that uz points in the opposite direction to the view...</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#lookat">lookat&nbsp;(eye, at, up)</a></td>
+	<td class="summary">Generate a modelview matrix from an eye position, point of interest and up vector</td>
+	</tr>
+</table>
+<h2><a href="#Class_mat4">Class mat4 </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#mat4:copy">mat4:copy&nbsp;(self)</a></td>
+	<td class="summary">Create a copy of a mat4</td>
+	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#mat4:index">mat4:index&nbsp;(column, row)</a></td>
 	<td class="summary">Get the array index in a matrix:</td>
@@ -101,10 +201,6 @@
 	<td class="summary">Get a column of the matrix as a vec3</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#mat4:copy">mat4:copy&nbsp;()</a></td>
-	<td class="summary">Create a copy of the matrix</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#mat4:transposenew">mat4:transposenew&nbsp;()</a></td>
 	<td class="summary">Get transposed copy of the matrix</td>
 	</tr>
@@ -128,22 +224,6 @@
 	<td class="name" nowrap><a href="#mat4:transform_transposed">mat4:transform_transposed&nbsp;(v)</a></td>
 	<td class="summary">Computes product of a vec4 with the transpose of the matrix</td>
 	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#fromPositionAxis">fromPositionAxis&nbsp;(pos, ux, uy, uz)</a></td>
-	<td class="summary">Generate a matrix from a position and three unit axes</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#perspectivePlane">perspectivePlane&nbsp;(nearBL, nearBR, nearTL, eye, near, far)</a></td>
-	<td class="summary">Calculate perspective projection for near plane and eye coordinates
- (nearBL, nearBR, nearTL, eye) all share the same coordinate system
- (nearBR,nearBL) and (nearTL,nearBL) should form a right angle
- (eye) can be set freely, allowing diverse off-axis projections
- See Generalized Perspective Projection, Robert Kooima, 2009, EVL</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#perspectiveOffAxis">perspectiveOffAxis&nbsp;(fovy, aspect, near, far, xshift, yshift, focal)</a></td>
-	<td class="summary">Generalized off-axis perspective:</td>
-	</tr>
 </table>
 
 <br/>
@@ -153,6 +233,712 @@
     <h2><a name="Functions"></a>Functions</h2>
     <dl class="function">
     <dt>
+    <a name = "fromPositionAxis"></a>
+    <strong>fromPositionAxis&nbsp;(pos, ux, uy, uz)</strong>
+    </dt>
+    <dd>
+    Generate a matrix from a position and three unit axes
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pos</span>
+         vec3 position</li>
+        <li><span class="parameter">ux</span>
+         vec3 right-vector (unit length)</li>
+        <li><span class="parameter">uy</span>
+         vec3 up-vector (unit length)</li>
+        <li><span class="parameter">uz</span>
+         vec3 rear-vector (unit length)</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "translate"></a>
+    <strong>translate&nbsp;(x, y, z)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to apply a translation
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">z</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scale"></a>
+    <strong>scale&nbsp;(x, y, z)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to re-scale
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">z</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rotateYZ"></a>
+    <strong>rotateYZ&nbsp;(angle)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to rotate on the YZ plane (around X)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">angle</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rotateZX"></a>
+    <strong>rotateZX&nbsp;(angle)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to rotate on the ZX plane (around Y)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">angle</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rotateXY"></a>
+    <strong>rotateXY&nbsp;(angle)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to rotate on the XY plane (around Z)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">angle</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rotate"></a>
+    <strong>rotate&nbsp;(angle, axis)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to rotate around an arbitrary axis
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">angle</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">axis</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         normalized vector to rotate around</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "shearYZ"></a>
+    <strong>shearYZ&nbsp;(y, z)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to apply shear on the YZ plane
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">z</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "shearZX"></a>
+    <strong>shearZX&nbsp;(z, x)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to apply shear on the ZX plane
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">z</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "shearXY"></a>
+    <strong>shearXY&nbsp;(x, y)</strong>
+    </dt>
+    <dd>
+    Generate a matrix to apply shear on the XY plane
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "perspectivePlane"></a>
+    <strong>perspectivePlane&nbsp;(nearBL, nearBR, nearTL, eye, near, far)</strong>
+    </dt>
+    <dd>
+    Calculate perspective projection for near plane and eye coordinates
+ (nearBL, nearBR, nearTL, eye) all share the same coordinate system
+ (nearBR,nearBL) and (nearTL,nearBL) should form a right angle
+ (eye) can be set freely, allowing diverse off-axis projections
+ See Generalized Perspective Projection, Robert Kooima, 2009, EVL
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">nearBL</span>
+        	bottom-left near-plane coordinate (world-space)</li>
+        <li><span class="parameter">nearBR</span>
+        	bottom-right near-plane coordinate (world-space)</li>
+        <li><span class="parameter">nearTL</span>
+        	top-left near-plane coordinate (world-space)</li>
+        <li><span class="parameter">eye</span>
+        		eye coordinate (world-space)</li>
+        <li><span class="parameter">near</span>
+        		near plane distance from eye</li>
+        <li><span class="parameter">far</span>
+        		far plane distance from eye</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "perspectiveOffAxisX"></a>
+    <strong>perspectiveOffAxisX&nbsp;(fovy, aspect, near, far, xshift, focal)</strong>
+    </dt>
+    <dd>
+    Generate a matrix for off-axis perspective in X only (e.g.  planar stereo offset)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fovy</span>
+            <span class="types"><span class="type">number</span></span>
+         field of view in Y (degrees)</li>
+        <li><span class="parameter">aspect</span>
+            <span class="types"><span class="type">number</span></span>
+         aspect ratio of projection</li>
+        <li><span class="parameter">near</span>
+            <span class="types"><span class="type">number</span></span>
+         near clipping plane (world coordinates)</li>
+        <li><span class="parameter">far</span>
+            <span class="types"><span class="type">number</span></span>
+         far clipping plane (world coordinates)</li>
+        <li><span class="parameter">xshift</span>
+            <span class="types"><span class="type">number</span></span>
+         off axis shift</li>
+        <li><span class="parameter">focal</span>
+            <span class="types"><span class="type">number</span></span>
+         focal depth</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "perspectiveOffAxisY"></a>
+    <strong>perspectiveOffAxisY&nbsp;(fovy, aspect, near, far, yshift, focal)</strong>
+    </dt>
+    <dd>
+    Generate a matrix for off-axis perspective in Y only (e.g.  planar stereo offset)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fovy</span>
+            <span class="types"><span class="type">number</span></span>
+         field of view in Y (degrees)</li>
+        <li><span class="parameter">aspect</span>
+            <span class="types"><span class="type">number</span></span>
+         aspect ratio of projection</li>
+        <li><span class="parameter">near</span>
+            <span class="types"><span class="type">number</span></span>
+         near clipping plane (world coordinates)</li>
+        <li><span class="parameter">far</span>
+            <span class="types"><span class="type">number</span></span>
+         far clipping plane (world coordinates)</li>
+        <li><span class="parameter">yshift</span>
+            <span class="types"><span class="type">number</span></span>
+         off axis shift</li>
+        <li><span class="parameter">focal</span>
+            <span class="types"><span class="type">number</span></span>
+         focal depth</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "perspectiveOffAxis"></a>
+    <strong>perspectiveOffAxis&nbsp;(fovy, aspect, near, far, xshift, yshift, focal)</strong>
+    </dt>
+    <dd>
+    Generate a matrix for off-axis perspective (e.g.  planar stereo offset)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fovy</span>
+            <span class="types"><span class="type">number</span></span>
+         field of view in Y (degrees)</li>
+        <li><span class="parameter">aspect</span>
+            <span class="types"><span class="type">number</span></span>
+         aspect ratio of projection</li>
+        <li><span class="parameter">near</span>
+            <span class="types"><span class="type">number</span></span>
+         near clipping plane (world coordinates)</li>
+        <li><span class="parameter">far</span>
+            <span class="types"><span class="type">number</span></span>
+         far clipping plane (world coordinates)</li>
+        <li><span class="parameter">xshift</span>
+            <span class="types"><span class="type">number</span></span>
+         off axis shift</li>
+        <li><span class="parameter">yshift</span>
+            <span class="types"><span class="type">number</span></span>
+         off axis shift</li>
+        <li><span class="parameter">focal</span>
+            <span class="types"><span class="type">number</span></span>
+         focal depth</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "perspective"></a>
+    <strong>perspective&nbsp;(fovy, aspect, near, far)</strong>
+    </dt>
+    <dd>
+    Generate a matrix for perspective
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fovy</span>
+            <span class="types"><span class="type">number</span></span>
+         field of view in Y (degrees)</li>
+        <li><span class="parameter">aspect</span>
+            <span class="types"><span class="type">number</span></span>
+         aspect ratio of projection</li>
+        <li><span class="parameter">near</span>
+            <span class="types"><span class="type">number</span></span>
+         near clipping plane (world coordinates)</li>
+        <li><span class="parameter">far</span>
+            <span class="types"><span class="type">number</span></span>
+         far clipping plane (world coordinates)</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "frustum"></a>
+    <strong>frustum&nbsp;(l, r, b, t, near, far)</strong>
+    </dt>
+    <dd>
+    Generate a frustum matrix
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+        	distance from center of near plane to left edge</li>
+        <li><span class="parameter">r</span>
+        	distance from center of near plane to right edge</li>
+        <li><span class="parameter">b</span>
+        	distance from center of near plane to bottom edge</li>
+        <li><span class="parameter">t</span>
+        	distance from center of near plane to top edge</li>
+        <li><span class="parameter">near</span>
+        	distance from eye to near plane</li>
+        <li><span class="parameter">far</span>
+        	distance from eye to far plane</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "unfrustum"></a>
+    <strong>unfrustum&nbsp;(l, r, b, t, near, far)</strong>
+    </dt>
+    <dd>
+    Generate the inverse of a frustum matrix
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+        	distance from center of near plane to left edge</li>
+        <li><span class="parameter">r</span>
+        	distance from center of near plane to right edge</li>
+        <li><span class="parameter">b</span>
+        	distance from center of near plane to bottom edge</li>
+        <li><span class="parameter">t</span>
+        	distance from center of near plane to top edge</li>
+        <li><span class="parameter">near</span>
+        	distance from eye to near plane</li>
+        <li><span class="parameter">far</span>
+        	distance from eye to far plane</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ortho"></a>
+    <strong>ortho&nbsp;(l, r, b, t, near, far)</strong>
+    </dt>
+    <dd>
+    Generate an orthographic projection matrix
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+        	distance from center of near plane to left edge</li>
+        <li><span class="parameter">r</span>
+        	distance from center of near plane to right edge</li>
+        <li><span class="parameter">b</span>
+        	distance from center of near plane to bottom edge</li>
+        <li><span class="parameter">t</span>
+        	distance from center of near plane to top edge</li>
+        <li><span class="parameter">near</span>
+        	distance from eye to near plane</li>
+        <li><span class="parameter">far</span>
+        	distance from eye to far plane</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "unortho"></a>
+    <strong>unortho&nbsp;(l, r, b, t, near, far)</strong>
+    </dt>
+    <dd>
+    Generate the inverse of an orthographic projection matrix
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+        	distance from center of near plane to left edge</li>
+        <li><span class="parameter">r</span>
+        	distance from center of near plane to right edge</li>
+        <li><span class="parameter">b</span>
+        	distance from center of near plane to bottom edge</li>
+        <li><span class="parameter">t</span>
+        	distance from center of near plane to top edge</li>
+        <li><span class="parameter">near</span>
+        	distance from eye to near plane</li>
+        <li><span class="parameter">far</span>
+        	distance from eye to far plane</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "lookatu"></a>
+    <strong>lookatu&nbsp;(eye, ux, uy, uz)</strong>
+    </dt>
+    <dd>
+    Generate a modelview matrix from an eye position and unit axis vectors
+ ux, uy, uz must be unit vectors
+ remember that uz points in the opposite direction to the view...
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">eye</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the position of the camera</li>
+        <li><span class="parameter">ux</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the unit X axis of the camera's point of view</li>
+        <li><span class="parameter">uy</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the unit Y axis of the camera's point of view</li>
+        <li><span class="parameter">uz</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the unit Z axis of the camera's point of view</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "lookat"></a>
+    <strong>lookat&nbsp;(eye, at, up)</strong>
+    </dt>
+    <dd>
+    Generate a modelview matrix from an eye position, point of interest and up vector
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">eye</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the position of the camera</li>
+        <li><span class="parameter">at</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the position of the point of interest</li>
+        <li><span class="parameter">up</span>
+            <span class="types"><a class="type" href="../modules/vec3.html#">vec3</a></span>
+         the unit Y axis of the camera's point of view</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        new matrix
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Class_mat4"></a>Class mat4 </h2>
+        A 4x4 matrix
+    <dl class="function">
+    <dt>
+    <a name = "mat4:copy"></a>
+    <strong>mat4:copy&nbsp;(self)</strong>
+    </dt>
+    <dd>
+    Create a copy of a mat4
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">self</span>
+            <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
+        (copy)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
     <a name = "mat4:index"></a>
     <strong>mat4:index&nbsp;(column, row)</strong>
     </dt>
@@ -161,10 +947,10 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">column</span>
-       (zero-based)</li>
-      <li><span class="parameter">row</span>
-       (zero-based)</li>
+        <li><span class="parameter">column</span>
+         (zero-based)</li>
+        <li><span class="parameter">row</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -186,10 +972,10 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">column</span>
-       (zero-based)</li>
-      <li><span class="parameter">row</span>
-       (zero-based)</li>
+        <li><span class="parameter">column</span>
+         (zero-based)</li>
+        <li><span class="parameter">row</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -211,12 +997,12 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">column</span>
-       (zero-based)</li>
-      <li><span class="parameter">row</span>
-       (zero-based)</li>
-      <li><span class="parameter">value</span>
-       (optional, default 0)</li>
+        <li><span class="parameter">column</span>
+         (zero-based)</li>
+        <li><span class="parameter">row</span>
+         (zero-based)</li>
+        <li><span class="parameter">value</span>
+         (optional, default 0)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -238,8 +1024,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">i</span>
-       (zero-based)</li>
+        <li><span class="parameter">i</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -261,8 +1047,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">i</span>
-       (zero-based)</li>
+        <li><span class="parameter">i</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -284,8 +1070,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">i</span>
-       (zero-based)</li>
+        <li><span class="parameter">i</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -307,32 +1093,14 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">i</span>
-       (zero-based)</li>
+        <li><span class="parameter">i</span>
+         (zero-based)</li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
         vec3
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "mat4:copy"></a>
-    <strong>mat4:copy&nbsp;()</strong>
-    </dt>
-    <dd>
-    Create a copy of the matrix
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-        new matrix
     </ol>
 
 
@@ -350,6 +1118,7 @@
     <h3>Returns:</h3>
     <ol>
 
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
         new matrix
     </ol>
 
@@ -366,8 +1135,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">...</span>
-       arguments to set</li>
+        <li><span class="parameter">...</span>
+         arguments to set</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -393,6 +1162,7 @@
     <h3>Returns:</h3>
     <ol>
 
+          <span class="types"><a class="type" href="../modules/mat4.html#">mat4</a></span>
         matrix
     </ol>
 
@@ -411,8 +1181,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">v</span>
-       vec4 column vector to multiply</li>
+        <li><span class="parameter">v</span>
+         vec4 column vector to multiply</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -434,8 +1204,8 @@
 
     <h3>Parameters:</h3>
     <ul>
-      <li><span class="parameter">v</span>
-       vec4 vector to multiply</li>
+        <li><span class="parameter">v</span>
+         vec4 vector to multiply</li>
     </ul>
 
     <h3>Returns:</h3>
@@ -448,104 +1218,13 @@
 
 
 </dd>
-    <dt>
-    <a name = "fromPositionAxis"></a>
-    <strong>fromPositionAxis&nbsp;(pos, ux, uy, uz)</strong>
-    </dt>
-    <dd>
-    Generate a matrix from a position and three unit axes
-
-    <h3>Parameters:</h3>
-    <ul>
-      <li><span class="parameter">pos</span>
-       vec3 position</li>
-      <li><span class="parameter">ux</span>
-       vec3 right-vector (unit length)</li>
-      <li><span class="parameter">uy</span>
-       vec3 up-vector (unit length)</li>
-      <li><span class="parameter">uz</span>
-       vec3 rear-vector (unit length)</li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        matrix
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "perspectivePlane"></a>
-    <strong>perspectivePlane&nbsp;(nearBL, nearBR, nearTL, eye, near, far)</strong>
-    </dt>
-    <dd>
-    Calculate perspective projection for near plane and eye coordinates
- (nearBL, nearBR, nearTL, eye) all share the same coordinate system
- (nearBR,nearBL) and (nearTL,nearBL) should form a right angle
- (eye) can be set freely, allowing diverse off-axis projections
- See Generalized Perspective Projection, Robert Kooima, 2009, EVL
-
-    <h3>Parameters:</h3>
-    <ul>
-      <li><span class="parameter">nearBL</span>
-      	bottom-left near-plane coordinate (world-space)</li>
-      <li><span class="parameter">nearBR</span>
-      	bottom-right near-plane coordinate (world-space)</li>
-      <li><span class="parameter">nearTL</span>
-      	top-left near-plane coordinate (world-space)</li>
-      <li><span class="parameter">eye</span>
-      		eye coordinate (world-space)</li>
-      <li><span class="parameter">near</span>
-      		near plane distance from eye</li>
-      <li><span class="parameter">far</span>
-      		far plane distance from eye</li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "perspectiveOffAxis"></a>
-    <strong>perspectiveOffAxis&nbsp;(fovy, aspect, near, far, xshift, yshift, focal)</strong>
-    </dt>
-    <dd>
-    Generalized off-axis perspective:
-
-    <h3>Parameters:</h3>
-    <ul>
-      <li><span class="parameter">fovy</span>
-      </li>
-      <li><span class="parameter">aspect</span>
-      </li>
-      <li><span class="parameter">near</span>
-      </li>
-      <li><span class="parameter">far</span>
-      </li>
-      <li><span class="parameter">xshift</span>
-      </li>
-      <li><span class="parameter">yshift</span>
-      </li>
-      <li><span class="parameter">focal</span>
-      </li>
-    </ul>
-
-
-
-
-
-</dd>
 </dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.3</a></i>
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.3.12</a></i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
