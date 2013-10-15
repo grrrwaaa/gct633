@@ -6,6 +6,8 @@ local vec4 = require "vec4"
 ffi.cdef [[
 typedef struct vertex {
 	vec3f position;
+	vec3f normal;
+	vec2f texcoord;
 	vec4f color;
 } vertex;
 ]]
@@ -66,6 +68,25 @@ function buffer:disable_position_attribute(shader, name)
 	gl.DisableVertexAttribArray(attr);
 end
 
+function buffer:enable_normal_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "normal")
+	self:bind()
+	gl.VertexAttribPointer(
+        attr,  	 
+		3,                                --/* size */
+        gl.FLOAT,                         --/* type */
+        gl.FALSE,                         --/* normalized? */
+        ffi.sizeof("vertex"),            --/* stride */
+		ffi.cast("void *", ffi.offsetof("vertex", "normal"))
+    );
+	gl.EnableVertexAttribArray(attr);
+	self:unbind()
+end
+function buffer:disable_normal_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "normal")
+	gl.DisableVertexAttribArray(attr);
+end
+
 function buffer:enable_color_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "color")
 	self:bind()
@@ -83,6 +104,26 @@ end
 
 function buffer:disable_color_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "color")
+	gl.DisableVertexAttribArray(attr);
+end
+
+function buffer:enable_texcoord_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "texcoord")
+	self:bind()
+	gl.VertexAttribPointer(
+        attr,  	 
+		4,                                --/* size */
+        gl.FLOAT,                         --/* type */
+        gl.FALSE,                         --/* normalized? */
+        ffi.sizeof("vertex"),            --/* stride */
+		ffi.cast("void *", ffi.offsetof("vertex", "texcoord"))
+    );
+	gl.EnableVertexAttribArray(attr);
+	self:unbind()
+end
+
+function buffer:disable_texcoord_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "texcoord")
 	gl.DisableVertexAttribArray(attr);
 end
 

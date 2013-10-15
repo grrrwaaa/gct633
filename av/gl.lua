@@ -4372,12 +4372,9 @@ local commonsyms = {
 }
 local libgl = {}
 function gl.init_symbols()
-	print("initializing symbols")
 	for i, k in ipairs(commonsyms) do	
 		glindex(libgl, k)
-		print(k, libgl[k])
 	end
-	print("initialized symbols")
 end
 
 function gl.Clear(...)
