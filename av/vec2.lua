@@ -1,4 +1,6 @@
 --- vec2: A simple 2-component vector
+-- @module vec2
+
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
 local atan2 = math.atan2
@@ -11,7 +13,6 @@ local format = string.format
 
 local ffi = require "ffi"
 ffi.cdef [[ 
-
 typedef struct vec2f {
 	float x, y;
 } vec2f;
@@ -41,20 +42,6 @@ function vec2.copy(v)
 	return new(v.x, v.y)
 end
 
---- Set the components of a vector:
--- @param x component
--- @param y component
--- @return self
-function vec2:set(x, y)
-	if type(x) == "number" or type(x) == "nil" then
-		self.x = x or 0
-		self.y = y or 0
-	else
-		self.x = x.x or 0
-		self.y = x.y or 0
-	end
-	return self
-end
 
 --- Create a unit (length 1) vector from an angle
 -- @param angle in radians
@@ -67,21 +54,6 @@ end
 -- @param angle in radians
 function vec2.fromPolar(length, angle)
 	return new(length * cos(angle), length * sin(angle))	
-end
-
---- Add a vector (or number) to self (in-place)
--- @param v number or vector to add
--- @return self
-function vec2:add(v)
-	if type(v) == "number" then
-		self.x = self.x + v
-		self.y = self.y + v
-		return self
-	else
-		self.x = self.x + v.x
-		self.y = self.y + v.y
-		return self
-	end
 end
 
 --- Add two vectors (or numbers) to create a new vector
@@ -99,20 +71,6 @@ function vec2.addnew(a, b)
 end
 vec2.__add = vec2.addnew
 	
---- Subtract a vector (or number) to self (in-place)
--- @param v number or vector to sub
--- @return self
-function vec2:sub(v)
-	if type(v) == "number" then
-		self.x = self.x - v
-		self.y = self.y - v
-		return self
-	else
-		self.x = self.x - v.x
-		self.y = self.y - v.y
-		return self
-	end
-end
 
 --- Subtract two vectors (or numbers) to create a new vector
 -- @param a vector or number
@@ -132,21 +90,6 @@ vec2.__sub = vec2.subnew
 function vec2:__unm()
 	return new(-self.x, -self.y)
 end
-	
---- Multiply a vector (or number) to self (in-place)
--- @param v number or vector to mul
--- @return self
-function vec2:mul(v)
-	if type(v) == "number" then
-		self.x = self.x * v
-		self.y = self.y * v
-		return self
-	else
-		self.x = self.x * v.x
-		self.y = self.y * v.y
-		return self
-	end
-end
 
 --- Multiply two vectors (or numbers) to create a new vector
 -- @param a vector or number
@@ -163,21 +106,6 @@ function vec2.mulnew(a, b)
 end
 vec2.__mul = vec2.mulnew
 	
---- Divide a vector (or number) to self (in-place)
--- @param v number or vector to div
--- @return self
-function vec2:div(v)
-	if type(v) == "number" then
-		self.x = self.x / v
-		self.y = self.y / v
-		return self
-	else
-		self.x = self.x / v.x
-		self.y = self.y / v.y
-		return self
-	end
-end
-
 --- Divide two vectors (or numbers) to create a new vector
 -- @param a vector or number
 -- @param b vector or number
@@ -192,21 +120,6 @@ function vec2.divnew(a, b)
 	end
 end
 vec2.__div = vec2.divnew
-	
---- Raise to power a vector (or number) to self (in-place)
--- @param v number or vector to pow
--- @return self
-function vec2:pow(v)
-	if type(v) == "number" then
-		self.x = self.x ^ v
-		self.y = self.y ^ v
-		return self
-	else
-		self.x = self.x ^ v.x
-		self.y = self.y ^ v.y
-		return self
-	end
-end
 
 --- Raise to power two vectors (or numbers) to create a new vector
 -- @param a vector or number
@@ -222,21 +135,6 @@ function vec2.pownew(a, b)
 	end
 end
 vec2.__pow = vec2.pownew
-	
---- Calculate modulo a vector (or number) to self (in-place)
--- @param v number or vector to mod
--- @return self
-function vec2:mod(v)
-	if type(v) == "number" then
-		self.x = self.x % v
-		self.y = self.y % v
-		return self
-	else
-		self.x = self.x % v.x
-		self.y = self.y % v.y
-		return self
-	end
-end
 
 --- Calculate modulo two vectors (or numbers) to create a new vector
 -- @param a vector or number
@@ -253,20 +151,6 @@ function vec2.modnew(a, b)
 end
 vec2.__mod = vec2.modnew
 
---- Calculate minimum of elements (in-place)
--- @param v number or vector limit
--- @return self
-function vec2:min(v)
-	if type(v) == "number" then
-		self.x = min(self.x, v)
-		self.y = min(self.y, v)
-		return self
-	else
-		self.x = min(self.x, v.x)
-		self.y = min(self.y, v.y)
-		return self
-	end
-end
 
 --- Calculate minimum of elements to create a new vector
 -- @param a vector or number
@@ -282,6 +166,183 @@ function vec2.minnew(a, b)
 	end
 end
 
+--- Calculate maximum of elements to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec2.maxnew(a, b)
+	if type(b) == "number" then
+		return new(max(a.x, b), max(a.y, b))
+	elseif type(a) == "number" then
+		return new(max(a, b.x), max(a, b.y))
+	else
+		return new(max(a.x, b.x), max(a.y, b.y)) 
+	end
+end
+
+--- Create a new vector in a uniformly random direction:
+-- @param mag magnitude (optional, default 1)
+-- @return new vector
+function vec2.random(mag)
+	local a = random() * pi * 2
+	return new(cos(a), sin(a)) * (mag or 1)
+end
+
+--- return the dot product of two vectors:
+-- @param a vector
+-- @param b vector
+-- @return dot product
+function vec2.dot(a, b)
+	return a.x * b.x + a.y * b.y
+end
+
+--- The distance between two vectors (two points)
+-- (The relative distance from a to b)
+-- @param a vector to measure distance between
+-- @param b vector to measure distance between
+-- @return distance
+function vec2.distance(a, b)
+	return (a - b):length()
+end
+
+--- The angle between two vectors (two points)
+-- (The relative angle from self to v)
+-- @param a vector to measure angle between
+-- @param b vector to measure angle between
+-- @return distance
+function vec2.anglebetween(a, b)
+	local am = a:length()
+	local bm = b:length()
+	return acos(a:dot(b) / (am * bm))
+end
+
+--------------------------------------------------------------------------------
+
+--- A 2-component vector
+-- @type vec2
+
+--- Set the components of a vector:
+-- @param x component
+-- @param y component
+-- @return self
+function vec2:set(x, y)
+	if type(x) == "number" or type(x) == "nil" then
+		self.x = x or 0
+		self.y = y or 0
+	else
+		self.x = x.x or 0
+		self.y = x.y or 0
+	end
+	return self
+end
+
+--- Add a vector (or number) to self (in-place)
+-- @param v number or vector to add
+-- @return self
+function vec2:add(v)
+	if type(v) == "number" then
+		self.x = self.x + v
+		self.y = self.y + v
+		return self
+	else
+		self.x = self.x + v.x
+		self.y = self.y + v.y
+		return self
+	end
+end
+	
+--- Subtract a vector (or number) to self (in-place)
+-- @param v number or vector to sub
+-- @return self
+function vec2:sub(v)
+	if type(v) == "number" then
+		self.x = self.x - v
+		self.y = self.y - v
+		return self
+	else
+		self.x = self.x - v.x
+		self.y = self.y - v.y
+		return self
+	end
+end
+
+--- Multiply a vector (or number) to self (in-place)
+-- @param v number or vector to mul
+-- @return self
+function vec2:mul(v)
+	if type(v) == "number" then
+		self.x = self.x * v
+		self.y = self.y * v
+		return self
+	else
+		self.x = self.x * v.x
+		self.y = self.y * v.y
+		return self
+	end
+end
+
+--- Divide a vector (or number) to self (in-place)
+-- @param v number or vector to div
+-- @return self
+function vec2:div(v)
+	if type(v) == "number" then
+		self.x = self.x / v
+		self.y = self.y / v
+		return self
+	else
+		self.x = self.x / v.x
+		self.y = self.y / v.y
+		return self
+	end
+end
+
+	
+--- Raise to power a vector (or number) to self (in-place)
+-- @param v number or vector to pow
+-- @return self
+function vec2:pow(v)
+	if type(v) == "number" then
+		self.x = self.x ^ v
+		self.y = self.y ^ v
+		return self
+	else
+		self.x = self.x ^ v.x
+		self.y = self.y ^ v.y
+		return self
+	end
+end
+
+--- Calculate modulo a vector (or number) to self (in-place)
+-- @param v number or vector to mod
+-- @return self
+function vec2:mod(v)
+	if type(v) == "number" then
+		self.x = self.x % v
+		self.y = self.y % v
+		return self
+	else
+		self.x = self.x % v.x
+		self.y = self.y % v.y
+		return self
+	end
+end
+
+--- Calculate minimum of elements (in-place)
+-- @param v number or vector limit
+-- @return self
+function vec2:min(v)
+	if type(v) == "number" then
+		self.x = min(self.x, v)
+		self.y = min(self.y, v)
+		return self
+	else
+		self.x = min(self.x, v.x)
+		self.y = min(self.y, v.y)
+		return self
+	end
+end
+
+
 --- Calculate maximum of elements (in-place)
 -- @param v number or vector limit
 -- @return self
@@ -294,20 +355,6 @@ function vec2:max(v)
 		self.x = max(self.x, v.x)
 		self.y = max(self.y, v.y)
 		return self
-	end
-end
-
---- Calculate maximum of elements to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec2.maxnew(a, b)
-	if type(b) == "number" then
-		return new(max(a.x, b), max(a.y, b))
-	elseif type(a) == "number" then
-		return new(max(a, b.x), max(a, b.y))
-	else
-		return new(max(a.x, b.x), max(a.y, b.y)) 
 	end
 end
 
@@ -358,12 +405,11 @@ function vec2:lerp(v, f)
 end
 
 --- create a vector from the linear interpolation of two vectors:
--- @param a vector
 -- @param b vector
 -- @param f interpolation factor from a to b (0 = none, 1 = full)
 -- @return new vector
-function vec2.lerpnew(a, b, f)
-	return a + (b - a) * f
+function vec2:lerpnew(b, f)
+	return self + (b - self) * f
 end
 
 --- set the length of the vector to 1 (unit vector)
@@ -490,14 +536,6 @@ function vec2:rotatenew(angle)
 	)
 end
 
---- Create a new vector in a uniformly random direction:
--- @param mag magnitude (optional, default 1)
--- @return new vector
-function vec2.random(mag)
-	local a = random() * pi * 2
-	return new(cos(a), sin(a)) * (mag or 1)
-end
-
 --- Set to a vector of magnitude 1 in a uniformly random direction:
 -- @param mag magnitude (optional, default 1)
 -- @return self
@@ -534,33 +572,6 @@ function vec2:polar()
 	return self:length(), self:angle()
 end
 
---- return the dot product of two vectors:
--- @param a vector
--- @param b vector
--- @return dot product
-function vec2.dot(a, b)
-	return a.x * b.x + a.y * b.y
-end
-
---- The distance between two vectors (two points)
--- (The relative distance from self to p)
--- @param p target to measure distance to
--- @return distance
-function vec2:distance(p)
-	return (p - self):length()
-end
-
---- The angle between two vectors (two points)
--- (The relative angle from self to v)
--- @param a vector to measure angle between
--- @param b vector to measure angle between
--- @return distance
-function vec2.anglebetween(a, b)
-	local am = a:length()
-	local bm = b:length()
-	return acos(a:dot(b) / (am * bm))
-end
-
 function vec2:__tostring()
 	return format("vec2(%f, %f)", self.x, self.y)
 end
@@ -569,6 +580,7 @@ function vec2.__eq(a, b)
 	return a.x==b.x and a.y==b.y
 end
 
+--- Return the components of the vector as values
 function vec2:unpack()
 	return self.x, self.y
 end

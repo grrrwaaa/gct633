@@ -1,4 +1,5 @@
 --- vec3: A simple 3-component vector
+-- @module vec3
 
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
@@ -52,6 +53,198 @@ function vec3.fromvec2(v, z)
 	return new(v.x, v.y, z or 0)
 end
 
+
+--- Add two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.addnew(a, b)
+	if type(b) == "number" then
+		return new(a.x + b, a.y + b, a.z + b)
+	elseif type(a) == "number" then
+		return new(a + b.x, a + b.y, a + b.z)
+	else
+		return new(a.x + b.x, a.y + b.y, a.z + b.z)
+	end
+end
+vec3.__add = vec3.addnew
+	
+--- Subtract two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.subnew(a, b)
+	if type(b) == "number" then
+		return new(a.x - b, a.y - b, a.z - b)
+	elseif type(a) == "number" then
+		return new(a - b.x, a - b.y, a - b.z)
+	else
+		return new(a.x - b.x, a.y - b.y, a.z - b.z)
+	end
+end
+vec3.__sub = vec3.subnew
+	
+function vec3:__unm()
+	return new(-self.x, -self.y, -self.z)
+end	
+
+
+--- Multiply two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.mulnew(a, b)
+	if type(b) == "number" then
+		return new(a.x * b, a.y * b, a.z * b)
+	elseif type(a) == "number" then
+		return new(a * b.x, a * b.y, a * b.z)
+	else
+		return new(a.x * b.x, a.y * b.y, a.z * b.z)
+	end
+end
+vec3.__mul = vec3.mulnew
+	
+
+--- Divide two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.divnew(a, b)
+	if type(b) == "number" then
+		return new(a.x / b, a.y / b, a.z / b)
+	elseif type(a) == "number" then
+		return new(a / b.x, a / b.y, a / b.z)
+	else
+		return new(a.x / b.x, a.y / b.y, a.z / b.z)
+	end
+end
+vec3.__div = vec3.divnew
+	
+
+--- Raise to power two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.pownew(a, b)
+	if type(b) == "number" then
+		return new(a.x ^ b, a.y ^ b, a.z ^ b)
+	elseif type(a) == "number" then
+		return new(a ^ b.x, a ^ b.y, a ^ b.z)
+	else
+		return new(a.x ^ b.x, a.y ^ b.y, a.z ^ b.z)
+	end
+end
+vec3.__pow = vec3.pownew
+	
+
+--- Calculate modulo two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.modnew(a, b)
+	if type(b) == "number" then
+		return new(a.x % b, a.y % b, a.z % b)
+	elseif type(a) == "number" then
+		return new(a % b.x, a % b.y, a % b.z)
+	else
+		return new(a.x % b.x, a.y % b.y, a.z % b.z)
+	end
+end
+vec3.__mod = vec3.modnew
+
+--- Calculate minimum of elements to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.minnew(a, b)
+	if type(b) == "number" then
+		return new(min(a.x, b), min(a.y, b), min(a.z, b))
+	elseif type(a) == "number" then
+		return new(min(a, b.x), min(a, b.y), min(a, b.z))
+	else
+		return new(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z)) 
+	end
+end
+
+
+--- Calculate maximum of elements to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec3.maxnew(a, b)
+	if type(b) == "number" then
+		return new(max(a.x, b), max(a.y, b), max(a.z, b))
+	elseif type(a) == "number" then
+		return new(max(a, b.x), max(a, b.y), max(a, b.z))
+	else
+		return new(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z)) 
+	end
+end
+
+--- create a vector from the linear interpolation of two vectors:
+-- @param a vector
+-- @param b vector
+-- @param f interpolation factor from a to b (0 = none, 1 = full)
+-- @return new vector
+function vec3.lerpnew(a, b, f)
+	return a + (b - a) * f
+end
+
+--- Create a new vector in a uniformly random direction:
+-- @param mag magnitude (optional, default 1)
+-- @return new vector
+function vec3.random(mag)
+	local a = random() * pi * 2
+	local z = random() * 2 - 1
+	local d = sqrt(1-z*z)
+	return new(d * cos(a), d * sin(a), z) * (mag or 1)
+end
+
+--- return the dot product of two vectors:
+-- @param a vector
+-- @param b vector
+-- @return dot product
+function vec3.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z
+end
+
+--- return the cross product of two vectors:
+-- @param a vector
+-- @param b vector
+-- @return cross product
+function vec3.cross(a, b)
+	return new(
+		a.y*b.z - a.z*b.y, 
+		a.z*b.x - a.x*b.z, 
+		a.x*b.y - a.y*b.x
+	)
+end
+
+--- The angle between two vectors (two points)
+-- (The relative angle from self to v)
+-- @param a vector to measure angle between
+-- @param b vector to measure angle between
+-- @return distance
+function vec3.anglebetween(a, b)
+	local am = a:length()
+	local bm = b:length()
+	return acos(a:dot(b) / (am * bm))
+end
+
+function vec3:__tostring()
+	return format("vec3(%f, %f, %f)", self.x, self.y, self.z)
+end
+
+function vec3.__eq(a, b) 
+	return a.x==b.x and a.y==b.y and a.z==b.z
+end
+
+--------------------------------------------------------------------------------
+
+--- A 3 component vector
+-- @type vec3
+
+
 --- Set the components of a vector:
 -- @param x component
 -- @param y component
@@ -69,6 +262,8 @@ function vec3:set(x, y, z)
 	end
 	return self
 end
+
+
 
 -- TODO: from axis angle
 -- TODO: from quat
@@ -90,21 +285,6 @@ function vec3:add(v)
 	end
 end
 
---- Add two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.addnew(a, b)
-	if type(b) == "number" then
-		return new(a.x + b, a.y + b, a.z + b)
-	elseif type(a) == "number" then
-		return new(a + b.x, a + b.y, a + b.z)
-	else
-		return new(a.x + b.x, a.y + b.y, a.z + b.z)
-	end
-end
-vec3.__add = vec3.addnew
-	
 --- Subtract a vector (or number) to self (in-place)
 -- @param v number or vector to sub
 -- @return self
@@ -121,25 +301,6 @@ function vec3:sub(v)
 		return self
 	end
 end
-
---- Subtract two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.subnew(a, b)
-	if type(b) == "number" then
-		return new(a.x - b, a.y - b, a.z - b)
-	elseif type(a) == "number" then
-		return new(a - b.x, a - b.y, a - b.z)
-	else
-		return new(a.x - b.x, a.y - b.y, a.z - b.z)
-	end
-end
-vec3.__sub = vec3.subnew
-	
-function vec3:__unm()
-	return new(-self.x, -self.y, -self.z)
-end	
 
 --- Multiply a vector (or number) to self (in-place)
 -- @param v number or vector to mul
@@ -158,21 +319,7 @@ function vec3:mul(v)
 	end
 end
 
---- Multiply two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.mulnew(a, b)
-	if type(b) == "number" then
-		return new(a.x * b, a.y * b, a.z * b)
-	elseif type(a) == "number" then
-		return new(a * b.x, a * b.y, a * b.z)
-	else
-		return new(a.x * b.x, a.y * b.y, a.z * b.z)
-	end
-end
-vec3.__mul = vec3.mulnew
-	
+
 --- Divide a vector (or number) to self (in-place)
 -- @param v number or vector to div
 -- @return self
@@ -190,21 +337,6 @@ function vec3:div(v)
 	end
 end
 
---- Divide two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.divnew(a, b)
-	if type(b) == "number" then
-		return new(a.x / b, a.y / b, a.z / b)
-	elseif type(a) == "number" then
-		return new(a / b.x, a / b.y, a / b.z)
-	else
-		return new(a.x / b.x, a.y / b.y, a.z / b.z)
-	end
-end
-vec3.__div = vec3.divnew
-	
 --- Raise to power a vector (or number) to self (in-place)
 -- @param v number or vector to pow
 -- @return self
@@ -222,21 +354,6 @@ function vec3:pow(v)
 	end
 end
 
---- Raise to power two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.pownew(a, b)
-	if type(b) == "number" then
-		return new(a.x ^ b, a.y ^ b, a.z ^ b)
-	elseif type(a) == "number" then
-		return new(a ^ b.x, a ^ b.y, a ^ b.z)
-	else
-		return new(a.x ^ b.x, a.y ^ b.y, a.z ^ b.z)
-	end
-end
-vec3.__pow = vec3.pownew
-	
 --- Calculate modulo a vector (or number) to self (in-place)
 -- @param v number or vector to mod
 -- @return self
@@ -253,21 +370,6 @@ function vec3:mod(v)
 		return self
 	end
 end
-
---- Calculate modulo two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.modnew(a, b)
-	if type(b) == "number" then
-		return new(a.x % b, a.y % b, a.z % b)
-	elseif type(a) == "number" then
-		return new(a % b.x, a % b.y, a % b.z)
-	else
-		return new(a.x % b.x, a.y % b.y, a.z % b.z)
-	end
-end
-vec3.__mod = vec3.modnew
 
 --- Apply math.floor to all elements:
 -- @return self
@@ -295,19 +397,6 @@ function vec3:min(v)
 	end
 end
 
---- Calculate minimum of elements to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.minnew(a, b)
-	if type(b) == "number" then
-		return new(min(a.x, b), min(a.y, b), min(a.z, b))
-	elseif type(a) == "number" then
-		return new(min(a, b.x), min(a, b.y), min(a, b.z))
-	else
-		return new(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z)) 
-	end
-end
 
 --- Calculate maximum of elements (in-place)
 -- @param v number or vector limit
@@ -326,27 +415,6 @@ function vec3:max(v)
 	end
 end
 
---- Calculate maximum of elements to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec3.maxnew(a, b)
-	if type(b) == "number" then
-		return new(max(a.x, b), max(a.y, b), max(a.z, b))
-	elseif type(a) == "number" then
-		return new(max(a, b.x), max(a, b.y), max(a, b.z))
-	else
-		return new(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z)) 
-	end
-end
-
---- Constrain vector to range (in-place)
--- @param lo vector or number minimum value 
--- @param hi vector or number minimum value 
--- @return self
-function vec3:clip(lo, hi)
-	return self:max(lo):min(hi)
-end
 
 --- Constrain vector to range to create a new vector
 -- @param lo vector or number minimum value 
@@ -390,14 +458,6 @@ function vec3:lerp(v, f)
 	return self:add((v - self):mul(f))
 end
 
---- create a vector from the linear interpolation of two vectors:
--- @param a vector
--- @param b vector
--- @param f interpolation factor from a to b (0 = none, 1 = full)
--- @return new vector
-function vec3.lerpnew(a, b, f)
-	return a + (b - a) * f
-end
 
 --- set the length of the vector to 1 (unit vector)
 -- (randomized direction if self length was zero)
@@ -551,16 +611,6 @@ function vec3:rotateZnew(angle)
 	)
 end
 
---- Create a new vector in a uniformly random direction:
--- @param mag magnitude (optional, default 1)
--- @return new vector
-function vec3.random(mag)
-	local a = random() * pi * 2
-	local z = random() * 2 - 1
-	local d = sqrt(1-z*z)
-	return new(d * cos(a), d * sin(a), z) * (mag or 1)
-end
-
 --- Set to a vector of magnitude 1 in a uniformly random direction:
 -- @param mag magnitude (optional, default 1)
 -- @return self
@@ -588,25 +638,6 @@ function vec3:magSqr()
 	return self:dot(self)
 end
 
---- return the dot product of two vectors:
--- @param a vector
--- @param b vector
--- @return dot product
-function vec3.dot(a, b)
-	return a.x * b.x + a.y * b.y + a.z * b.z
-end
-
---- return the cross product of two vectors:
--- @param a vector
--- @param b vector
--- @return cross product
-function vec3.cross(a, b)
-	return new(
-		a.y*b.z - a.z*b.y, 
-		a.z*b.x - a.x*b.z, 
-		a.x*b.y - a.y*b.x
-	)
-end
 
 --- The distance between two vectors (two points)
 -- (The relative distance from self to p)
@@ -619,25 +650,8 @@ function vec3:distanceSquared(p)
 	return (p - self):magSqr()
 end
 
---- The angle between two vectors (two points)
--- (The relative angle from self to v)
--- @param a vector to measure angle between
--- @param b vector to measure angle between
--- @return distance
-function vec3.anglebetween(a, b)
-	local am = a:length()
-	local bm = b:length()
-	return acos(a:dot(b) / (am * bm))
-end
 
-function vec3:__tostring()
-	return format("vec3(%f, %f, %f)", self.x, self.y, self.z)
-end
-
-function vec3.__eq(a, b) 
-	return a.x==b.x and a.y==b.y and a.z==b.z
-end
-
+--- Return the three components of the vector as numbers:
 function vec3:unpack()
 	return self.x, self.y, self.z
 end

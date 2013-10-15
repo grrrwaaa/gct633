@@ -1,8 +1,11 @@
--- Forked from: https://github.com/malkia/ufo/
-
+--- OpenGL 
 -- FFI based GL bindings
 -- supports both gl.glClear() and gl.Clear() calling modes
 -- adds generic functions, such as gl.Vertex in place of gl.Vertex4f etc.
+-- @module gl
+
+-- Forked from: https://github.com/malkia/ufo/
+
 
 local ffi = require 'ffi'
 local bit = require 'bit'
@@ -4376,6 +4379,7 @@ function gl.init_symbols()
 		glindex(libgl, k)
 	end
 end
+
 
 function gl.Clear(...)
 	if select('#', ...) > 0 then

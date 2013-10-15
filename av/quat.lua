@@ -1,4 +1,5 @@
 --- quat: A simple 2-component vector
+-- @module quat
 
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos

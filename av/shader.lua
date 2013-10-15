@@ -1,4 +1,5 @@
--- shader: Friendly wrapper for OpenGL GLSL shaders
+--- shader: Friendly wrapper for OpenGL GLSL shaders
+-- @module shader
 
 local gl = require "gl"
 local glu = require "glu"
@@ -19,11 +20,20 @@ local function new(vcode, fcode)
 	return util.gc(setmetatable(self, shader), shader.destroy)
 end
 
+--- A shader program
+-- @type shader
+
+--- Add another chunk of GLSL code to the vertex shader:
+-- @tparam string code
+-- @treturn shader self
 function shader:vertex(code)
 	self.vertex_shaders[#self.vertex_shaders+1] = code
 	return self
 end
 
+--- Add another chunk of GLSL code to the fragment shader:
+-- @tparam string code
+-- @treturn shader self
 function shader:fragment(code)
 	self.fragment_shaders[#self.fragment_shaders+1] = code
 	return self
@@ -76,6 +86,10 @@ function checkStatus(program)
 	return program
 end
 
+--- Bind the shader program (gl.UseProgram)
+-- will compile/link the shader if required
+-- will throw an error of shader fails to compile/link
+-- @treturn shader self
 function shader:bind()
 	if not self.id then	
 		--print("creating shader")
@@ -129,12 +143,17 @@ function shader:bind()
 	return self
 end
 
+--- Stop using this shader program (gl.UseProgram(0))
+-- @treturn shader self
 function shader:unbind()
 	gl.UseProgram(0)
 	self.bound = false
 	return self
 end
 
+--- Release the shader program 
+-- (it will be recreated when next used)
+-- @treturn shader self
 function shader:destroy()
 	if self.id then
 		gl.DeleteProgram(self.id)
@@ -186,10 +205,17 @@ function shader:addAttribute(index)
 	self.attributes[k] = u
 end
 
+--- Get the attribute location (GLuint) for a shader attribute
+-- @tparam string k attribute name
+-- @treturn GLuint attribute location
 function shader:GetAttribLocation(k)
 	return gl.GetAttribLocation(self.id, k)
 end
 
+--- Set a shader uniform
+-- @tparam string k uniform name
+-- @param ... uniform values (numbers)
+-- @treturn shader self
 function shader:uniform(k, ...)
 	local u = self.uniforms[k]
 	if not u then
@@ -199,6 +225,10 @@ function shader:uniform(k, ...)
 	return self
 end
 
+--- Set a shader attribute
+-- @tparam string k attribute name
+-- @param ... attribute values (numbers)
+-- @treturn shader self
 function shader:attribute(k, ...)
 	local u = self.attributes[k]
 	if not u then

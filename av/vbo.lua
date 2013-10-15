@@ -1,3 +1,6 @@
+--- A friendly wrapper for setting up vertex buffer objects
+-- @module vbo
+
 local ffi = require "ffi"
 local gl = require "gl"
 local vec3 = require "vec3"
@@ -12,16 +15,24 @@ typedef struct vertex {
 } vertex;
 ]]
 
-local buffer = {}
-function buffer:__index(k)
+local vbo = {}
+function vbo:__index(k)
 	if type(k) == "number" then
 		return self.data[k]
 	else
-		return buffer[k]
+		return vbo[k]
 	end
 end
 
-function buffer.new(n)
+
+--- Create a vbo object
+-- @param? n number of vertices (default 3)
+-- @treturn vbo
+function vbo(n) end
+
+
+function vbo.new(n)
+	n = n or 3
 	local self = {
 		id = 0,
 		dirty = false,
@@ -30,10 +41,16 @@ function buffer.new(n)
 		
 		data = ffi.new("vertex[?]", n)
 	}
-	return setmetatable(self, buffer)
+	return setmetatable(self, vbo)
 end
 
-function buffer:bind()
+--- A vertex buffer wrapper
+-- @type vbo
+
+--- Bind the VBO
+-- This will upload data to the GPU if the vbo.dirty flag is marked
+-- @return self
+function vbo:bind()
 	if self.id == 0 then
 		self.id = gl.GenBuffers(1)
 		self.dirty = true
@@ -43,13 +60,21 @@ function buffer:bind()
 		gl.BufferData(gl.ARRAY_BUFFER, ffi.sizeof(self.data), self.data, self.usage)
 		self.dirty = false
 	end
+	return self
 end
 
-function buffer:unbind()
+--- Unbind the VBO
+-- @return self
+function vbo:unbind()
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	return self
 end
 
-function buffer:enable_position_attribute(shader, name)
+--- Set the buffer's position data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "position")
+-- @return self
+function vbo:enable_position_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "position")
 	self:bind()
 	gl.VertexAttribPointer(
@@ -62,13 +87,24 @@ function buffer:enable_position_attribute(shader, name)
     );
 	gl.EnableVertexAttribArray(attr);
 	self:unbind()
-end
-function buffer:disable_position_attribute(shader, name)
-	local attr = shader:GetAttribLocation(name or "position")
-	gl.DisableVertexAttribArray(attr);
+	return self
 end
 
-function buffer:enable_normal_attribute(shader, name)
+--- Disable the binding of position data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "position")
+-- @return self
+function vbo:disable_position_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "position")
+	gl.DisableVertexAttribArray(attr);
+	return self
+end
+
+--- Set the buffer's normal data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "normal")
+-- @return self
+function vbo:enable_normal_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "normal")
 	self:bind()
 	gl.VertexAttribPointer(
@@ -81,13 +117,24 @@ function buffer:enable_normal_attribute(shader, name)
     );
 	gl.EnableVertexAttribArray(attr);
 	self:unbind()
-end
-function buffer:disable_normal_attribute(shader, name)
-	local attr = shader:GetAttribLocation(name or "normal")
-	gl.DisableVertexAttribArray(attr);
+	return self
 end
 
-function buffer:enable_color_attribute(shader, name)
+--- Disable the binding of normal data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "normal")
+-- @return self
+function vbo:disable_normal_attribute(shader, name)
+	local attr = shader:GetAttribLocation(name or "normal")
+	gl.DisableVertexAttribArray(attr);
+	return self
+end
+
+--- Set the buffer's color data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "color")
+-- @return self
+function vbo:enable_color_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "color")
 	self:bind()
 	gl.VertexAttribPointer(
@@ -100,14 +147,24 @@ function buffer:enable_color_attribute(shader, name)
     );
 	gl.EnableVertexAttribArray(attr);
 	self:unbind()
+	return self
 end
 
-function buffer:disable_color_attribute(shader, name)
+--- Disable the binding of color data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "color")
+-- @return self
+function vbo:disable_color_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "color")
 	gl.DisableVertexAttribArray(attr);
+	return self
 end
 
-function buffer:enable_texcoord_attribute(shader, name)
+--- Set the buffer's texcoord data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "texcoord")
+-- @return self
+function vbo:enable_texcoord_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "texcoord")
 	self:bind()
 	gl.VertexAttribPointer(
@@ -120,21 +177,33 @@ function buffer:enable_texcoord_attribute(shader, name)
     );
 	gl.EnableVertexAttribArray(attr);
 	self:unbind()
+	return self
 end
 
-function buffer:disable_texcoord_attribute(shader, name)
+--- Disable the binding of texcoord data as the source of a shader's attribute
+-- @param shader the shader program to bind to
+-- @param? name the attribute name (default "texcoord")
+-- @return self
+function vbo:disable_texcoord_attribute(shader, name)
 	local attr = shader:GetAttribLocation(name or "texcoord")
 	gl.DisableVertexAttribArray(attr);
+	return self
 end
 
-function buffer:draw(primitive, first, count)
+--- Submit the buffer to be rendered
+-- @param? primitive rendering style (default gl.TRIANGLES)
+-- @param? first the first index to render (default 0)
+-- @param? count the number of vertices to render (default self.count)
+-- @return self
+function vbo:draw(primitive, first, count)
 	gl.DrawArrays(primitive or gl.TRIANGLES, first or 0, count or self.count)
+	return self
 end
 
-setmetatable(buffer, {
+setmetatable(vbo, {
 	__call = function(t, ...)
-		return buffer.new(...)
+		return vbo.new(...)
 	end,
 })
 
-return buffer
+return vbo

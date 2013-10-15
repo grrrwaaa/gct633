@@ -1,4 +1,5 @@
 --- vec4: A simple 3-component vector
+-- @module vec4
 
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
@@ -60,6 +61,173 @@ function vec4.fromvec2(v, z, w)
 end
 
 
+
+--- Add two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.addnew(a, b)
+	if type(b) == "number" then
+		return new(a.x + b, a.y + b, a.z + b, a.w + b)
+	elseif type(a) == "number" then
+		return new(a + b.x, a + b.y, a + b.z, a + b.w)
+	else
+		return new(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w)
+	end
+end
+vec4.__add = vec4.addnew
+
+--- Subtract two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.subnew(a, b)
+	if type(b) == "number" then
+		return new(a.x - b, a.y - b, a.z - b, a.w - b)
+	elseif type(a) == "number" then
+		return new(a - b.x, a - b.y, a - b.z, a - b.w)
+	else
+		return new(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w)
+	end
+end
+vec4.__sub = vec4.subnew
+	
+function vec4:__unm()
+	return new(-self.x, -self.y, -self.z, -self.w)
+end	
+
+--- Multiply two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.mulnew(a, b)
+	if type(b) == "number" then
+		return new(a.x * b, a.y * b, a.z * b, a.w * b)
+	elseif type(a) == "number" then
+		return new(a * b.x, a * b.y, a * b.z, a * b.w)
+	else
+		return new(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w)
+	end
+end
+vec4.__mul = vec4.mulnew
+
+--- Divide two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.divnew(a, b)
+	if type(b) == "number" then
+		return vec4.mulnew(a, 1/b)
+	elseif type(a) == "number" then
+		return new(a / b.x, a / b.y, a / b.z, a / b.w)
+	else
+		return new(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w)
+	end
+end
+vec4.__div = vec4.divnew
+
+--- Raise to power two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.pownew(a, b)
+	if type(b) == "number" then
+		return new(a.x ^ b, a.y ^ b, a.z ^ b, a.w ^ b)
+	elseif type(a) == "number" then
+		return new(a ^ b.x, a ^ b.y, a ^ b.z, a ^ b.w)
+	else
+		return new(a.x ^ b.x, a.y ^ b.y, a.z ^ b.z, a.w ^ b.w)
+	end
+end
+vec4.__pow = vec4.pownew
+
+--- Calculate modulo two vectors (or numbers) to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.modnew(a, b)
+	if type(b) == "number" then
+		return new(a.x % b, a.y % b, a.z % b, a.w % b)
+	elseif type(a) == "number" then
+		return new(a % b.x, a % b.y, a % b.z, a % b.w)
+	else
+		return new(a.x % b.x, a.y % b.y, a.z % b.z, a.w % b.w)
+	end
+end
+vec4.__mod = vec4.modnew
+
+
+--- Calculate minimum of elements to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.minnew(a, b)
+	if type(b) == "number" then
+		return new(min(a.x, b), min(a.y, b), min(a.z, b), min(a.w, b))
+	elseif type(a) == "number" then
+		return new(min(a, b.x), min(a, b.y), min(a, b.z), min(a, b.w))
+	else
+		return new(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z), min(a.w, b.w)) 
+	end
+end
+
+--- Calculate maximum of elements to create a new vector
+-- @param a vector or number
+-- @param b vector or number
+-- @return new vector
+function vec4.maxnew(a, b)
+	if type(b) == "number" then
+		return new(max(a.x, b), max(a.y, b), max(a.z, b), max(a.w, b))
+	elseif type(a) == "number" then
+		return new(max(a, b.x), max(a, b.y), max(a, b.z), max(a, b.w))
+	else
+		return new(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z), max(a.w, b.w)) 
+	end
+end
+
+--- create a vector from the linear interpolation of two vectors:
+-- @param a vector
+-- @param b vector
+-- @param f interpolation factor from a to b (0 = none, 1 = full)
+-- @return new vector
+function vec4.lerpnew(a, b, f)
+	return a + (b - a) * f
+end
+
+--- return the dot product of two vectors:
+-- @param a vector
+-- @param b vector
+-- @return dot product
+function vec4.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
+end
+
+--- The distance between two vectors (two points)
+-- (The relative distance from a to b)
+-- @param a target to measure distance from
+-- @param b target to measure distance to
+-- @return distance
+function vec4.distance(a, b)
+	return (b - a):length()
+end
+
+--- The angle between two vectors (two points)
+-- (The relative angle from self to v)
+-- @param a vector to measure angle between
+-- @param b vector to measure angle between
+-- @return distance
+function vec4.anglebetween(a, b)
+	local am = a:length()
+	local bm = b:length()
+	return acos(a:dot(b) / (am * bm))
+end
+
+
+--------------------------------------------------------------------------------
+
+--- A four-component vector
+-- @type vec4
+
 --- Set the components of a vector:
 -- @param x component (optional, default 0)
 -- @param y component (optional, default 0)
@@ -99,21 +267,6 @@ function vec4:add(v)
 		return self
 	end
 end
-
---- Add two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.addnew(a, b)
-	if type(b) == "number" then
-		return new(a.x + b, a.y + b, a.z + b, a.w + b)
-	elseif type(a) == "number" then
-		return new(a + b.x, a + b.y, a + b.z, a + b.w)
-	else
-		return new(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w)
-	end
-end
-vec4.__add = vec4.addnew
 	
 --- Subtract a vector (or number) to self (in-place)
 -- @param v number or vector to sub
@@ -134,25 +287,6 @@ function vec4:sub(v)
 	end
 end
 
---- Subtract two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.subnew(a, b)
-	if type(b) == "number" then
-		return new(a.x - b, a.y - b, a.z - b, a.w - b)
-	elseif type(a) == "number" then
-		return new(a - b.x, a - b.y, a - b.z, a - b.w)
-	else
-		return new(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w)
-	end
-end
-vec4.__sub = vec4.subnew
-	
-function vec4:__unm()
-	return new(-self.x, -self.y, -self.z, -self.w)
-end	
-
 --- Multiply a vector (or number) to self (in-place)
 -- @param v number or vector to mul
 -- @return self
@@ -171,21 +305,6 @@ function vec4:mul(v)
 		return self
 	end
 end
-
---- Multiply two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.mulnew(a, b)
-	if type(b) == "number" then
-		return new(a.x * b, a.y * b, a.z * b, a.w * b)
-	elseif type(a) == "number" then
-		return new(a * b.x, a * b.y, a * b.z, a * b.w)
-	else
-		return new(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w)
-	end
-end
-vec4.__mul = vec4.mulnew
 	
 --- Divide a vector (or number) to self (in-place)
 -- @param v number or vector to div
@@ -201,21 +320,6 @@ function vec4:div(v)
 		return self
 	end
 end
-
---- Divide two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.divnew(a, b)
-	if type(b) == "number" then
-		return vec4.mulnew(a, 1/b)
-	elseif type(a) == "number" then
-		return new(a / b.x, a / b.y, a / b.z, a / b.w)
-	else
-		return new(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w)
-	end
-end
-vec4.__div = vec4.divnew
 	
 --- Raise to power a vector (or number) to self (in-place)
 -- @param v number or vector to pow
@@ -235,21 +339,6 @@ function vec4:pow(v)
 		return self
 	end
 end
-
---- Raise to power two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.pownew(a, b)
-	if type(b) == "number" then
-		return new(a.x ^ b, a.y ^ b, a.z ^ b, a.w ^ b)
-	elseif type(a) == "number" then
-		return new(a ^ b.x, a ^ b.y, a ^ b.z, a ^ b.w)
-	else
-		return new(a.x ^ b.x, a.y ^ b.y, a.z ^ b.z, a.w ^ b.w)
-	end
-end
-vec4.__pow = vec4.pownew
 	
 --- Calculate modulo a vector (or number) to self (in-place)
 -- @param v number or vector to mod
@@ -270,21 +359,6 @@ function vec4:mod(v)
 	end
 end
 
---- Calculate modulo two vectors (or numbers) to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.modnew(a, b)
-	if type(b) == "number" then
-		return new(a.x % b, a.y % b, a.z % b, a.w % b)
-	elseif type(a) == "number" then
-		return new(a % b.x, a % b.y, a % b.z, a % b.w)
-	else
-		return new(a.x % b.x, a.y % b.y, a.z % b.z, a.w % b.w)
-	end
-end
-vec4.__mod = vec4.modnew
-
 --- Calculate minimum of elements (in-place)
 -- @param v number or vector limit
 -- @return self
@@ -304,20 +378,6 @@ function vec4:min(v)
 	end
 end
 
---- Calculate minimum of elements to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.minnew(a, b)
-	if type(b) == "number" then
-		return new(min(a.x, b), min(a.y, b), min(a.z, b), min(a.w, b))
-	elseif type(a) == "number" then
-		return new(min(a, b.x), min(a, b.y), min(a, b.z), min(a, b.w))
-	else
-		return new(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z), min(a.w, b.w)) 
-	end
-end
-
 --- Calculate maximum of elements (in-place)
 -- @param v number or vector limit
 -- @return self
@@ -334,20 +394,6 @@ function vec4:max(v)
 		self.z = max(self.z, v.z)
 		self.w = max(self.w, v.w)
 		return self
-	end
-end
-
---- Calculate maximum of elements to create a new vector
--- @param a vector or number
--- @param b vector or number
--- @return new vector
-function vec4.maxnew(a, b)
-	if type(b) == "number" then
-		return new(max(a.x, b), max(a.y, b), max(a.z, b), max(a.w, b))
-	elseif type(a) == "number" then
-		return new(max(a, b.x), max(a, b.y), max(a, b.z), max(a, b.w))
-	else
-		return new(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z), max(a.w, b.w)) 
 	end
 end
 
@@ -405,15 +451,6 @@ end
 -- @return self
 function vec4:lerp(v, f)
 	return self:add(v:sub(self):mul(f))
-end
-
---- create a vector from the linear interpolation of two vectors:
--- @param a vector
--- @param b vector
--- @param f interpolation factor from a to b (0 = none, 1 = full)
--- @return new vector
-function vec4.lerpnew(a, b, f)
-	return a + (b - a) * f
 end
 
 --- set the length of the vector to 1 (unit vector)
@@ -506,31 +543,9 @@ function vec4:magSqr()
 	return self:dot(self)
 end
 
---- return the dot product of two vectors:
--- @param a vector
--- @param b vector
--- @return dot product
-function vec4.dot(a, b)
-	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
-end
-
---- The distance between two vectors (two points)
--- (The relative distance from self to p)
--- @param p target to measure distance to
--- @return distance
-function vec4:distance(p)
-	return (p - self):length()
-end
-
---- The angle between two vectors (two points)
--- (The relative angle from self to v)
--- @param a vector to measure angle between
--- @param b vector to measure angle between
--- @return distance
-function vec4.anglebetween(a, b)
-	local am = a:length()
-	local bm = b:length()
-	return acos(a:dot(b) / (am * bm))
+--- Return the four components of the vector as numbers
+function vec4:unpack()
+	return self.x, self.y, self.z, self.w
 end
 
 function vec4:__tostring()
@@ -539,10 +554,6 @@ end
 
 function vec4.__eq(a, b) 
 	return a.x==b.x and a.y==b.y and a.z==b.z and a.w==b.w
-end
-
-function vec4:unpack()
-	return self.x, self.y, self.z, self.w
 end
 
 setmetatable(vec4, {
