@@ -3,6 +3,7 @@
 
 local ffi = require "ffi"
 local gl = require "gl"
+local vec2 = require "vec2"
 local vec3 = require "vec3"
 local vec4 = require "vec4"
 
@@ -15,6 +16,14 @@ typedef struct vertex {
 } vertex;
 ]]
 
+
+
+--- Create a vbo object
+-- @param? n number of vertices (default 3)
+-- @treturn vbo
+function vbo(n) end
+
+
 local vbo = {}
 function vbo:__index(k)
 	if type(k) == "number" then
@@ -23,13 +32,6 @@ function vbo:__index(k)
 		return vbo[k]
 	end
 end
-
-
---- Create a vbo object
--- @param? n number of vertices (default 3)
--- @treturn vbo
-function vbo(n) end
-
 
 function vbo.new(n)
 	n = n or 3
