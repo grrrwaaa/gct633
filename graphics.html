@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Graphics</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/highlight.pack.js"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<script src="js/extensions/github.js" type="text/javascript"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+# Graphics programming
+
+The world of computer graphics is vast and ever-growing. We will limit ourselves mostly to the common practice of real-time rendering using the OpenGL library, probably the most widely used graphics interfaces in use today. [OpenGL is an open standard](http://www.khronos.org/opengl/) implemented by most graphics processing unit (GPU) hardware in personal computers and mobile devices. Similarly, for writing programs on the GPU we will use OpenGL Shader Language (GLSL). Although some of the text here is specific to OpenGL/GLSL, the general process is applicable to many other rendering systems.
+
+> Rather confusingly OpenGL and GLSL have many different versions. We will work against OpenGL version 2.1, which is more compatible with the various operating systems on laptops today, and closer to the OpenGL ES 2.0 available on most mobile devices. For GLSL (GPU) programming, we will use version 1.2, which correponds to OpenGL version 2.1. It's worth nothing this, because a lot of tutorial material out there on the internet is for older or newer versions of OpenGL, and thus easily misleading.
+
+The OpenGL API (application programming interface) is specified for the C language, however we will be using it from within Lua. It is in most cases very easy to translate OpenGL code from C to Lua. Any function prefix **gl** becomes **gl.**, and any constant prefix **GL_** also becomes **gl.**. Finally, some functions in Lua can be simplified by leveraging Lua's dynamic typing support, so for example we can use **gl.Color** instead of **glColor4f**. 
+
+## OpenGL pipeline
+
+The typical task of an OpenGL program is to take as input some 3D geometry and other parameters, and render it by setting the color value for each pixel in the application window. This involves a series of transformations between [spaces](space.html), and different kinds of programming tasks at each stage of the transformation. Some of the earlier steps of these operations occur on the computer's CPU, while the later operations occur on the graphics hardware (GPU). The flow of data through this process is almost always unidirectional, hence it is sometimes called the 'rendering pipeline'. 
+
+[![Duran Software image of pipeline](http://duriansoftware.com/joe/media/gl1-pipeline-01.png)](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-1:-The-Graphics-Pipeline.html)
+
+The host program fills OpenGL-managed memory buffers with arrays of vertices; these vertices are projected into screen space, assembled into triangles, and rasterized into pixel-sized fragments; finally, the fragments are assigned color values and drawn to the framebuffer. Modern GPUs get their flexibility by delegating the "project into screen space" and "assign color values" stages to uploadable programs called shaders. 
+
+## Shader program
+
+At any time the GPU may have one shader program bound. Typically the shader program will contain a vertex shader and a fragment shader. These allow us to insert our own code into the rendering pipeline at the vertex transformation and fragment coloring stages.
+
+## Vertex shader
+
+Each vertex in the vertex array is sent through the vertex program. The vertex program determines how to modify each vertex. At minimum, it must compute the actual position of the vertex in screen space (by setting the **gl_Position** variable). 
+
+Here is a simple vertex shader:
+
+```
+// the input position of the vertex:
+attribute vec3 position;
+
+void main() {
+	gl_Position = vec4(position.x, position.y, 0., 1.);
+}
+```
+
+Vertex shaders may make use of **attributes**, values that are set for each input vertex. Typical vertex attributes are position, color, normal (surface direction), texture coordinate (for applying texture mapping).
+
+Note that the GLSL language provides support for vector types (vec2, vec3, vec4) and matrix types (mat2, mat3, mat4) in the language itself, since these are so fundamental to graphics programming. 
+
+## Fragment shader
+
+For each pixel of a rendered triangle, the fragment shader is run to compute the pixel color (by setting the **gl_FragColor** variable). Here is a simple fragment shader:
+
+```
+uniform vec3 lightcolor;
+
+void main() {
+	// paint all pixels opaque red:
+	vec3 red = vec3(1, 0, 0);
+	// compute pixel color by multiplying with the light color:
+	vec3 color = lightcolor * red;
+	// store that as the result, with an alpha (opacity) value of 1:
+	gl_FragColor = vec4(color, 1);
+}
+```
+
+A **uniform** is a way to pass data from the CPU to either vertex or fragment shader. Uniform data has the same value for all vertices/fragments, but can change in successive renders. References to textures are also passed as uniforms (of type **sampler2D**).
+
+Loading, compiling, linking and using shaders requires some fiddly OpenGL code, which we have abstracted into the **shader** module (take a look inside it to see how it works):
+
+```
+-- load in the shader utility module:
+local shader = require "shader"
+
+-- write the GLSL code:
+local vertex_code = [[
+	// the input position of the vertex:
+	attribute vec3 position;
+
+	void main() {
+		gl_Position = vec4(position.x, position.y, 0., 1.);
+	}
+]]
+local fragment_code = [[
+	uniform vec3 lightcolor;
+
+	void main() {
+		// paint all pixels opaque red:
+		vec3 red = vec3(1, 0, 0);
+		// compute pixel color by multiplying with the light color:
+		vec3 color = lightcolor * red;
+		// store that as the result, with an alpha (opacity) value of 1:
+		gl_FragColor = vec4(color, 1);
+	}
+]]
+
+-- use this GLSL code to create a new shader program:
+local myshaderprogram = shader(vertex_code, fragment_code)
+
+-- the rendering callback:
+function draw()
+	-- start using the shader:
+	myshaderprogram:bind()
+	-- set a shader uniform:
+	myshaderprogram:uniform("lightcolor", 0.5, 0.5, 0.5)
+	
+	-- RENDER VERTICES HERE
+	
+	-- done using the shader:
+	myshaderprogram:unbind()
+end
+```
+
+## Vertex buffers
+
+To make use of the shader we must send some vertices. Each vertex may have a number of attributes, including location, normal, color, texture coordainates, etc. All these together make the vertex buffer.
+
+> We can also supply an additional *element array*, which is an array of indices into the vertex buffer specifying the order to render them. This allows us to use one vertex more than once, or even skip a vertex we don't want to use. It determines how the vertices become triangles.
+
+Creating and using vertex buffers requires some fiddly OpenGL code, because it can be very generic. We have abstracted the most common case into the **vbo** module (take a look inside it to see how it works):
+
+```
+-- load in the utility module for vertex buffer objects
+local vbo = require "vbo"
+
+-- create a VBO object to store vertex position and color data
+-- this vbo contains 3 vertices (1 triangle):
+local vertices = vbo(15)
+
+-- set the vertex positions:
+verices[0].position:set(-1, -1, 0)
+verices[0].position:set( 1, -1, 0)
+verices[0].position:set( 0,  1, 0)
+
+
+function draw()
+	-- start using the shader:
+	myshaderprogram:bind()
+	-- set a shader uniform:
+	myshaderprogram:uniform("lightcolor", 0.5, 0.5, 0.5)
+	
+	-- tell the shader_program where to find the 
+	-- 'position' attributes
+	-- when looking in the vertices VBO:
+	vertices:enable_position_attribute(myshaderprogram)
+	
+	-- render using the data in the VBO:
+	vertices:draw()
+	
+	-- detach the shader_program attributes:
+	vertices:disable_position_attribute(myshaderprogram)
+	
+	-- detach the shader:
+	myshaderprogram:unbind()
+end
+```
+
+
+
+-----
+
+[OpenGL 2.1 Reference Pages](http://www.opengl.org/sdk/docs/man2/)
+[An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="time.html">Time</a><br/>
+		<a href="space.html">Space</a><br/>
+		<a href="programming.html">Programming</a><br/>
+		<a href="audio.html">Audio</a><br/>
+		<a href="graphics.html">Graphics</a><br/>
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<a href="docs/index.html">&gt;&gt; Reference</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter({ extensions: "g" });
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Space</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/highlight.pack.js"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<script src="js/extensions/github.js" type="text/javascript"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+![xkcd](http://what-if.xkcd.com/imgs/a/58/orbit_wide.png)
+
+# Programming and space
+
+Just as with time, to work with space we need to understand how space can be represented, how spaces can be mapped and transformed, and what representations and transformations are used by existing programming libraries. But we also need to understand how space is perceived.
+
+## Perception of space
+
+### Picture plane and frame
+
+The picture plane is the (normally rectangular) space of the projection screen, LCD screen, monitor, touchscreen etc.; the frame as a physical object. The frame is a window onto our work, part of its limiting edges – just like when we use our fingers to limit a view. 
+
+- The relationship of objects (or points of attention) and frame can convey meaning. Photographers and painters know the 'rule of thirds': placing important objects at one- or two-thirds of the horizontal or vertical span. Cutting an object by the frame can be very jarring. 
+
+![rule of thirds](http://upload.wikimedia.org/wikipedia/commons/c/ce/Rivertree_thirds_md.gif)
+
+- With movement, the frame can also convey the meaning of the view: a distanced, objective world-view, a passive observer, a point-of-view subjectivity, an abstract or dream-like perception...
+- We can split the screen space into divisions. Cinema has used this for parallel timelines, software interfaces use this for modal inspectors, menu bars, etc. 
+- We can break the boundary of the frame by imposing a new frame shape (such as a circular vignette) or boundary (blurred edges). 
+- We can suppress consciousness of the bounding frame and emphasize "open space". Open space increases immersion and involvement of the viewer. 
+	- By eliminating objects that emphasize the frame (horizontal and vertical lines, or using lighted subjects within a black world)
+	- By creating movement that is stronger than the frame: random multi-directional movements, long tracks into or out of the frame, and hand-held camera style.
+- With multi-projector systems or head-mounted displays, we can attempt to erase the frame entirely and create a fully immersive environment.
+
+![cosm at banff](http://www.allosphere.ucsb.edu/cosm/img/banff.jpg)
+
+- With augmented reality and mixed devices, we can overlay (or underlay) real and virtual content dynamically. Nevertheless, we must still be sensitive to the effects of framing, particularly when it cuts stereoscopic depth.
+
+### Depth
+
+The Screen is a 2-D surface, with no real depth. Most moving images create an illusion of natural 3-D space upon this screen. [Depth cues](http://en.wikipedia.org/wiki/Depth_perception) that can increase or decrease the sense of depth:
+
+- Size: Distant objects are smaller
+- Perspective convergence – aided by using angled lines with vanishing points (one, two or three+), with many different suggestive energies. These lines may belong to land, buildings, objects, actors, or abstract forms.
+- Stereopsis – applying correct perspective shift (parallax) for each eye. 
+- Occlusion – overlapping objects suggest depth.
+- Lighting and shading - accurate modeling of lighting effects can give a strong sense of three dimensionality and depth.
+- Movement – lateral movement diminishes depth sensation, while depth movement or depth-relative movements can reinforce perspective. Rotation displays three-dimensional form, even when reduced to silhouette (the *kinetic depth effect*). 
+- Camera movement – dollying shots tend to emphasize depth by motion parallax (no matter the direction), whereas pans and zooms tend to flatten the image.
+- Camera movement
+- Textural diffusion – distant objects are smaller and thus carry less textural detail. In computer graphics this is sometimes referred to as *level of detail*. 
+- Shadows help to locate an otherwise ambiguous object by reference with other objects, particularly when shadows fall on a ground plane.
+- Saturation and contrast tends to attenuate with distance, due to scattering effects of atmospheric particles; this is more pronounced in dense fog. 
+- Brightness & color separation – bright objects are usually perceived as being nearer than dark objects, and warm colors (red, orange, yellow) are perceived as being nearer than cold colors (green, blue). Mountains are blue. Increasing tonal or brightness contrast over the various depths in the scene also assist depth cueing. 
+- Focus – objects that are out of focus lose many depth cue features, and thus an out-of-focus shot usually creates a more planar perspective.
+
+The absence of depth cues tends to produce a flat space, while ambiguous and contraditctory cues can create an ambiguous or disorienting perception of space. 
+
+A film utilizes **deep space** when significant elements of an image are positioned both near to and distant from the camera. For deep space these objects do not have to be in focus. 	In narrative contexts, it can integrate the characters into their natural surroundings, map out the actual distances involved between one location and another.
+
+![deep space](http://www.mat.ucsb.edu/~wakefield/amv/img/cpdeep4.jpg)
+ 
+In shallow space the image is staged with very little depth. The figures in the image occupy the same or closely positioned planes. While the resulting image loses realistic appeal, its flatness enhances its pictorial qualities. Shallow space can be staged, or it can also be achieved optically, with the use of a telephoto lens.This is particularly useful for creating claustrophic images, since it makes the characters look like they are being crushed against the background.
+
+![shallow space](http://www.mat.ucsb.edu/~wakefield/amv/img/totshal3.jpg)
+
+Animation begins in an ambiguous space, and much work is required to create convincing depth cues; photography however begins in real space, and effort is required to create (and maintain) an ambiguous space, since our perception always works to map the phenomenological space to a particular scale & position.
+
+### Form
+
+- Foreground and background
+	- figure-ground relations, subject and environment, positive and negative space
+- Proportion
+	- rule of thirds, golden ratio, harmonic ratios
+- Balance and symmetry
+	- symmetry/balance suggests contemplation and stability, asymmetry/imbalance suggests emotion and change
+	- parallel and perpendicular
+- Enclosure creates sub-spaces and volume
+- Texture suggests tactile sensation
+
+Consider Kandinsky's [Point and Line to Plane](http://books.google.co.kr/books?id=dIvm5kmGZWkC&dq=point+and+line+to+plane) and Klee's [Pedagogical Sketchbook](http://ing.univaq.it/continenza/Corso%20di%20Disegno%20dell'Architettura%202/TESTI%20D'AUTORE/Paul-klee-Pedagogical-Sketchbook.pdf).
+
+## Mathematical representations of space
+
+We can treat space mathematically in terms of a set of dimensions. For example, any point in a regular [Cartesian](http://en.wikipedia.org/wiki/Cartesian_coordinate_system) space of two dimensions (2D) may be described by two numbers, for the signed distance (coordinate) from the origin along X and Y axis values respectively. A point is thus a pair (x, y). Similarly, in 3D, any point may be described by the triplet (x, y, z). Mathematically we treat the space as a direct mapping of N-dimensional real numbers, R<sup>2</sup> or R<sup>3</sup> respectively. 
+
+> The general term for pairs and triplets (and higher dimensions of grouped parameters) is a *tuple*; however programmers sometimes misleadingly call them *vectors*. 
+
+Note that this representation assumes knowledge of the origin and axes, the *coordinate frame* of the space. There are many conventions for coordinate systems. In OpenGL, the standard coordinate convention is right-handed, with positive to the right, Y positive upwards, and Z positive coming out of the screen (toward your eye). 
+
+![OpenGL coordinate convention](img/coordSystem.jpg)
+
+The Cartesian model is not the only possible representation of a space. For example, we can also model the location of a point in 2D space relative to the origin in terms of a distance and angle. [This is the *polar* representation](http://en.wikipedia.org/wiki/Polar_coordinate_system). This model is sufficient to capture space, as all possible points can be represented. To extend polar coordinates to 3D space we can use cylindrical or spherical coordinate systems.
+
+We also use the term 'space' for parametric, multi-dimensional systems that are not necessarily related to spatial extension as such. For example, we can consider a space of possible colors (perhaps three dimensions of red, green and blue components), or a space of possible joint positions and orientations of a robot arm (with as many dimensions as there are moveable parts). 
+
+More generally, for any system with degrees of freedom, we can consider the [*phase space*](http://en.wikipedia.org/wiki/Phase_space) or *configuration space* of the system as an N-dimensional space, with one dimension for each degree of freedom (parameter). For a mechanical system, we generally require dimensions to capture the position and momentum of every moving part. Note that every possible state of the system is represented in the space, but not every point in space is necessarily a possible state of the system.  
+
+Plotting a point for every valid state in the space gives a shape that can tell us about the character of the system; plotting a path from one valid state to the next (a *phase trajectory*) tells us about the evolution of the system; in particular, whether it moves to a stable point, cyclic behavior, or chaotic behavior.
+
+![Pendulum](http://upload.wikimedia.org/wikipedia/en/thumb/d/da/Pendulum_Phase_Portrait.jpg/799px-Pendulum_Phase_Portrait.jpg)
+
+## Mappings between spaces
+
+We can consider a mapping from one space to another as a function. In some cases it may be expressed as a matrix. For example, it is often convenient to transform into a coordinate system centered on a particular object (such as a character in a game), placing the origin at the object's center and the axes aligned to the object's current orientation. To transform any point from world-space to this character's space requires a translation and rotation, both of which can be expressed as matrices.
+
+Mapping between spaces is very important because certain operations are much easier (or faster) to compute in one spatial representation than another. Or, one space may more closely represent perceptual properties, while another more closely maps to hardware representation (e.g. HCL vs RGB representation of color). The meaning of *distance* depends on the spatial representation, and thus also operations of translation, neighborhood and interpolation. Choosing the right space to operate in is very important for the meaning of the result.
+
+Mapping is also important for constrained systems. The robot arm described by M parameters ultimately maps to a 3D position (and perhaps orientation); forward and inverse kinematics are the maps between them. In this case we would like to position the arm exactly, but are limited to control of the motor parameters in a wholly different space.
+
+A large amount of the work in creating a 3D rendering is appropriate mapping between different spaces: object space, world space, view/eye space, screen/depth space, texture spaces, color spaces, light spaces, and so on.
+
+![Space is big.](img/space_is_big.gif)
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="time.html">Time</a><br/>
+		<a href="space.html">Space</a><br/>
+		<a href="programming.html">Programming</a><br/>
+		<a href="audio.html">Audio</a><br/>
+		<a href="graphics.html">Graphics</a><br/>
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<a href="docs/index.html">&gt;&gt; Reference</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter({ extensions: "g" });
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>
