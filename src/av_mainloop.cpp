@@ -1,5 +1,7 @@
 #include "av.h"
 
+// ref http://wiki.allegro.cc/index.php?title=Timers#How_to_use_them.3F
+
 // the main update routine (high priority)
 void av_update_once();
 // the main rendering routine (medium priority)

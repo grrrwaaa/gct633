@@ -111,11 +111,11 @@ local function addvoice(func, dur)
 		dur = dur or math.huge,
 	}
 	
-	function voice:blockfunc(self, blocksize, out)
+	function voice:blockfunc(blocksize, out)
 		for i = 0, blocksize-1 do
 			local l, r = func()
-			out[i*2] = out[i*2] + l or 0
-			out[i*2+1] = out[i*2+1] + r or l or 0
+			out[i*2] = out[i*2] + (l or 0)
+			out[i*2+1] = out[i*2+1] + (r or l or 0)
 		end
 		self.dur = self.dur - blocksize
 		return self.dur > 0
