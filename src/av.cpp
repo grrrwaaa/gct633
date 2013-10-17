@@ -331,7 +331,8 @@ int main(int argc, char * argv[]) {
 	#ifdef AV_WINDOWS
 		dll("lua51");
 		dll("libsndfile-1");
-		dll("glut32"); // trick didn't seem to work for GLUT
+		dll("glut32");
+		//dll("glew32");
 	#endif
 	// configure GLUT:
 	glutInit(&argc, argv);

@@ -1,6 +1,9 @@
 -- create the window first (important on Windows):
 local window = require "window"
 window:create()
+
+print("created window")
+
 -- load in the OpenGL library:
 local gl = require "gl"
 -- and two helper modules to make working with OpenGL easier:

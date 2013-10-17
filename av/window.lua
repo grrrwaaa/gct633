@@ -342,7 +342,6 @@ function window:redisplay()
 	
 	---[[
 	if firstdraw then	
-		gl.init_symbols()
 		print("OpenGL VERSION", gl.GetString(gl.VERSION))
 		print("OpenGL VENDOR", gl.GetString(gl.VENDOR))
 		print("OpenGL RENDERER", gl.GetString(gl.RENDERER))
@@ -407,6 +406,7 @@ end
 
 
 function window:create()
+	
 	if (window.stereo) then
 		glut.glutInitDisplayString("rgb double depth>=16 alpha samples<=4 stereo")
 	else
@@ -422,6 +422,9 @@ function window:create()
 	else
 		window.id = glut.glutCreateWindow("")
 	end
+	
+	gl.init()
+		
 	glut.glutSetWindow(window.id)
 	registerCallbacks()
 	

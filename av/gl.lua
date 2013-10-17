@@ -7,6 +7,8 @@
 -- Forked from: https://github.com/malkia/ufo/
 
 
+
+
 local ffi = require 'ffi'
 local bit = require 'bit'
 local C = ffi.C
@@ -4374,7 +4376,7 @@ local commonsyms = {
 	"GetError",
 }
 local libgl = {}
-function gl.init_symbols()
+function gl.init()
 	for i, k in ipairs(commonsyms) do	
 		glindex(libgl, k)
 	end

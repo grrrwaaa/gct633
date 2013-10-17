@@ -4,11 +4,14 @@
 #if defined(_WIN32) || defined(__WINDOWS_MM__) || defined(_WIN64)
 	#define AV_WINDOWS 1
 	#include <windows.h>
-	#include <direct.h>
 	
+	//#include "glew.h"
 	#include <gl\gl.h> 
 	#include <gl\glu.h> 
+	
 	#include <glut.h>
+	
+	#include <direct.h>
 	
 	#define AV_EXPORT extern "C" __declspec(dllexport) 
 	#define AV_PATH_MAX MAX_PATH
