@@ -624,9 +624,10 @@ function sndfile.read(path)
 	end
 	-- allocate a buffer for it:
 	local buf = buffer(info.frames, info.channels)
+	
 	-- read it in:
-	local n = lib.sf_read_double(sf, buf.samples, info.frames)
-	assert(n == info.frames, "unable to read whole file")
+	local n = lib.sf_read_double(sf, buf.samples, info.frames*info.channels)
+	assert(n == info.frames*info.channels, "unable to read whole file")
 	return buf
 end
 

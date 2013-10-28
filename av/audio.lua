@@ -42,16 +42,18 @@ local lib = ffi.C
 local driver = lib.av_audio_get()
 assert(driver ~= nil, "problem acquiring audio driver")
 
+local buffer = require "audio.buffer"
 
 local audio = {
 	driver = driver,
+	
+	outbuffer = buffer(driver.blocks * driver.blocksize, driver.outchannels, driver.buffer),
 	
 	latency = 16, -- 16 blocks of 256 at 44.1kHz is about 100ms.
 }
 
 -- to get a lower latency we would need to update() more frequently.
 print("audio script latency (seconds)", audio.latency * driver.blocksize / driver.samplerate)
-
 
 function audio.start()
 	if not pcall(lib.av_audio_start) then
@@ -114,25 +116,25 @@ local function addvoice(func, dur)
 	function voice:blockfunc(blocksize, out)
 		for i = 0, blocksize-1 do
 			local l, r = func()
+			if l == nil and r == nil then 
+				return nil
+			end
 			out[i*2] = out[i*2] + (l or 0)
 			out[i*2+1] = out[i*2+1] + (r or l or 0)
 		end
 		self.dur = self.dur - blocksize
-		return self.dur > 0
+		return self.dur > 0 or nil
 	end
 	
 	voices[voice] = true
 end
 
 local function start_audio_runloop()
+	audio.outbuffer.samples = driver.buffer
+
 	local runloop = require "runloop"
-	local function generateblock(blocksize, out)		
-		for v in pairs(voices) do
-			voices[v] = v:blockfunc(blocksize, out)
-		end
-	end
 	
-	local function generateblocks()
+	runloop.insert(function()
 		local blocksize = driver.blocksize
 		local w = driver.blockwrite
 		local r = driver.blockread
@@ -142,7 +144,13 @@ local function start_audio_runloop()
 			-- fill up & wrap around:
 			while w < s do
 				local out = driver.buffer + w * driver.blockstep
-				generateblock( blocksize, out )
+				for i = 0, blocksize-1 do
+					out[i*2] = 0
+					out[i*2+1] = 0
+				end		
+				for v in pairs(voices) do
+					voices[v] = v:blockfunc(blocksize, out)
+				end
 				driver.blockwrite = w
 				w = w + 1
 			end
@@ -151,14 +159,24 @@ local function start_audio_runloop()
 		end
 		while w < t do
 			local out = driver.buffer + w * driver.blockstep
-			generateblock( blocksize, out )
+			for i = 0, blocksize-1 do
+				out[i*2] = 0
+				out[i*2+1] = 0
+			end		
+			for v in pairs(voices) do
+				voices[v] = v:blockfunc(blocksize, out)
+			end
 			w = w + 1
 			driver.blockwrite = w
 		end
-	end
-
-	runloop.insert(generateblocks)
+	end)
 	is_audio_runloop_running = true
+end
+
+function audio.start()
+	if not is_audio_runloop_running then
+		start_audio_runloop()
+	end
 end
 
 --- Play a function or audio_buffer.
@@ -177,58 +195,24 @@ function audio.play(content, duration)
 		
 		addvoice(content, duration and driver.samplerate * duration)
 		
-		--[[
-		local f = content
-		local count = 0
-		if duration then
-			local frames = driver.samplerate * duration
-			content = function()
-				if count < frames then
-					count = count + 1
-					return f()
-				end
-			end
-			while count < frames do	
-				audio.run(content)
-				lib.av_sleep(0.01)
-			end
-		else	
-			-- just run forever:
-			while true do
-				audio.run(f)
-				lib.av_sleep(0.01)
-			end
-		end
-		--]]
-	elseif type(content) == "cdata" and buffer.isbuffer(content) then
+	elseif buffer.isbuffer(content) then
 		
 		local count = 0	
 		local buf = content
 		local chans = buf.channels
-		local frames = buf.frames
+		local frames = tonumber(buf.frames)
 		if duration then
 			frames = math.min(frames, driver.samplerate * duration)
 		end
-
-		content = function()
+		
+		addvoice(function()
 			if count < frames then
 				local l = buf.samples[count*chans]
 				local r = chans > 1 and buf.samples[count*chans+1] or l
 				count = count + 1
 				return l, r
-			else
-				return 0
 			end
-		end
-		
-		addvoice(content, frames)
-		
-		--[[
-		while count < frames do	
-			audio.run(content)
-			lib.av_sleep(0.01)
-		end
-		--]]
+		end, frames)
 	else
 		error("bad type for audio.play")
 	end

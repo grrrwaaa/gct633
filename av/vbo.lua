@@ -43,6 +43,11 @@ function vbo.new(n)
 		
 		data = ffi.new("vertex[?]", n)
 	}
+	-- set reasonable defaults:
+	for i = 0, self.count-1 do
+		self.data[i].color:set(1, 1, 1, 1)
+		self.data[i].normal:set(0, 0, 1)
+	end
 	return setmetatable(self, vbo)
 end
 

@@ -40,18 +40,24 @@ local buffer = {}
 buffer.__index = buffer
 
 function buffer.isbuffer(t)
-	return ffi.istype(t, ffi.typeof("audio_buffer *"))
-		or ffi.istype(t, ffi.typeof("audio_buffer"))
+	--return ffi.istype(t, ffi.typeof("audio_buffer *")) 
+	--	  or ffi.istype(t, ffi.typeof("audio_buffer"))
+	return getmetatable(t) == buffer
 end
 
 --- Create a new audio_buffer filled with silence.
 -- @tparam int frames The number of frames (sample length) of the buffer
 -- @tparam ?int channels The number of channels per frame
 -- @treturn SNDFILE
-function buffer.create(frames, channels) 
+function buffer.create(frames, channels, samples) 
 	assert(frames and frames > 0, "buffer length (frames) required")
 	channels = channels and (max(channels, 1)) or 1
-	local buf = ffi.new("audio_buffer", frames*channels, frames, channels)
+	--local buf = ffi.new("audio_buffer", frames*channels, frames, channels)
+	local buf = setmetatable({
+		frames = frames,
+		channels = channels,
+		samples = samples or ffi.new("double[?]", frames*channels),
+	}, buffer)
 	return buf
 end
 
@@ -83,7 +89,7 @@ end
 -- @type audio_buffer
 
 function buffer:__tostring()
-	return format("audio_buffer(%dx%d, %p)", self.frames, self.channels, self)
+	return format("audio_buffer(%dx%d, %p)", self.frames, self.channels, self.samples)
 end
 
 --- Write values into a buffer
@@ -133,7 +139,7 @@ function buffer.load(filename) end
 --]]
 
 
-ffi.metatype("audio_buffer", buffer)
+--ffi.metatype("audio_buffer", buffer)
 
 setmetatable(buffer, {
 	__call = function(s, frames, channels)
