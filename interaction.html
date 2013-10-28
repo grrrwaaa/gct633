@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Interaction</title>
+    
+<link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/highlight.default.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/highlight.pack.js"></script>
+<script src="js/showdown.js" type="text/javascript"></script>
+<script src="js/extensions/github.js" type="text/javascript"></script>
+<script src="js/main.js" type="text/javascript"></script>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<div style="display: none" id="sourcetext">
+
+# Interaction
+
+----
+
+# An interactive multimodal app: PONG
+
+Let's create a game. Let's rebuild one of the oldest and most famous computer games of all time: **PONG!**
+
+![Pong the arcade game](http://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Atari_Pong_arcade_game_cabinet.jpg/250px-Atari_Pong_arcade_game_cabinet.jpg)
+
+> Pong is one of the earliest arcade video games; it is a an electronic ping-pong game featuring simple two-dimensional graphics. Pong was one of the first video games to reach mainstream popularity. The game was originally manufactured by Atari Incorporated (Atari), who released it in 1972. Pong quickly became a success and is the first commercially successful video game, which led to the start of the video game industry. Pong has been referenced and parodied in multiple television shows and video games, and has been a part of several video game and cultural exhibitions. [wikipedia](http://en.wikipedia.org/wiki/Pong)
+
+## The Game
+
+> The player controls an in-game paddle by moving it vertically across the left side of the screen, and can compete against either a computer controlled opponent or another player controlling a second paddle on the opposing side. Players use the paddles to hit a ball back and forth. The aim is for a player to earn more points than the opponent; points are earned when one fails to return the ball to the other. [wikipedia](http://en.wikipedia.org/wiki/Pong)
+
+[Here is an early video from 1969.](http://www.youtube.com/watch?v=XNRx5hc4gYc)
+[Here is an early Atari version](http://www.youtube.com/watch?v=SHsYjWm8XSI)
+[Another Atari version from 1972 with different sounds](http://www.youtube.com/watch?v=3nu_L8uEzJw)
+
+To rebuild Pong we should analyze the important components and subcomponents, to make sure we can implement each one, until the entire game is complete. **Divide and conquer** is the foremost idiom of software design. At the most general level most games incorporate these components:
+
+- **Game state**. (Sometimes called the **model**). The data that describes the state of the game at any moment, including the world and its objects, meta-level data such as scores and modes, resources used in rendering, and so on. 
+- **Game logic/simulation**. (Sometimes called the **controller**). The **update** routine(s) that modify the game state from one step to the next. It may be composed of several subroutines for different (kinds of) objects, and may have routines that operate in parallel.
+	- This includes **interaction**. The ways in which a player can add new input to the game logic as it is simulated, such as keyboard, mouse, joystick, head-tracking and other human interface devices (HIDs).
+- **Rendering**. (Sometimes called the **view**). How the game is visualized and sonified. 
+
+## Game State
+
+The game comprises these elements:
+
+- Two players, represented by the "paddles" on screen. 
+	- Each player has a paddle that can move up and down the screen (and also left to right in the original demo)
+	- That means we will also need variables to store the vertical velocity.
+	- Each player also has a score.
+- One ball, with variable X and Y position. 
+	- The ball moves continuously until a collision occurs. 
+	- That means we will also need variables to store the ball horizontal and vertical velocity.
+	- (*The original design also had support for spin, or "English"*)
+- Configuration parameters to tune the gameplay.
+
+## Game logic
+
+Most of the game dynamics come from the movement of the ball. These are the basic properties of Pong. 
+
+- The game is played in rounds. A round starts by serving the ball, and ends by scoring a goal.
+- At the start of a round, the ball begins in the center of the screen with a random direction of motion.
+	- The ball moves by continual accumulation of velocity to position.
+	- Exceptions to this rule depend on collision detection:
+		- If the ball touches the top or bottom edge of the screen:
+			- It bounces (reversing the vertical direction)
+		- If the ball reaches the left edge of the screen:
+			- Player 2 gains one point
+			- A new round is started
+		- If the ball reaches the right edge of the screen:
+			- Player 1 gains one point
+			- A new round is started
+		- If the ball collides with the inside face of a paddle:
+			- It reverses horizontal direction
+			- *It speeds up slightly, to make the game get harder.*
+			- *It changes vertical direction slightly, depending on which edge (top or bottom) of the paddle it collided with.*
+
+The trickiest part of that is detecting whether the paddle has hit the ball. We can break that down into two conditions:
+
+- The Y position is between the top and bottom edges of the paddle.
+- The old X position was in front of the inside face of the paddle, and the new X position is on or behind the inside face of the paddle.
+
+*In fact this is not quite accurate, but good enough to start with.*
+
+## Interaction
+
+- **Paddles**: players can move the paddles up and down the screen.    
+	- For a two-player game, we'll need to use keypresses to move the paddles.
+		- We can detect when a key is pressed, and modify a paddle velocity according to what key it is.
+		- We can detect key release set the paddle velocity back to zero.
+		- Or we could use mouse interaction
+	- We also need to invent one or more algorithms for the computer's playing style... 
+		- It should play better than random, but worse than perfect! 
+	- Paddles should also be restricted from reaching the top or bottom of the screen.
+		- *In the real Pong game, they couldn't even quite reach the edge, so there was always a chance to score against a pro.*
+- Options: we might want to use other keypresses to choose options:
+	- A key to reset the game & scores to zero
+	- A key to pause the game
+	- Whether to play 2-player mode or 1-player versus computer? Or detect that automatically by lack of keypresses?
+
+## Rendering Pong
+
+The rendering of the original Pong is incredibly simple, made entirely of large black or white squares, to represent the essential elements of paddles (players) and the ball. 
+
+The sounds of Pong (if present at all) were similarly simple, reflecting the available technology of the day. Wwe might want to try rendering in a more elaborate style. Our game sounds could include a combination of: 
+
+- A background music track 
+- Triggered sound events:
+	- When a round begins
+	- When the ball collides with walls
+	- When the ball collides with a player paddle
+	- When a goal is scored
+
+## Elaborating Pong
+
+Once we havea pong working, we can start playing around with new variations.
+
+- Using more interesting sounds!
+	- Using more game feature parameters, e.g. the angle of bounce, speed, etc.
+- Dynamically adapting music to gameplay 
+	- e.g. setting the tempo according to the ball speed
+- Sound effects on the sounds: delays, reverbs, distortions etc.
+- Adding some of the original features:
+	- Putting "English" on the ball by swiping it
+	- Adding paddle movement in X
+- Paddles & balls:
+	- Adding paddle rotation
+	- Changing paddle size (or shape) according to the current score
+	- Multiple paddles in flocking formations
+	- Pong with multiple balls!
+- World:
+	- More obstacles in the space
+	- Adding a gravitational field with black holes to influence the ball
+	- Adding portals (quantum-tunneling pong!)
+- Time:
+	- Extra points for scoring a goal 'on the beat' of the rhythm
+	- Pong with different rules on each 'level' (each subsequent round of the game)
+- AI: 
+	- Different NPC player 'personalities'	
+	- How about an opponent that learns from you?
+- Pong in 3D...
+
+[Taking pong way too far...](http://www.youtube.com/watch?v=NDjseVmruH8)
+
+
+-----
+
+[![what my camera sees](http://25.media.tumblr.com/0d0b57119830ca73f0abb18258e9f48f/tumblr_mr7bnwCN8M1qamt2wo1_500.jpg)](https://fbcdn-sphotos-d-a.akamaihd.net/hphotos-ak-ash3/1146629_10152155549169896_1044586992_n.jpg)
+
+-----
+
+[OpenGL 2.1 Reference Pages](http://www.opengl.org/sdk/docs/man2/)
+[An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
+
+</div>
+<div id="wrapper">
+	<div class="header">
+		<h1>GCT 633</h1>
+		<a href="index.html">Overview</a><br/>
+		<a href="time.html">Time</a><br/>
+		<a href="space.html">Space</a><br/>
+		<a href="programming.html">Programming</a><br/>
+		<a href="audio.html">Audio</a><br/>
+		<a href="graphics.html">Graphics</a><br/>
+		<a href="interaction.html">Interaction</a><br/>
+		<a href="lua.html">Lua Tutorial</a><br/>
+		<a href="docs/index.html">&gt;&gt; Reference</a><br/>
+		<a href="http://github.com/grrrwaaa/gct633">&gt;&gt; GitHub</a><br/>
+	</div>
+	<div class="section">
+		<script type="text/javascript">
+		//var converter = new Markdown.Converter();
+		var converter = new Showdown.converter({ extensions: "g" });
+		document.write(converter.makeHtml($('#sourcetext').text()));
+		</script>
+	</div>	
+	<div class="footer">
+		<img src="img/snake6_small.jpg" alt="Graham Wakefield"><br/>
+		Graham Wakefield, 2013</div>
+	</div>
+</body>
+</html>
