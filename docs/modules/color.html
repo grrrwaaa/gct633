@@ -1,0 +1,404 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>AV</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Class_rgb">Class rgb </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul>
+  <li><a href="../modules/audio.html">audio</a></li>
+  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
+  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
+  <li><a href="../modules/audio.sndfile.html">audio.sndfile</a></li>
+  <li><strong>color</strong></li>
+  <li><a href="../modules/coroutine.html">coroutine</a></li>
+  <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/expr.html">expr</a></li>
+  <li><a href="../modules/gl.html">gl</a></li>
+  <li><a href="../modules/global.html">global</a></li>
+  <li><a href="../modules/io.html">io</a></li>
+  <li><a href="../modules/mat4.html">mat4</a></li>
+  <li><a href="../modules/math.html">math</a></li>
+  <li><a href="../modules/os.html">os</a></li>
+  <li><a href="../modules/package.html">package</a></li>
+  <li><a href="../modules/quat.html">quat</a></li>
+  <li><a href="../modules/shader.html">shader</a></li>
+  <li><a href="../modules/string.html">string</a></li>
+  <li><a href="../modules/table.html">table</a></li>
+  <li><a href="../modules/util.html">util</a></li>
+  <li><a href="../modules/vbo.html">vbo</a></li>
+  <li><a href="../modules/vec2.html">vec2</a></li>
+  <li><a href="../modules/vec3.html">vec3</a></li>
+  <li><a href="../modules/vec4.html">vec4</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>color</code></h1>
+
+<p>A collection of types and utilities for color spaces.</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#rgb">rgb&nbsp;(r, g, b, a)</a></td>
+	<td class="summary">Generate an rgba color.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#rgb">rgb</a></td>
+	<td class="summary">RGBA</td>
+	</tr>
+</table>
+<h2><a href="#Class_rgb">Class rgb </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#rgb:copy">rgb:copy&nbsp;()</a></td>
+	<td class="summary">Create a duplicate of this color object</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:hex">rgb:hex&nbsp;(str, a)</a></td>
+	<td class="summary">Set or return this color expressed as a hexadecimal string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:hsv">rgb:hsv&nbsp;(h, s, v, a)</a></td>
+	<td class="summary">Set or return this color expressed as HSV.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:hsl">rgb:hsl&nbsp;(h, s, l, a)</a></td>
+	<td class="summary">Set or return this color expressed as HSL.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:hsi">rgb:hsi&nbsp;(h, s, i, a)</a></td>
+	<td class="summary">Set or return this color expressed as HSI.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:xyz">rgb:xyz&nbsp;(x, y, z, a)</a></td>
+	<td class="summary">Set or return this color expressed as CIE XYZ.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:lab">rgb:lab&nbsp;(l, a, b, alpha)</a></td>
+	<td class="summary">Set or return this color expressed as L*a*b.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:lch">rgb:lch&nbsp;(l, c, h, a)</a></td>
+	<td class="summary">Set or return this color expressed as Lch.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rgb:luminance">rgb:luminance&nbsp;()</a></td>
+	<td class="summary">Return the perceptual luminance of this color.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2><a name="Functions"></a>Functions</h2>
+    <dl class="function">
+    <dt>
+    <a name = "rgb"></a>
+    <strong>rgb&nbsp;(r, g, b, a)</strong>
+    </dt>
+    <dd>
+    Generate an rgba color.
+ This function takes many different forms:
+ rgb(1, 0, 0, 0.2) generates red at 20% alpha
+ rgb(1, 0, 0) generates red
+ rgb(0.5, 0.2) generates 50% greyscale at 20% alpha
+ rgb(0.5) generates 50% greyscale
+ rgb("#FF0000"), rgb("#f00"), rgb("red") generate red
+ rgb("#FF0000", 0.2), rgb("#f00", 0.2), rgb("red", 0.2) generate red at 20% alpha
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">r</span>
+        </li>
+        <li><span class="parameter">g</span>
+        </li>
+        <li><span class="parameter">b</span>
+        </li>
+        <li><span class="parameter">a</span>
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Tables"></a>Tables</h2>
+    <dl class="function">
+    <dt>
+    <a name = "rgb"></a>
+    <strong>rgb</strong>
+    </dt>
+    <dd>
+    RGBA
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2><a name="Class_rgb"></a>Class rgb </h2>
+        A color expressed as red, green, blue and alpha components.
+    <dl class="function">
+    <dt>
+    <a name = "rgb:copy"></a>
+    <strong>rgb:copy&nbsp;()</strong>
+    </dt>
+    <dd>
+    Create a duplicate of this color object
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        rgba
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:hex"></a>
+    <strong>rgb:hex&nbsp;(str, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as a hexadecimal string.
+ e.g. c:hex() -> "FF0000"
+ e.g. c:hex("FF0000")
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+         hex string</li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:hsv"></a>
+    <strong>rgb:hsv&nbsp;(h, s, v, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as HSV.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">h</span>
+         hue</li>
+        <li><span class="parameter">s</span>
+         saturation</li>
+        <li><span class="parameter">v</span>
+         value</li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:hsl"></a>
+    <strong>rgb:hsl&nbsp;(h, s, l, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as HSL.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">h</span>
+         hue</li>
+        <li><span class="parameter">s</span>
+         saturation</li>
+        <li><span class="parameter">l</span>
+         luminance</li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:hsi"></a>
+    <strong>rgb:hsi&nbsp;(h, s, i, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as HSI.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">h</span>
+         hue</li>
+        <li><span class="parameter">s</span>
+         saturation</li>
+        <li><span class="parameter">i</span>
+         intensity</li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:xyz"></a>
+    <strong>rgb:xyz&nbsp;(x, y, z, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as CIE XYZ.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+        </li>
+        <li><span class="parameter">y</span>
+        </li>
+        <li><span class="parameter">z</span>
+        </li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:lab"></a>
+    <strong>rgb:lab&nbsp;(l, a, b, alpha)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as L*a*b.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+        </li>
+        <li><span class="parameter">a</span>
+        </li>
+        <li><span class="parameter">b</span>
+        </li>
+        <li><span class="parameter">alpha</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:lch"></a>
+    <strong>rgb:lch&nbsp;(l, c, h, a)</strong>
+    </dt>
+    <dd>
+    Set or return this color expressed as Lch.
+ also accepts optional alpha argument
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">l</span>
+         luminance</li>
+        <li><span class="parameter">c</span>
+         chroma</li>
+        <li><span class="parameter">h</span>
+         hue</li>
+        <li><span class="parameter">a</span>
+         alpha value</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rgb:luminance"></a>
+    <strong>rgb:luminance&nbsp;()</strong>
+    </dt>
+    <dd>
+    Return the perceptual luminance of this color.
+ (does not take into account alpha value)
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.3.12</a></i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
