@@ -209,7 +209,7 @@ end
 -- (The relative angle from self to v)
 -- @param a vector to measure angle between
 -- @param b vector to measure angle between
--- @return distance
+-- @return angle
 function vec2.anglebetween(a, b)
 	local am = a:length()
 	local bm = b:length()
