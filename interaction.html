@@ -114,36 +114,71 @@ The sounds of Pong (if present at all) were similarly simple, reflecting the ava
 	- When the ball collides with a player paddle
 	- When a goal is scored
 
-## Elaborating Pong
+## Assignment: Elaborating Pong
 
-Once we havea pong working, we can start playing around with new variations.
+We quickly sketched up a working version of Pong in class:
+https://github.com/grrrwaaa/gct633/blob/master/classfiles/oct29.lua (If you pull the latest copy of the class software, you will have this file already). 
 
-- Using more interesting sounds!
-	- Using more game feature parameters, e.g. the angle of bounce, speed, etc.
-- Dynamically adapting music to gameplay 
-	- e.g. setting the tempo according to the ball speed
-- Sound effects on the sounds: delays, reverbs, distortions etc.
-- Adding some of the original features:
-	- Putting "English" on the ball by swiping it
-	- Adding paddle movement in X
-- Paddles & balls:
+The task of this assignment is to elaborate, mutate or otherwise rewrite Pong in two or more interesting ways. We began to explore some possible directions in class, but whether you follow them or implement your own ideas, try to take them as far as possible in the time available; and enjoy exploring! Perhaps it will evolve into an entirely new game; perhaps it won't even be a game anymore... We can discuss your ideas during class, in office hours, or by email. 
+
+### Grading
+
+This is a bigger assignment than the previous ones, and contributes 3x more to your grade; please dedicate more time to it accordingly. And have fun doing it! Grading will take into account the creativity/novelty of your ideas, the technical execution of them, and the aesthetic/perceptual quality of the result. You may be asked to present your game to the class.
+
+### Submission details
+
+If your project uses more than one file, please remember to upload them all. If you use sound files, make sure that they are not more than a few seconds long, and upload them too. 
+
+You must comment your code thoroughly. At the top of your main script please include a long comment that includes:
+
+- A description of your project idea(s)
+- An explanation of how to use it (what the interaction is, how the gameplay works)
+- Your strategy to implement your ideas, and any challenges you had implementing them
+- Your ideas for how it could be taken further in future work (*important!*)
+
+In addition, there should also be a comments throughout the code:
+
+- For each function, to explain what it does 
+- Comments over any complex or important lines in the code
+- Comments to note where there might be possible errors
+- Comments to indicate where possible future work could be added ("TODO" comments)
+
+Remember: good code formatting and commenting is part of the technical execution. Code is for humans as well as machines!
+
+### Example ideas:
+
+- Sound:
+	- Using more interesting sounds!
+	- Using more game feature parameters to modify the sound synthesis, e.g. the angle of bounce, speed, etc.
+	- Adding a backing track (like the drum machine) that dynamically adapts to the gameplay 
+		- e.g. setting the tempo according to the ball speed
+	- Adding sound effects on the sounds: echoes, distortions etc.
+- Ball:
+	- Adding nonlinear movements, like "spin" ("English")
+	- Pong with multiple balls!
+	- Adding a gravitational field with black holes to influence the ball
+- Paddles:
 	- Adding paddle rotation
 	- Changing paddle size (or shape) according to the current score
+	- Sticky paddles
 	- Multiple paddles in flocking formations
-	- Pong with multiple balls!
+	- Paddles that reproduce and die
 - World:
 	- More obstacles in the space
-	- Adding a gravitational field with black holes to influence the ball
 	- Adding portals (quantum-tunneling pong!)
 - Time:
+	- Making the ball move in rhthmic bouncing jumps instead of a smooth line
+	- Extra paddles that follow your movement with delay
 	- Extra points for scoring a goal 'on the beat' of the rhythm
-	- Pong with different rules on each 'level' (each subsequent round of the game)
+	- Pong with different rules and systems on each 'level' (each subsequent round of the game)
 - AI: 
 	- Different NPC player 'personalities'	
-	- How about an opponent that learns from you?
-- Pong in 3D...
+	- An opponent that learns from you?
+- Visual:
+	- More complex geometry in the VBO
+	- Pong in 3D space...
 
-[Taking pong way too far...](http://www.youtube.com/watch?v=NDjseVmruH8)
+[For inspiration: taking pong way too far...](http://www.youtube.com/watch?v=NDjseVmruH8)
 
 -----
 
