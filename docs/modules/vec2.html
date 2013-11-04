@@ -46,7 +46,10 @@
   <li><a href="../modules/color.html">color</a></li>
   <li><a href="../modules/coroutine.html">coroutine</a></li>
   <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/draw2D.html">draw2D</a></li>
   <li><a href="../modules/expr.html">expr</a></li>
+  <li><a href="../modules/field2D.html">field2D</a></li>
+  <li><a href="../modules/field3D.html">field3D</a></li>
   <li><a href="../modules/gl.html">gl</a></li>
   <li><a href="../modules/global.html">global</a></li>
   <li><a href="../modules/io.html">io</a></li>
@@ -271,6 +274,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#vec2:polar">vec2:polar&nbsp;()</a></td>
 	<td class="summary">Return the magnitude and angle (polar form):</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#vec2:cross">vec2:cross&nbsp;(a, b)</a></td>
+	<td class="summary">Return the cross product of two vectors.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#vec2:unpack">vec2:unpack&nbsp;()</a></td>
@@ -1338,6 +1345,32 @@
     <ol>
 
         length, angle (in radians)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "vec2:cross"></a>
+    <strong>vec2:cross&nbsp;(a, b)</strong>
+    </dt>
+    <dd>
+    Return the cross product of two vectors.
+ (Of course, the cross product only applies to 3D vectors. In this case, we return the magnitude of the cross product of vec3's where the z component is zero.)
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">a</span>
+         vector</li>
+        <li><span class="parameter">b</span>
+         vector</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        magnitude of 3D cross product
     </ol>
 
 
