@@ -572,6 +572,15 @@ function vec2:polar()
 	return self:length(), self:angle()
 end
 
+--- Return the cross product of two vectors.
+-- (Of course, the cross product only applies to 3D vectors. In this case, we return the magnitude of the cross product of vec3's where the z component is zero.)
+-- @param a vector
+-- @param b vector
+-- @return magnitude of 3D cross product
+function vec2:cross(b)
+	return self.x*b.y - self.y*b.x
+end
+
 function vec2:__tostring()
 	return format("vec2(%f, %f)", self.x, self.y)
 end

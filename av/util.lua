@@ -10,28 +10,22 @@ local floor = math.floor
 local gcmap = {}
 setmetatable(gcmap, { __mode = 'v' })
 
-local util = {}
-
 --- return an object that will call func when it is garbage collected:
 -- (Sentinel pattern)
 -- Note: this is not necessary in Lua 5.2 where tables can have __gc metamethods
 -- @param self an object to pass to this gcfunc
 -- @param gcfunc a function to call
 -- @return obj (for method chaining)
-function util.gc(self, gcfunc)
-	if not gcfunc then
-		gcfunc, self = self, true
-	end
-	assert(type(gcfunc) == "function", "gc handler must be a function")
+local function gc(self, gcfunc)
 	-- create new raw userdata with metatable:
 	local gc = newproxy(true)
-	-- needs to be wrapped in a Lua function:
 	getmetatable(gc).__gc = function() gcfunc(self) end
 	-- keep gc alive as long as self exists:
 	gcmap[gc] = self
 	-- return self for method chaining (also like ffi.gc)
 	return self
 end
+
 
 -- used by conflat()
 -- appends items to the rope
@@ -59,15 +53,14 @@ end
 -- and calls tostring() on all non-table values
 -- Any nested functions will also be invoked, and conflat called on their results.
 -- @param v the item to concat (e.g. a list)
--- @param sep a separator character between items (optional)
--- @param ext an extension to the separator applied for nested sublists (optional)
+-- @sep a separator character between items (optional)
+-- @ext an extension to the separator applied for nested sublists (optional)
 -- @return string
-function util.conflat(v, sep, ext)
+local function conflat(v, sep, ext)
 	local rope = {}
 	conflat_impl(rope, v, sep, ext)
 	return concat(rope)
 end
-local conflat = util.conflat
 
 
 --- Generate a template-filling function based on a template string
@@ -77,7 +70,7 @@ local conflat = util.conflat
 -- If a template item is preceded by a newline and whitespace, the newline and whitespace are repeated for all items substituted (via the argument to conflat()).
 -- @param source string template source
 -- @return function to apply a model
-function util.template(source)
+function template(source)
 	return function(dict)
 		-- ugh. the pattern grabs:
 		-- (optional newline)(optional whitespace)$(varname)optional{}
@@ -118,16 +111,16 @@ local keywords = {
     ["until"] = true,     
     ["while"] = true,
 }
-util.keywords = keywords
 
 local varpat = "^[%a_][%w_]*$"
 local function isvalidluavariablename(k)
 	return type(k) == "string" and (k:match("^[%a_][%w_]*$") ~= nil) and not keywords[k]
 end
 
-function util.isinteger(n)
+local function isinteger(n)
 	return type(n) == "number" and n == floor(n)
 end
+
 
 local function dict_keylist_sorter(a, b)
 	local ta,tb = type(a), type(b)
@@ -138,7 +131,7 @@ local function dict_keylist_sorter(a, b)
 	end
 end
 
-local isinteger = util.isinteger
+
 local function dict_keylist_only(t, n)
 	local res = {}
 	for k, v in pairs(t) do
@@ -169,8 +162,6 @@ local function dict_keystr(k, ind)
 		return format("[%q]", k)
 	end
 end	
-
-local table_tostring
 
 local function dict_valstr(v, ind, memo)
 	if type(v) == "string" then	-- TODO: and no invalid chars!
@@ -244,14 +235,26 @@ table_tostring = function(t, ind, memo)
 	end	
 end
 
---- Return a pretty-formatted string representation of a table (or any Lua value).
--- The Array portion is printed after dict portion.
+--- Return a pretty-formatted string representation of a table
+-- Array portion is printed after dict portion.
 -- Keys are sorted alphanumerically.
--- This could also be used as an optional replacement of the global tostring()
+-- Could also be used as a replacement of the global tostring()
 -- @param t the value (e.g. table) to print
 -- @return string
-function util.tostring(t)
+local function tostring(t)
 	return table_tostring(t, "", {})
 end
 
-return util
+return {
+	gc = gc,
+	conflat = conflat,
+	template = template,
+	tostring = tostring,
+	
+	
+	keywords = keywords,
+	isinteger = isinteger,
+	
+	-- safer alias:
+	table_tostring = tostring,
+}
