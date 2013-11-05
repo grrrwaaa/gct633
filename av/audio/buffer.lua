@@ -138,6 +138,15 @@ function buffer.load(filename) end
 
 --]]
 
+function buffer:lerp(idx)
+	local dim = self.frames
+	local idx1 = math.floor(idx % dim)
+	local idx2 = (idx1 + 1) % dim
+	local x1 =  self.samples[ idx1 ]
+	local x2 =  self.samples[ idx2 ]
+	local a = idx % 1
+	return x1 + a * (x2 - x1)
+end
 
 --ffi.metatype("audio_buffer", buffer)
 

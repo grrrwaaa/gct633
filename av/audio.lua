@@ -219,21 +219,98 @@ function audio.play(content, duration)
 end
 
 -- render the contents of the audio buffer
-function audio.draw()
+function audio.scope()
 	local gl = require "gl"
-	local buffer = driver.buffer
+	local window = require "window"
+	window.width = 400
+	window.height = 200
+	window.create()
 	
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
+	local buf = audio.outbuffer
+	local blocks = driver.blocks
+	local frames = buf.frames
+	local channels = buf.channels
 	
-	gl.Begin(gl.LINE_STRIP)
-	local dim = driver.blocksize * driver.blocks * driver.outchannels - 1
-	for i = 0, dim, 10 do
-		local x = i / dim
-		local y = 0.5 + 0.5 * buffer[i]
-		gl.Vertex(x, y, 0)
+	draw = function()
+	
+		local w = window.width
+		local iw = 1/w
+		local playphase = audio.driver.blockwrite / blocks
+	
+		-- set the positions of the vertices:
+		gl.Begin(gl.TRIANGLE_STRIP)
+		for i = 0, w-1 do
+			-- phase (0..1) through sound:
+			local phase = i / w
+			-- convert to X coordinate (-1..1)
+			local x = phase*2-1
+		
+			-- get start point:
+			local first = math.floor(phase * buf.frames)
+			-- get number of samples per vertex:
+			local count = math.floor(frames * iw)
+		
+			-- get highest & lowest sample in this period:
+			local lo, hi = 1, -1
+			for j = first, first+count-1 do
+				lo = math.min(lo, buf.samples[j*channels])
+				hi = math.max(hi, buf.samples[j*channels])
+			end
+		
+			local g = (playphase - phase) % 1
+			g = 0.2 + 0.8*(1-g)*(1-g)
+		
+			gl.Color(0.2, g, 0.2)
+		
+			gl.Vertex(x, lo*0.5-0.5, 0)
+			gl.Vertex(x, hi*0.5-0.5, 0)
+		end
+		gl.End()
+		
+		-- set the positions of the vertices:
+		gl.Begin(gl.TRIANGLE_STRIP)
+		for i = 0, w-1 do
+			-- phase (0..1) through sound:
+			local phase = i / w
+			-- convert to X coordinate (-1..1)
+			local x = phase*2-1
+		
+			-- get start point:
+			local first = math.floor(phase * buf.frames)
+			-- get number of samples per vertex:
+			local count = math.floor(frames * iw)
+		
+			-- get highest & lowest sample in this period:
+			local lo, hi = 1, -1
+			for j = first, first+count-1 do
+				lo = math.min(lo, buf.samples[j*channels+1])
+				hi = math.max(hi, buf.samples[j*channels+1])
+			end
+		
+			local g = (playphase - phase) % 1
+			g = 0.2 + 0.8*(1-g)*(1-g)
+		
+			gl.Color(0.2, g, 0.2)
+		
+			gl.Vertex(x, lo*0.5+0.5, 0)
+			gl.Vertex(x, hi*0.5+0.5, 0)
+		end
+		gl.End()
+	
+		--[[
+		gl.Enable(gl.BLEND)
+		gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
+	
+		gl.Begin(gl.LINE_STRIP)
+		local dim = driver.blocksize * driver.blocks * driver.outchannels - 1
+		for i = 0, dim, 10 do
+			local x = (i / dim)*2-1
+			local y = 0.5 + 0.5 * buffer[i]
+			gl.Vertex(x, y, 0)
+		end
+		gl.End()
+		--]]
 	end
-	gl.End()
 end
 
 return audio
