@@ -259,6 +259,42 @@ The sequencer's basic requirements:
 
 ----
 
+## Excitation-resonance and other physical models
+
+It is widely and often commented that purely electronic sounds are too thin, shallow, artificial, cold, pure, etc. We should know that this criticism does not apply to computer-generated sound *in principle*, as we can reconstruct rich, deep, impure sounds during sample playback. The criticism really applies to the mathematical models that have been often been used to solve the computer music problem. 
+
+One response to this has been to attempt to recreate nature in the computer, by running simulations of the physical (usually kinetic, mechanical) systems of musical instruments. In the computer music community it is often referred to as **physical modeling**. A "model" predicts the behavior of a physical system from an initial state and input forces. A "physical model" is one using systems drawn from physics, such as mass-spring-damper systems. 
+
+[Julius Smith's online book of physical modeling](https://ccrma.stanford.edu/~jos/pasp/)
+
+Most acoustic physical models describe a process in which a source of energy (the "excitation") is transduced into the physical system, and then propagates as waves constrained by the system as a medium ("resonance"), some of which energy is transferred to pressure waves in the air ("sound") reaching our ears ("reception"). In fact most sounds that we hear in nature follow this form of excitation -> resonance. Several pheonomena are common:
+
+- After the excitation is removed, energy gradually dissipates away
+- The resonant objects (including the physical environment) emphasize certain frequencies over others (this is the "resonating" aspect), 
+- High frequencies typically dissipate sooner than lower frequencies
+
+These are such fundamental aspects of natural sound that our psychoacoustic experience is hard-wired to them. Sustained sounds suggest a continuous input of energy. Crescendoes in nature are rare (wind, waves, approaching elephants). 
+
+### Vibrating strings
+
+Perhaps the simplest physical model is the vibrating string, such as found on a guitar or gayagum. The excitation is by plectrum or finger rubbing against and displacing the string (a short burst of randomized energy), or a bow continuously imparting random displacements (a longer, sustained input of noise). The resonance of the string is the vibrations it supports, which gradually decay as the energy dissipates into the instrument body. The body itself also resonates in a rich way, transducing energy to airborne sound.
+
+Because the string is constrained at each end, the only waveforms of vibration that can remain stable are proportional to integer divisions of the string length. This strongly constrains the sound produced, turning the rich spectrum of the noisy pluck into a more organized, decaying mixture of tones:
+
+![Fundamental and overtones of a vibrating string](http://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Harmonic_partials_on_strings.svg/220px-Harmonic_partials_on_strings.svg.png)
+
+[Slow motion video of a bass string vibration](http://www.youtube.com/watch?v=XkSglALOueM)
+
+The simplest model of a vibrating string was presented by Karplus and Strong:
+
+![KP string](http://upload.wikimedia.org/wikipedia/commons/9/9d/Karplus-strong-schematic.png)
+
+1. A noise burst (representing the pluck) is used as input added to a delay line. 
+2. The delay line length defines the fundamental tone of the string. 
+3. The feedback path includes a filter to emulate the way energy is gradually dissipated from the string (usually removing higher frequencies more quickly than lower ones). The gain of the filter must be less than 1 to avoid saturated feedback.
+
+----
+
 ## Lazy Programming
 
 Many programmers are lazy, and many programmers like laziness. Laziness is one of the great motivators for innovation. For example, abstraction appeals to our desire to be lazy, as it makes future revisions easier.
