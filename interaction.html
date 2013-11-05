@@ -182,9 +182,50 @@ Remember: good code formatting and commenting is part of the technical execution
 
 -----
 
-[OpenGL 2.1 Reference Pages](http://www.opengl.org/sdk/docs/man2/)
-[An intro to modern OpenGL](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html)
+# Sound toys
 
+Sound toys are small applications with interactive visual interfaces that generate sound. Some are desktop apps, some are web apps, and in recent years there have been many mobile apps (often reconstructing earlier desktop or browser based works). Some are more like instruments, some are more like games, some are more like interactive media artworks, or audio-visual paintings, others are not easily categorized. They are a useful medium for us to explore, as they are often quite interesting in behavior despite the simplicity of design. Often they use drawing input, simple physical simulations, network or agent systems in the creation of interesting interfaces and behavior.
+
+- One of the oldest selections of web-based soundtoys is at [www.soundtoys.net](http://www.soundtoys.net/), though some of them don't work on modern browsers.
+- A more recent selection is at [creative applications net](http://www.creativeapplications.net/tag/soundtoy/)
+- A pioneering collection of sound toy experiments is the [ixi software collection](http://www.ixi-audio.net/content/software.html). They might not work on your OS, but the do include the source code.
+	- An academic treatment by one of the authors: [ixi software: The Interface as Instrument](http://www.ixi-software.net/thor/ixi_software.pdf).
+- Snibbe studio reconstructed several earlier works for iOS, such as [bubbleharp](http://www.snibbestudio.com/bubbleharp/)
+- Another popular example on iOS is [Soundrop](https://itunes.apple.com/en/app/soundrop/id364871590?mt=8)
+
+## Sounddrop
+
+If we take the last example ([Soundrop](https://itunes.apple.com/en/app/soundrop/id364871590?mt=8)), we can break this down into different components and problems to solve just as we did for Pong:
+
+- Simulation:
+	- A moving ball
+		- Position and velocity 
+		- With force of gravity
+			- Also need forces (acceleration)
+		- Bouncing of surfaces at different angles
+			- Collision test: intersection of ball-path with surface
+			- Collision effect: calculate change in forces and new ball position
+	- Many surfaces, many balls
+		- Balls generated periodically at one location
+		- Balls removed if they fly off the screen sides or bottom
+- Rendering:
+	- Balls
+	- Surfaces (endpoints and connection)
+	- Sound: triggered by ball-surface collisions make sound
+		- The pitch appears to depend on the ball velocity
+- Interaction: 
+	- Adding a surface
+		- Drawing gesture: mouse start and end positions
+	- Removing a surface
+		- Selecting a surface (with double-click or keydown?)
+		- Requires mouse/surface collision test
+	- Moving surface endpoint
+		- Selecting endpoint and dragging
+		- Requires mouse/endpoint collision test
+	- Moving the ball generator
+		- Selecting generator and dragging
+		- Requires mouse/generator collision test
+	
 </div>
 <div id="wrapper">
 	<div class="header">
