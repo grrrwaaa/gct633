@@ -109,7 +109,7 @@ function new_round()
 	ball.velocity.y = config.initial_ball_speed * ((math.random()*2)-1)
 	
 	-- hack:
-	ball.velocity.y = 0
+	--ball.velocity.y = 0
 end
 
 -- gets called every frame:
