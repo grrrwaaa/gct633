@@ -259,6 +259,25 @@ The sequencer's basic requirements:
 
 ----
 
+## Lazy Programming
+
+Many programmers are lazy, and many programmers like laziness. Laziness is one of the great motivators for innovation. For example, abstraction appeals to our desire to be lazy, as it makes future revisions easier.
+
+[Lazy evaluation](http://en.wikipedia.org/wiki/Lazy_evaluation) is a technique of software design in which values are computed as late as possible: only when they are needed. Lazy evaluation also implies not repeating the same computation twice (sharing results instead). It is sometimes referred to as **call by need**.
+
+Rather than computing each intermediate value on the way to a result, we can instead collect a description of the steps required, and only at the last moment actually execute them. This is also known as **deferred evaluation**. If we discover as we go that some of these steps were not necessary, we can remove them before executing. It also means that we can refer to values before they have been computed (these are called **futures**). 
+
+In addition to improving performance (reducing waste), lazy evaluation can be used to represent potentially infinite data structures (you can add more on the end when you need them), and to define control flow in abstract rather than primitive forms. 
+
+### Lazy reaction
+
+Consider the orchestra/score. The score contains an ordered list of pairs, mapping discrete times to note objects. At each one of these times, the running *state* (the active set of notes) changes, but between these times it does not change. Between these times the (relatively) continuous behaviors of the notes generate changing sound, but the behaviors themselves do not change. 
+
+Conal Elliot described a "reactive" appraoch to programming in a similar way: "Observed over time, a reactive behavior consists of a sequence of non-reactive phases, punctuated by events." [Elliot, C. Push-Pull Functional Reactive Programming
+](http://conal.net/papers/push-pull-frp/push-pull-frp.pdf)
+
+----
+
 ## Excitation-resonance and other physical models
 
 It is widely and often commented that purely electronic sounds are too thin, shallow, artificial, cold, pure, etc. We should know that this criticism does not apply to computer-generated sound *in principle*, as we can reconstruct rich, deep, impure sounds during sample playback. The criticism really applies to the mathematical models that have been often been used to solve the computer music problem. 
@@ -295,25 +314,9 @@ The simplest model of a vibrating string was presented by Karplus and Strong:
 
 ----
 
-## Lazy Programming
+## Sounds as summations of cyclic rotations (Fourier)
 
-Many programmers are lazy, and many programmers like laziness. Laziness is one of the great motivators for innovation. For example, abstraction appeals to our desire to be lazy, as it makes future revisions easier.
-
-[Lazy evaluation](http://en.wikipedia.org/wiki/Lazy_evaluation) is a technique of software design in which values are computed as late as possible: only when they are needed. Lazy evaluation also implies not repeating the same computation twice (sharing results instead). It is sometimes referred to as **call by need**.
-
-Rather than computing each intermediate value on the way to a result, we can instead collect a description of the steps required, and only at the last moment actually execute them. This is also known as **deferred evaluation**. If we discover as we go that some of these steps were not necessary, we can remove them before executing. It also means that we can refer to values before they have been computed (these are called **futures**). 
-
-In addition to improving performance (reducing waste), lazy evaluation can be used to represent potentially infinite data structures (you can add more on the end when you need them), and to define control flow in abstract rather than primitive forms. 
-
-### Lazy reaction
-
-Consider the orchestra/score. The score contains an ordered list of pairs, mapping discrete times to note objects. At each one of these times, the running *state* (the active set of notes) changes, but between these times it does not change. Between these times the (relatively) continuous behaviors of the notes generate changing sound, but the behaviors themselves do not change. 
-
-Conal Elliot described a "reactive" appraoch to programming in a similar way: "Observed over time, a reactive behavior consists of a sequence of non-reactive phases, punctuated by events." [Elliot, C. Push-Pull Functional Reactive Programming
-](http://conal.net/papers/push-pull-frp/push-pull-frp.pdf)
-
-
-
+[A great interactive, visual explanation](http://toxicdump.org/stuff/FourierToy.swf)
 
 ----
 
