@@ -4,6 +4,8 @@
 local ffi = require "ffi"
 local C = ffi.C
 
+local floor = math.floor
+
 ffi.cdef [[
 
 double av_time();
@@ -44,12 +46,23 @@ assert(driver ~= nil, "problem acquiring audio driver")
 
 local buffer = require "audio.buffer"
 
+local scheduler = require "scheduler"
+local sched = scheduler.create()
+
 local audio = {
 	driver = driver,
 	
 	outbuffer = buffer(driver.blocks * driver.blocksize, driver.outchannels, driver.buffer),
 	
 	latency = 16, -- 16 blocks of 256 at 44.1kHz is about 100ms.
+	
+	go = sched.go,
+	wait = sched.wait,
+	now = sched.now,
+	event = sched.event,
+	
+	cancel = sched.cancel,
+	due = sched.due,
 }
 
 -- to get a lower latency we would need to update() more frequently.
@@ -126,38 +139,93 @@ local function addvoice(func, dur)
 		return self.dur > 0 or nil
 	end
 	
+	function voice:sablockfunc(out, from, to)
+		for i = from, to do
+			local l, r = func()
+			if l == nil and r == nil then 
+				return nil
+			end
+			out[i*2] = out[i*2] + (l or 0)
+			out[i*2+1] = out[i*2+1] + (r or l or 0)
+		end
+		self.dur = self.dur - (1 + to - from)
+		return self.dur > 0 or nil
+	end
+	
 	voices[voice] = true
 end
 
-local function start_audio_runloop()
-	audio.outbuffer.samples = driver.buffer
+local function dsp(out, from, to)
+	for i = from, to do
+		out[i*2] = 0
+		out[i*2+1] = 0
+	end		
+	for v in pairs(voices) do
+		voices[v] = v:sablockfunc(out, from, to)
+	end
+end
 
-	local runloop = require "runloop"
+local s0 = 0
+
+local function audio_schedloop()
+	local blocksize = driver.blocksize
+	local samplerate = driver.samplerate
+	local blocks = driver.blocks
 	
-	runloop.insert(function()
-		local blocksize = driver.blocksize
-		local w = driver.blockwrite
-		local r = driver.blockread
-		local s = driver.blocks
-		local t = (r + audio.latency) % driver.blocks
-		if w > t then
-			-- fill up & wrap around:
-			while w < s do
-				local out = driver.buffer + w * driver.blockstep
-				for i = 0, blocksize-1 do
-					out[i*2] = 0
-					out[i*2+1] = 0
-				end		
-				for v in pairs(voices) do
-					voices[v] = v:blockfunc(blocksize, out)
-				end
-				driver.blockwrite = w
-				w = w + 1
-			end
-			w = 0
-			driver.blockwrite = w
+	local w = driver.blockwrite
+	local r = driver.blockread
+	local target_block = (r + audio.latency) % blocks
+	
+	local smax = blocks * blocksize
+	local isr = 1 / samplerate
+	
+	local t0 = s0 * isr	
+	
+	while w ~= target_block do
+		-- outbuffer for this block:
+		local out = driver.buffer
+		
+		-- time at end of this block:
+		local s1 = s0 + blocksize
+		local t1 = s1 * isr
+		
+		-- check for events & clock-divide?
+		local te = sched.due()
+		if te and te < t1 then
+			local se = floor(s0 + (te - t0) * samplerate)
+			
+			-- dsp from s0 to se
+			dsp(out, s0 % smax, se % smax)
+			
+			-- invoke event
+			sched.run_first()
+			
+			-- update clocks
+			t0 = te
+			s0 = se
 		end
-		while w < t do
+		
+		-- dsp from s0 to s1
+		dsp(out, s0 % smax, (s1 - 1) % smax)
+		
+		-- advance clocks:
+		t0 = t1
+		w = (w + 1) % blocks
+		driver.blockwrite = w
+		s0 = s1 --% smax
+	end
+	--print("done", r, w)
+end
+
+local function audio_runloop()
+	local blocksize = driver.blocksize
+	local w = driver.blockwrite
+	local r = driver.blockread
+	local s = driver.blocks
+	local t = (r + audio.latency) % driver.blocks
+	if w > t then
+		-- fill up & wrap around:
+		while w < s do
 			local out = driver.buffer + w * driver.blockstep
 			for i = 0, blocksize-1 do
 				out[i*2] = 0
@@ -166,10 +234,33 @@ local function start_audio_runloop()
 			for v in pairs(voices) do
 				voices[v] = v:blockfunc(blocksize, out)
 			end
-			w = w + 1
 			driver.blockwrite = w
+			w = w + 1
 		end
-	end)
+		w = 0
+		driver.blockwrite = w
+	end
+	while w < t do
+		local out = driver.buffer + w * driver.blockstep
+		for i = 0, blocksize-1 do
+			out[i*2] = 0
+			out[i*2+1] = 0
+		end		
+		for v in pairs(voices) do
+			voices[v] = v:blockfunc(blocksize, out)
+		end
+		w = w + 1
+		driver.blockwrite = w
+	end
+end
+
+local function start_audio_runloop()
+	audio.outbuffer.samples = driver.buffer
+
+	local runloop = require "runloop"
+	
+	--runloop.insert(audio_runloop)
+	runloop.insert(audio_schedloop)
 	is_audio_runloop_running = true
 end
 
@@ -262,8 +353,8 @@ function audio.scope()
 		
 			gl.Color(0.2, g, 0.2)
 		
-			gl.Vertex(x, lo*0.5-0.5, 0)
-			gl.Vertex(x, hi*0.5-0.5, 0)
+			gl.Vertex(x, lo*0.5+0.5, 0)
+			gl.Vertex(x, hi*0.5+0.5, 0)
 		end
 		gl.End()
 		
@@ -292,8 +383,8 @@ function audio.scope()
 		
 			gl.Color(0.2, g, 0.2)
 		
-			gl.Vertex(x, lo*0.5+0.5, 0)
-			gl.Vertex(x, hi*0.5+0.5, 0)
+			gl.Vertex(x, lo*0.5-0.5, 0)
+			gl.Vertex(x, hi*0.5-0.5, 0)
 		end
 		gl.End()
 	

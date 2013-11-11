@@ -241,7 +241,24 @@ end)`
 		self.due = function()
 			local m = self.next
 			return m and m.t or nil
-		end	
+		end
+		
+		-- update the schedule up to time t, invoking only one event:
+		-- returns new self.t
+		self.run_first = function()
+			local m = self.next
+			if m then
+				local t1 = max(self.t, m.t)
+				-- remove from queue:
+				self.next = m.next
+				-- remove from map:
+				Cmap[m.C] = nil
+				self.t = t1
+				-- resume it:
+				resume(m.C)
+				return t1
+			end
+		end
 		
 		self.update = function(t, maxtimercallbacks)
 			-- check for pending coros:
