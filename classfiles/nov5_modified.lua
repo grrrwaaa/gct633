@@ -2,6 +2,8 @@ local audio = require "audio"
 local buffer = require "audio.buffer"
 local samplerate = 44100
 
+math.randomseed(os.time())
+
 -- generate random number in (-1,1) range:
 function srandom()
 	return math.random()*2-1
@@ -141,10 +143,10 @@ for i = 1, 20 do
 end
 
 -- play a sequence of notes with a short delay between:
-function strum(bunch)
+function strum(player, bunch)
 	local filter = math.random()
 	local vibrato_freq = math.random(4)*math.random(4)
-	local vibrato_depth = 0.1*math.random()^4
+	local vibrato_depth = 0.1*math.random()^10
 	local tremelo_freq = math.random(8)
 	local bow = 0.01 * math.random()^100
 	
@@ -156,11 +158,11 @@ function strum(bunch)
 	local amp = 0.5 + math.random()
 	
 	for i = 1, bunch do
-		--print("pluck", bunch, i)
 
 		local h = harp[first + i * step]
 		if h then
-			h.pluck = amp * (1 + 0.1*srandom())
+			print("player strum", player, i)
+			h.pluck = 4 * amp * (1 + 0.1*srandom())
 			h.filter = filter
 			h.vibrato_freq = vibrato_freq
 			h.vibrato_depth = vibrato_depth
@@ -173,18 +175,18 @@ function strum(bunch)
 	end
 end
 
-function pick(period)
+function pick(player, period)
 	while true do	
 		audio.wait(period * math.random(4) / 2)
 		
-		audio.go(strum, period)
+		audio.go(strum, player, period)
 	end
 end
 
 -- run several parallel processes:
-audio.go(pick, 2)
-audio.go(pick, 4)
-audio.go(pick, 16)
+audio.go(pick, "a", 2)
+audio.go(pick, "b", 4)
+audio.go(pick, "c", 16)
 
 audio.scope()
 

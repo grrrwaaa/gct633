@@ -7,79 +7,6 @@ function srandom()
 	return math.random()*2-1
 end
 
--- construct a noise burst generator:
-function noiseburst(period)
-	-- number of samples to play for:
-	local dur = period * samplerate
-	-- samples played so far:
-	local count = 0
-	return function()
-		-- update samples played so far:
-		count = count + 1
-		-- if we haven't played enough yet:
-		if count < dur then
-			-- generate & return a random value
-			return srandom()
-		end
-	end
-end
-
--- construct a noise burst generator 
--- of duration 0.1 seconds
-local mynoise = noiseburst(0.1)
-
--- play it
---audio.play(mynoise)
-
---[[
-local freq = 2000
-
-local delay = {
-	-- create a 1 second block of sample memory:
-	data = buffer(samplerate / freq),
-	-- set the initial position to zero:
-	pos = 0,
-}
-
-for i = 0, delay.data.frames-1 do
-	delay.data.samples[i] = srandom()
-end
-
--- previous value of s
-local s0 = 0
-
-audio.play(function()
-	-- move read head on:
-	delay.pos = delay.pos + 1
-	-- wrap at end:
-	if delay.pos >= delay.data.frames then
-		delay.pos = 0
-	end
-	-- get sample at this position:
-	local s = delay.data.samples[ delay.pos ]
-	
-	-- take the average:
-	s = s + 0.1 * (s0 - s)
-	  --s * 0.9 + s0 * 0.1
-	  
-	-- overall decay
-	s = s * 0.9999 
-	
-	-- bowing:
-	--s = s + 0.01 * math.random() - 0.5)
-	
-	-- scale down & write back in:
-	delay.data.samples[delay.pos] = s
-	
-	-- update s0:
-	s0 = s
-	
-	-- hear it:
-	return s
-end)
-
---]]
-
 function make_string(freq)
 
 	local self = {
@@ -87,8 +14,8 @@ function make_string(freq)
 		data = buffer(44100),
 		-- set the initial position to zero:
 		pos = 0,
-		-- set the delay period:
-		period = samplerate / freq,
+		-- set the delay freq:
+		freq = freq,
 		
 		filter = 0.1,
 		
@@ -109,7 +36,8 @@ function make_string(freq)
 		end
 	
 		-- get read point:
-		local idx = self.pos - self.period
+		local wavelength = (samplerate / self.freq)
+		local idx = self.pos - wavelength
 		if idx < 0 then
 			idx = idx + self.data.frames
 		end
@@ -163,21 +91,29 @@ end
 
 
 local harp = {}
-for i = 1, 20 do
-	harp[i] = make_string(100 * (i + srandom() * 0.01))
+for i = 1, 16 do
+	harp[i] = make_string(100 * i)
 end
 
 local count = 0
+local which = 1
 audio.play(function()
 	
 	count = count + 1
-	if count > samplerate/4 then
+	if count > samplerate/16 then
 		count = 0
 		
-		local h = harp[math.random(#harp)]
+		local h = harp[which]
 		
 		h.pluck = 1
-		h.filter = (1-math.random())*(1-math.random())
+		h.filter = 0.5 --(1-math.random())*(1-math.random())
+		
+		h.freq = h.freq * 2^(1/12)
+		if h.freq > 1000 then
+			h.freq = h.freq / 4
+		end
+		
+		which = (which % #harp) + 1
 	end
 	
 	
