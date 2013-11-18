@@ -139,14 +139,14 @@ local function addvoice(func, dur)
 		return self.dur > 0 or nil
 	end
 	
-	function voice:sablockfunc(out, from, to)
+	function voice:sablockfunc(out, outchannels, from, to)
 		for i = from, to do
 			local l, r = func()
 			if l == nil and r == nil then 
 				return nil
 			end
-			out[i*2] = out[i*2] + (l or 0)
-			out[i*2+1] = out[i*2+1] + (r or l or 0)
+			out[i*outchannels] = out[i*outchannels] + (l or 0)
+			out[i*outchannels+1] = out[i*outchannels+1] + (r or l or 0)
 		end
 		self.dur = self.dur - (1 + to - from)
 		return self.dur > 0 or nil
@@ -155,13 +155,14 @@ local function addvoice(func, dur)
 	voices[voice] = true
 end
 
-local function dsp(out, from, to)
+local function dsp(out, outchannels, from, to)
 	for i = from, to do
-		out[i*2] = 0
-		out[i*2+1] = 0
+		for c = 0, outchannels-1 do
+			out[i*outchannels+c] = 0
+		end
 	end		
 	for v in pairs(voices) do
-		voices[v] = v:sablockfunc(out, from, to)
+		voices[v] = v:sablockfunc(out, outchannels, from, to)
 	end
 end
 
@@ -171,6 +172,7 @@ local function audio_schedloop()
 	local blocksize = driver.blocksize
 	local samplerate = driver.samplerate
 	local blocks = driver.blocks
+	local outchannels = driver.outchannels
 	
 	local w = driver.blockwrite
 	local r = driver.blockread
@@ -195,7 +197,7 @@ local function audio_schedloop()
 			local se = floor(s0 + (te - t0) * samplerate)
 			
 			-- dsp from s0 to se
-			dsp(out, s0 % smax, se % smax)
+			dsp(out, outchannels, s0 % smax, se % smax)
 			
 			-- invoke event
 			sched.run_first()
@@ -206,7 +208,7 @@ local function audio_schedloop()
 		end
 		
 		-- dsp from s0 to s1
-		dsp(out, s0 % smax, (s1 - 1) % smax)
+		dsp(out, outchannels, s0 % smax, (s1 - 1) % smax)
 		
 		-- advance clocks:
 		t0 = t1
@@ -224,6 +226,7 @@ local function audio_runloop()
 	local s = driver.blocks
 	local t = (r + audio.latency) % driver.blocks
 	if w > t then
+		print(w, t)
 		-- fill up & wrap around:
 		while w < s do
 			local out = driver.buffer + w * driver.blockstep
@@ -241,6 +244,7 @@ local function audio_runloop()
 		driver.blockwrite = w
 	end
 	while w < t do
+		print(w, t)
 		local out = driver.buffer + w * driver.blockstep
 		for i = 0, blocksize-1 do
 			out[i*2] = 0

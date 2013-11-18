@@ -1,11 +1,37 @@
-local runloop = require "runloop"
+for i = 0, #arg do
+	print(i, arg[i])
+end
+print("...", ...)
+
 
 local ffi = require "ffi"
-local C = ffi.C
+ffi.cdef [[
+typedef struct av_Audio {
+	unsigned int blocksize;
+	unsigned int indevice, outdevice;
+	unsigned int inchannels, outchannels;	
+	
+	double time, lag;		// in seconds
+	double samplerate;
+	
+	// a big buffer for main-thread audio generation
+	float * buffer;
+	// the buffer alternates between channels at blocksize periods:
+	int blocks, blockread, blockwrite, blockstep;	
+} av_Audio;
 
-t = C.av_time()
-runloop.insert(function()
-	local t1 = C.av_time()
-	print("hello", t1 - t )
-	t = t1
-end)
+
+av_Audio * av_audio_get();
+void av_audio_start();
+]]
+
+
+local C = ffi.C
+A = C.av_audio_get()
+C.av_audio_start()
+
+--[[
+for i = 0, 1000 do
+	A.buffer[i] = math.random()
+end
+--]]
