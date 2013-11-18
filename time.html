@@ -179,7 +179,173 @@ This is often not included as a form of control flow, however it is probably the
 
 Coroutines can give the impression of multiple parallel contexts of execution, but in reality only one is active at a time. Signals (interrupts) are a low level mechanism that operates in a similar manner, typically responding to low level events to interrupt current execution and jump to a new location. They are rarely used in high level code.
 
-Multi-threading uses lower level CPU parallelism to enable truly parallel execution. This can be very difficult to code for, as even a simple operation as ```i = i + 1``` could have unexpected results if the variable ```i``` is also modified by another parallel thread. 
+Multi-threading uses lower level CPU parallelism to enable truly parallel execution. This can be very difficult to code for, as even a simple operation as **i = i + 1** could have unexpected results if the variable **i** is also modified by another parallel thread. 
+
+----
+
+## audio.go(), audio.wait(), etc.
+
+The **audio** module comes equipped with a coroutine scheduler derived from [LuaAV](http://lua-av.mat.ucsb.edu/blog/?p=137). It allows us to schedule functions that can be paused and resumed in the process of generating audio. It is thus **strongly timed** in a similar manner to the ChucK live-coding language.
+
+The Lua language itself does not have means to control time, however this has been added by the **audio** module. These functions are very useful for building up musical structures, because of the temporal accuracy. They include:
+
+```
+-- return the current scheduler time (in seconds):
+audio.now()
+-- launch a function in the scheduler:
+audio.go()
+-- pause a scheduled function (either for a duration or until a named event occurs):
+audio.wait()
+-- resume functions waiting for a named event:
+audio.event()
+```
+
+If you will use these often, it may be worth caching them into local variables:
+
+```
+local now, go, wait, event = audio.now, audio.go, audio.wait, audio.event
+```
+
+### now()
+
+Printing out **now()** in a new script will return the logical time (in seconds) since the script was loaded. Until we start scheduling with time, all script actions occur immediately, so now() will return 0.
+
+```
+print(audio.now()) 	-- prints 0
+```
+
+### go()
+
+The function **go()** will take a function and arguments, create a *coroutine* based on them, and add this coroutine to the scheduler. An optional first argument can specify the time (in seconds) to wait before this function is run:
+
+```
+audio.go(print, "life")
+audio.go(2, print, "and everything")
+audio.go(1, print, "the universe")
+
+-- prints: "life"
+-- after 1 second, prints: "the universe"
+-- after 1 second more, prints: "and everything"
+```
+
+Of course you can put your own function instead of using **print**!
+
+### wait()
+
+So far we can use **audio.go** to precisely choose when a function starts. This could be enough to create a sequencer, for example.
+
+But since the functions are run as *coroutines*, we can also pause them in the middle, and resume them again later, using **wait()**. The **wait()** function allows us to pause the execution of a function for a number of seconds, after which it will continue:
+
+```
+audio.go(function()
+	print("life")
+	audio.wait(1)	
+	print("the universe")
+	audio.wait(1)
+	print("and everything")
+end)
+```
+
+What makes this more powerful is that it can be combined with other kinds of control flow such as for loops, while loops, nested function calls, and so on. Here's a simple example of an infinite process that prints "tick" every 1 second:
+
+```
+audio.go(function()
+	while true do	-- loop forever
+		print("tick")
+		audio.wait(1)	
+	end
+end)
+```
+
+Combine this with **now()** to create a clock:
+
+```
+audio.go(function()
+	while true do	-- loop forever
+		print("tick at", audio.now())
+		audio.wait(1)	
+	end
+end)
+```
+
+### Parallelism
+
+Coroutines are Lua's way to provides parallelism within a script. One way of thinking about a coroutines is that it is like a parallel function or script state; another way to think about it is as a function that can be paused in mid execution, while Lua goes off to execute some other code, and to later returned to (resume) at the point at which it paused (yielded). Our software adds more power to coroutines by connecting them with the audio scheduler.
+
+While a coroutine is paused, other coroutines and audio processes can continue to occur. So we can launch multiple coroutines to create parallel processes, like multiple players in an ensemble, voices in a drum machine, and so on. 
+
+Here's a very simple example; it prints out a tick every 1 second, and a TOCK every 4 seconds:
+
+```
+function clockprinter(name, period) 
+  while true do
+    print(audio.now(), name) 
+    audio.wait(period)
+  end
+end
+
+audio.go(clockprinter, "TOCK!", 4) 
+audio.go(clockprinter, "tick", 1)
+```
+
+Now we can create many parallel copies of the same function that can be scheduled alongside each other, each with potentially distinct timing, but without losing deterministic accuracy.
+
+In this way you can easily create musical patterns like Steve Reich's [Clapping Music](http://www.youtube.com/watch?v=lzkOFJMI5i8) or the phasing patterns of his [Drumming](http://www.youtube.com/watch?v=YH9n6pwpK0A&list=PL1G8x4dgz5wN--kHkJ66eahWhPEMTD4Pd) for example.
+
+Remember, the **go()** function can also take an optional first argument (delay in seconds), which allows us to schedule it to occur at some point in the future:
+
+```
+audio.go(2, clockprinter, "clackety", 1) -- will start 2 seconds later
+```
+
+Note that the even if the delay is 0, or is not given, the coroutine will not run immediately; **go()** simply adds the coroutine to the internal scheduler. (Lua is single-threaded by design, which means that only one actual function is executing at any time.) 
+
+### Scheduling with events
+
+Sometimes we want to schedule activity to occur not at a given time, but when a given situation occurs. To support this, the **go()** and **wait()** functions can also take a string argument in place of a duration. The string represents the name of a unique event.
+
+```
+-- schedule a callback for the "foo" event:
+audio.go("foo", function print("the foo happened") end)
+
+-- trigger it:
+audio.event("foo")
+```
+
+The **event()** function can then be used to resume ALL coroutines that were scheduled against or waiting upon a particular event. A classic use-case of this is to make sure that graphical rendering commands only execute during a window’s draw() method. Another use case is to schedule sequences to arbitrary rhythmic patterns.
+
+```
+-- launch a process to trigger "beat" events with a 1/0.5/0.5 pattern:
+function rhythm()
+	while true do
+		audio.event("beat")
+		audio.wait(1)
+		
+		audio.event("beat")
+		audio.wait(0.5)
+		
+		audio.event("beat")
+		audio.wait(0.5)
+	end
+end
+audio.go(rhythm)
+
+-- launch another process to respond to these events by alternating AAA and BBB:
+function printer()
+	while true do
+		print("AAA")
+		audio.wait("beat")
+		
+		print("BBB")
+		audio.wait("beat")
+	end
+end
+audio.go(printer)
+```
+
+
+
+----
 
 [![animation](http://25.media.tumblr.com/b5bbc21c3907802325301007ce31303f/tumblr_mjksjiMKYr1qamt2wo1_500.gif)](http://www.thisiscolossal.com/2012/05/delightful-paper-pop-ups-by-jenny-chen/)
 
