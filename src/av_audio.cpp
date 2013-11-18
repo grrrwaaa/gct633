@@ -49,8 +49,9 @@ int av_rtaudio_callback(void *outputBuffer,
 	audio.frames = frames;
 	
 	double newtime = audio.time + frames / audio.samplerate;
-	
 	size_t size = sizeof(float) * frames;
+	
+	//printf("%d %d %d %d\n", audio.blockread, audio.blocks, audio.blocksize, size);
 	
 	// zero outbuffers:
 	//memset(outputBuffer, 0, size);
@@ -122,6 +123,16 @@ AV_EXPORT void av_audio_start() {
 	options.streamName = "av";
 	
 	try {
+	
+		{
+			int blockspersecond = audio.samplerate / audio.blocksize;
+			audio.blocks = blockspersecond + 1;
+			audio.blockstep = audio.blocksize * audio.outchannels;
+			int len = audio.blockstep * audio.blocks;
+			if (audio.buffer) free(audio.buffer);
+			audio.buffer = (float *)calloc(len, sizeof(float));
+		}
+	
 		rta.openStream( &oParams, &iParams, RTAUDIO_FLOAT32, audio.samplerate, &audio.blocksize, &av_rtaudio_callback, NULL, &options );
 		rta.startStream();
 		printf("Audio started\n");
