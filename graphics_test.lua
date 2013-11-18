@@ -6,6 +6,9 @@ print("created window")
 
 -- load in the OpenGL library:
 local gl = require "gl"
+
+print("found gl")
+
 -- and two helper modules to make working with OpenGL easier:
 local shader = require "shader"
 local vbo = require "vbo"

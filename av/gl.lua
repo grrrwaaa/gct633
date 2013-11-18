@@ -12,26 +12,38 @@
 local ffi = require 'ffi'
 local bit = require 'bit'
 local C = ffi.C
+local lib
 
--- load from active executable rather than dynamic library
---local lib = ffi.C
+if ffi.os == "Linux" then
+	local ok
+	-- hack for Ubuntu, which loads mesa rather than nvidia by default:
+	-- if Nvidia is not installed, then it will fall back to system default GL.
 
-local libs = ffi_OpenGL_libs or {
-   OSX     = { x86 = "OpenGL.framework/OpenGL", x64 = "OpenGL.framework/OpenGL" },
-   Windows = { x86 = "OPENGL32.DLL",            x64 = "OPENGL32.DLL" },
-   Linux   = { x86 = "libGL.so",                x64 = "libGL.so", arm = "libGL.so" },
-   Linux = { x86 = "libGL.so", x64 = "libGL.so" },
-   BSD     = { x86 = "libGL.so",                x64 = "libGL.so" },
-   POSIX   = { x86 = "libGL.so",                x64 = "libGL.so" },
-   Other   = { x86 = "libGL.so",                x64 = "libGL.so" },
-}
+	local sources = {
+		"/usr/lib/nvidia-current-updates/libGL.so",
+		"/usr/lib/nvidia-current/libGL.so",
+		"/usr/lib/nvidia-319-updates/libGL.so",
+		"/usr/lib/nvidia-304/libGL.so",
+		-- last resort is mesa
+		"GL",
+	}
+	for i, v in ipairs(sources) do
+		ok, lib = pcall(ffi.load, v)
+		if ok then 
+			print("loaded opengl from", v)
+			break
+		end
+	end
+	assert(ok and lib, "failed to load OpenGL")
 
-local lib = lib or ffi.load( ffi_OpenGL_lib or libs[ ffi.os ][ ffi.arch ] )
+elseif ffi.os == "OSX" then
+	lib = ffi.load("OpenGL.framework/OpenGL")
 
-if ffi.os == "Windows" then
-	ffi.cdef[[
-		void * wglGetProcAddress(const char *);
-	]]
+elseif ffi.os == "Windows" then
+	lib = ffi.load("OPENGL32.DLL")
+
+else
+	error("Unexpected operating system")
 end
 
 ffi.cdef [[
