@@ -16,7 +16,18 @@ local function cmda(fmt, ...)
 	return io.popen(str):read("*a")
 end
 
-if ffi.os == "OSX" then
+if ffi.os == "Linux" then
+
+	local make = "g++ "
+		.. "-fno-stack-protector -O3 -Wall -fPIC " 
+		.. "-DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY "
+		.. "av.cpp av_audio.cpp RtAudio.cpp "
+		.. "-w -keep_private_externs "
+		.. "-lluajit -lsndfile "
+		.. "-o av_linux"
+	print(cmda(make))
+
+elseif ffi.os == "OSX" then
 
 	-- build 32:
 	local CC = "g++ "
