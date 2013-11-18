@@ -20,12 +20,14 @@ if ffi.os == "Linux" then
 
 	local make = "g++ "
 		.. "-fno-stack-protector -O3 -Wall -fPIC " 
-		.. "-DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY "
+		.. "-DEV_MULTIPLICITY=1 -DHAVE_GETTIMEOFDAY -D__LINUX_ALSA__ "
+		.. "-I/usr/include/luajit-2.0 "
 		.. "av.cpp av_audio.cpp RtAudio.cpp "
-		.. "-w -keep_private_externs "
-		.. "-lluajit -lsndfile "
+		.. "-w -rdynamic -Wl,-E  "
+		.. "/usr/lib/x86_64-linux-gnu/libluajit-5.1.a -ldl -lpthread -lsndfile -lGLU -lGL -lglut -lasound -lrt -lpthread "
 		.. "-o av_linux"
 	print(cmda(make))
+	print(cmda("cp av_linux .."))
 
 elseif ffi.os == "OSX" then
 

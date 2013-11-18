@@ -1,6 +1,9 @@
 #include "av.hpp"
 #include "RtAudio.h"
 
+#include <cstring>
+#include <cstdlib>
+
 typedef struct av_Audio {
 	unsigned int blocksize;
 	unsigned int frames;	

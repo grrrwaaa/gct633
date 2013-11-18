@@ -15,6 +15,8 @@ local ffi = require "ffi"
 local lib
 if ffi.os == "Windows" then
 	lib = ffi.load("libsndfile-1.dll")
+elseif ffi.os == "Linux" then
+	lib = ffi.load("sndfile")
 else
 	lib = ffi.C
 end
