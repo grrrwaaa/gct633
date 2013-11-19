@@ -55,7 +55,7 @@ end
 function draw()
 	-- from time to time, modify the VBO data:
 	if math.random() < 0.1 then
-		vertices[math.random(vertices.count)-1].position:set(math.random(), math.random(), math.random())
+		vertices[math.random(vertices.count)-1].position:set(math.random()*2-1, math.random()*2-1, math.random()*2-1)
 		-- mark the object as modified, so that it will be submitted to the GPU:
 		vertices.dirty = true
 	end
@@ -72,7 +72,7 @@ function draw()
 	
 	-- render using the data in the VBO:
 	-- (using gl.TRIANGLES by default)
-	vertices:draw()
+	vertices:draw(gl.TRIANGLE_STRIP)
 	
 	-- detach the shader_program attributes:
 	vertices:disable_position_attribute(shader_program)
