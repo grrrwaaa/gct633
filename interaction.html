@@ -188,16 +188,40 @@ Sound toys are small applications with interactive visual interfaces that genera
 
 - One of the oldest selections of web-based soundtoys is at [www.soundtoys.net](http://www.soundtoys.net/), though some of them don't work on modern browsers.
 - A more recent selection is at [creative applications net](http://www.creativeapplications.net/tag/soundtoy/)
-- A pioneering collection of sound toy experiments is the [ixi software collection](http://www.ixi-audio.net/content/software.html). They might not work on your OS, but the do include the source code.
+- A pioneering collection of sound toy experiments is the [ixi software collection](http://www.ixi-audio.net/content/software.html). They might not work on your OS, but there is source code. You might find videos of them on Youtube.
 	- An academic treatment by one of the authors: [ixi software: The Interface as Instrument](http://www.ixi-software.net/thor/ixi_software.pdf).
-- Snibbe studio reconstructed several earlier works for iOS, such as [bubbleharp](http://www.snibbestudio.com/bubbleharp/)
-- An interesting variation is taken by [Nodal](http://www.csse.monash.edu.au/~cema/nodal/)
+- Golan Levin created a series of audiovisual experiments for his [MIT Masters thesis](http://www.flong.com/texts/publications/thesis/) such as [YellowTail](http://vimeo.com/661922). See also his [TED Talk on software as art](http://www.ted.com/talks/golan_levin_on_software_as_art.html)
+- Artist Scott Snibbe studio reconstructed several earlier works for iOS, such as [bubbleharp](http://www.snibbestudio.com/bubbleharp/)
+- Some simple but novel ideas have grown into complex applications, such as [Nodal](http://www.csse.monash.edu.au/~cema/nodal/). Despite the complexity, the core idea in Nodal is simple: nodes are instruments, laid in a grid with connections along which players constantly move.
 	- [Academic paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.146.2797)
-- Another popular example on iOS is [Soundrop](https://itunes.apple.com/en/app/soundrop/id364871590?mt=8)
+- The game [*fLOW*](http://www.xgenstudios.com/game.php?keyword=flow) began as a student project at UCLA, in which you guide a growing fish-like creature around a space eating smaller fish, and going up and down levels as desired (based on the psychological concept of "flow"). It was picked up by SONY for the [Playstation](http://us.playstation.com/games/flow-ps3.html).
 
-## Sounddrop
+## Assignment 4: Propose/analyze a sound toy
 
-If we take the last example ([Soundrop](https://itunes.apple.com/en/app/soundrop/id364871590?mt=8)), we can break this down into different components and problems to solve just as we did for Pong:
+Do some research looking at existing sound toy applications and related artworks, experiments, software instruments and so on. Either choose one that you like, or invent a new idea inspired by one or more existing sound toys. It should include graphics, sound and interactivity; and it should be fairly simple yet creative, interesting, novel and/or fun. 
+
+> Even a simple system can become publishable research or a marketable product if it is interesting, fun and novel.
+
+What you need to do is:
+
+0. Indicate the inspirational references (ideally a website / video). 
+1. Describe the project briefly (2-5 sentences), including the main components, the kind of interaction. Articulate why it is innovative, interesting or fun, despite the simplicity.
+2. Outline the implementation challenges in more detail: break down the application into each of the components, including the sound and graphical rendering, the simulation, and the interaction. For each one outline areas that could be more challenging.
+3. From this you can identify what is the global state the program would probably need.
+
+This is a proposal for your final project, so the deadline is very short. 
+
+You can submit an individual idea for this assignment but join a team with somebody else's idea for the final project if you prefer. Working in teams may be necessary for more challenging projects.
+
+## Example
+
+Let's take the example of [Soundrop](https://itunes.apple.com/en/app/soundrop/id364871590?mt=8), which has been fairly successful on the difficult iOS app market.
+
+### Summary:
+
+You can draw platform surfaces into a space, on which balls can bounce. Each bounce makes a sound depending on the ball's speed. Balls appear at one point in space, and are subject to gravity. By drawing, erasing, moving the lines you can create small musical systems. Despite the simplicity it is quite addictive, perhaps because it scales well: you can really puzzle through building up a complex system part by part, and it sounds engaging at all stages. 
+
+### Implementation:
 
 - Simulation:
 	- A moving ball
@@ -205,28 +229,40 @@ If we take the last example ([Soundrop](https://itunes.apple.com/en/app/soundrop
 		- With force of gravity
 			- Also need forces (acceleration)
 		- Bouncing of surfaces at different angles
-			- Collision test: intersection of ball-path with surface
+			- Challenge: collision test: intersection of ball-path with surface
 			- Collision effect: calculate change in forces and new ball position
 	- Many surfaces, many balls
 		- Balls generated periodically at one location
 		- Balls removed if they fly off the screen sides or bottom
 - Rendering:
-	- Balls
-	- Surfaces (endpoints and connection)
+	- Graphics:
+		- Balls
+		- Surfaces (endpoints and connection)
 	- Sound: triggered by ball-surface collisions make sound
 		- The pitch appears to depend on the ball velocity
 - Interaction: 
 	- Adding a surface
 		- Drawing gesture: mouse start and end positions
 	- Removing a surface
-		- Selecting a surface (with double-click or keydown?)
-		- Requires mouse/surface collision test
+		- Challenge: Selecting a surface (with double-click or keydown?)
+			- Requires mouse/surface collision test
 	- Moving surface endpoint
-		- Selecting endpoint and dragging
-		- Requires mouse/endpoint collision test
+		- Challenge: Selecting endpoint and dragging
+			- Requires mouse/endpoint collision test
 	- Moving the ball generator
-		- Selecting generator and dragging
-		- Requires mouse/generator collision test
+		- Challenge: Selecting generator and dragging
+			- Requires mouse/generator collision test
+		
+### State:
+
+- variable list of balls
+	- position, velocity
+- ballsource position
+- variable list of surfaces
+	- two endpoint positions (possibly and/or center + rotation?)
+- currently selected surface / endpoint
+- configuration
+	- force of gravity	
 	
 </div>
 <div id="wrapper">
