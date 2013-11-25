@@ -41,7 +41,7 @@ elseif ffi.os == "OSX" then
 	local LDFLAGS = "-w -keep_private_externs "
 				.. "-mmacosx-version-min=10.6 "
 				.. "-Losx/lib "
-	local LIBS = "osx/lib/libluajit.a -framework CoreFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework GLUT -framework OpenGL -framework IOKit -force_load osx/lib/libsndfile.a"
+	local LIBS = "osx/lib/libluajit.a -framework CoreFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework GLUT -framework OpenGL -framework IOKit -force_load osx/lib/libsndfile.a -force_load osx/lib/libfreeimage.a"
 	local OUT = "-o av_osx"
 	
 	local build32 = { CC, "-arch i386 ", CFLAGS, SRC, LDFLAGS, LIBS, "-o av32" }

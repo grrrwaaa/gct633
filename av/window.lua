@@ -353,6 +353,10 @@ function window:redisplay()
 		gl.Hint(gl.LINE_SMOOTH_HINT, gl.NICEST)
 		gl.Enable(gl.POINT_SMOOTH)
 		gl.Hint(gl.POINT_SMOOTH_HINT, gl.NICEST)
+		
+		gl.Enable( gl.BLEND )
+   		gl.BlendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA )
+		
 		glu.assert("hints")
 		if window.oncreate then window:oncreate() end
 		firstdraw = false
