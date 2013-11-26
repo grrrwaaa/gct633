@@ -34,7 +34,7 @@ The first thing to learn is that OpenGL is highly **stateful**. For example, **g
 
 Geometry in OpenGL is specified as a series of *vertices*, where each vertex has a position in space, and possibly other attributes such as color, texture coordinate, normal direction, and so on. Vertices simply define a set of points, but we can instruct OpenGL to interpret them as surfaces (or lines, or points) using the following constants:
 
-![GL_GeometricPrimitives.png](GL_GeometricPrimitives.png)
+![GL_GeometricPrimitives.png](img/GL_GeometricPrimitives.png)
 
 In OpenGL 1 this is done using the **gl.Begin()** call, e.g. **gl.Begin(gl.LINES)**. After a **gl.Begin()** we can issue a number of vertices using **gl.Vertex()**, and finally finish our shape using **gl.End()**:
 
@@ -105,7 +105,7 @@ Note that the order of transformations is important: translate followed by scale
 
 The transformation stack is called a *stack* because you can push and pop it:
 
-![Stack](http://en.wikipedia.org/wiki/File:Data_stack.svg)
+![Stack](http://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg)
 
 *Pushing* the stack allows you to modify the transformation temporarily, and then later *pop* back to the previous state. Usually OpenGL provides up to 16 possible transformations on the stack.
 
