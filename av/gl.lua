@@ -41,6 +41,10 @@ elseif ffi.os == "OSX" then
 
 elseif ffi.os == "Windows" then
 	lib = ffi.load("OPENGL32.DLL")
+	ffi.cdef[[
+		void * wglGetProcAddress(const char *);
+	]]
+
 
 else
 	error("Unexpected operating system")

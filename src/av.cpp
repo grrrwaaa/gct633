@@ -333,6 +333,7 @@ int main(int argc, char * argv[]) {
 		dll("libsndfile-1");
 		dll("glut32");
 		//dll("glew32");
+		dll("FreeImage");
 	#endif
 	// configure GLUT:
 	glutInit(&argc, argv);

@@ -2,12 +2,8 @@
 local window = require "window"
 window:create()
 
-print("created window")
-
 -- load in the OpenGL library:
 local gl = require "gl"
-
-print("found gl")
 
 -- and two helper modules to make working with OpenGL easier:
 local shader = require "shader"
@@ -53,6 +49,14 @@ for i = 0, vertices.count-1 do
 end
 
 function draw()
+	gl.Color(1, 1, 1)
+	
+	gl.Begin(gl.POINTS)
+	for i = 1 , 100 do
+		gl.Vertex(math.random(), math.random(), math.random())
+	end
+	gl.End()
+
 	-- from time to time, modify the VBO data:
 	if math.random() < 0.1 then
 		vertices[math.random(vertices.count)-1].position:set(math.random()*2-1, math.random()*2-1, math.random()*2-1)
