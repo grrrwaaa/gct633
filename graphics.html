@@ -99,6 +99,8 @@ function draw()
 end
 ```
 
+Unlike gl.Color(), draw2D's *translate()*, *scale()* and *rotate()* do not replace the previous values; instead they accumulate on top of each other into a hidden state called the transformation matrix, which is a fancy name for how we get from the coordinate system in which we are currently drawing to the coordinate system of the actual output pixels. 
+
 Note that the order of transformations is important: translate followed by scale is quite different to scale followed by translate. For controlling an object, usually the order used is "translate, rotate, scale". 
 
 The transformation stack is called a *stack* because you can push and pop it:
@@ -124,9 +126,11 @@ function draw()
 end
 ```
 
-The **draw2D** module provides push, pop, translate, rotate and scale for 2D rendering. For more complex rendering, use **gl.LoadMatrix()** or **gl.MultMatrix()** in combination with one of the matrix transform generators in the **mat4** module:
+The **draw2D** module provides push, pop, translate, rotate and scale for 2D rendering. For more complex rendering, use **gl.LoadMatrix()** (to replace the previous value) or **gl.MultMatrix()** (to accumulate with the previous value) in combination with one of the matrix transform generators in the **mat4** module:
 
 ```
+-- this does the same thing as the previous script:
+
 local gl = require "gl"
 local draw2D = require "draw2D"
 local mat4 = require "mat4"
@@ -144,6 +148,10 @@ function draw()
 	draw2D.ellipse(0, 0, 1, 1)
 end
 ```
+
+With this we can easily now create ideal visual forms, and then create instances of these forms with different position, scale and rotation, however we please. We're about ready for some generative design...
+
+> Warning: if you want to do something computational according to the position, it's better not to use the OpenGL transformation stack, as it does not give you access to the computed position. Instead you'll have to compute it manually... 
 
 ## OpenGL 2 pipeline
 
