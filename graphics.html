@@ -24,7 +24,128 @@ The world of computer graphics is vast and ever-growing. We will limit ourselves
 
 The OpenGL API (application programming interface) is specified for the C language, however we will be using it from within Lua. It is in most cases very easy to translate OpenGL code from C to Lua. Any function prefix **gl** becomes **gl.**, and any constant prefix **GL_** also becomes **gl.**. Finally, some functions in Lua can be simplified by leveraging Lua's dynamic typing support, so for example we can use **gl.Color** instead of **glColor4f**. 
 
-## OpenGL pipeline
+## Good old-fashioned OpenGL 1
+
+Before leaping into GL 2.1, it's worth seeing how things used to be done, because although it is less flexible or efficient, in many ways it is easier to learn.
+
+The first thing to learn is that OpenGL is highly **stateful**. For example, **gl.Color()** will set the current color, and any geometry drawn after it will use that color, until another **gl.Color()** changes it. You can think of it like the current brush in your hand. OpenGL also uses state to store spatial transformations, such as the view and object (gl.MODELVIEW) and the current perspective (gl.PROJECTION). 
+
+### Geometry
+
+Geometry in OpenGL is specified as a series of *vertices*, where each vertex has a position in space, and possibly other attributes such as color, texture coordinate, normal direction, and so on. Vertices simply define a set of points, but we can instruct OpenGL to interpret them as surfaces (or lines, or points) using the following constants:
+
+![GL_GeometricPrimitives.png](GL_GeometricPrimitives.png)
+
+In OpenGL 1 this is done using the **gl.Begin()** call, e.g. **gl.Begin(gl.LINES)**. After a **gl.Begin()** we can issue a number of vertices using **gl.Vertex()**, and finally finish our shape using **gl.End()**:
+
+```
+local gl = require "gl"
+
+function draw()
+	gl.Color(1, 1, 1)
+	gl.Begin(gl.LINES)
+		gl.Vertex(0, 0, 0)
+		gl.Vertex(1, 1, 0)
+	gl.End()
+end
+```
+
+To change attributes of each vertex, we must call the attribute setters before the corresponding **gl.Vertex()**:
+
+```
+local gl = require "gl"
+
+function draw()
+	gl.Begin(gl.LINES)
+		gl.Color(0, 0, 1)
+		gl.Vertex(0, 0, 0)
+		
+		gl.Color(1, 0, 0)	
+		gl.Vertex(1, 1, 0)
+	gl.End()
+end
+```
+
+Some common geometries have been abstracted in the **draw2D** module:
+
+```
+local draw2D = require "draw2D"
+
+function draw()
+	draw2D.color(1, 0, 0)
+	draw2D.rect(0, 0, 1, 1)
+	
+	draw2D.color(1, 1, 0)
+	draw2D.ellipse(0, 0, 1, 1)
+end
+```
+
+### Transformation stacks
+
+If we want to render the same geometry at different locations, scales and rotations in space, we would normally have to recalculate the positions of each argument to each **gl.Vertex()**. Instead, OpenGL provides transformation stacks. The default stack is the *MODELVIEW* stack, which represents the current location, scale and orientation of geometry in the world. You can *translate*, *rotate* and *scale* the modelview.  You could think of translation as meaning changing the 'start point' (in mathematical terms, the "origin") of drawing. Or you could think of it as moving the underlying "graph paper" that we are drawing onto. Similarly for the rotating the paper, or scaling it. 
+
+```
+local draw2D = require "draw2D"
+
+function draw()
+	draw2D.translate(-1, 0)
+	draw2D.scale(0.5, 0.5)
+
+	draw2D.color(1, 0, 0)
+	draw2D.rect(0, 0, 1, 1)
+	
+	draw2D.color(1, 1, 0)
+	draw2D.ellipse(0, 0, 1, 1)
+end
+```
+
+Note that the order of transformations is important: translate followed by scale is quite different to scale followed by translate. For controlling an object, usually the order used is "translate, rotate, scale". 
+
+The transformation stack is called a *stack* because you can push and pop it:
+
+![Stack](http://en.wikipedia.org/wiki/File:Data_stack.svg)
+
+*Pushing* the stack allows you to modify the transformation temporarily, and then later *pop* back to the previous state. Usually OpenGL provides up to 16 possible transformations on the stack.
+
+```
+local draw2D = require "draw2D"
+
+function draw()
+	draw2D.push()
+		draw2D.translate(-1, 0)
+		draw2D.scale(0.5, 0.5)
+
+		draw2D.color(1, 0, 0)
+		draw2D.rect(0, 0, 1, 1)
+	draw2D.pop()
+	
+	draw2D.color(1, 1, 0)
+	draw2D.ellipse(0, 0, 1, 1)
+end
+```
+
+The **draw2D** module provides push, pop, translate, rotate and scale for 2D rendering. For more complex rendering, use **gl.LoadMatrix()** or **gl.MultMatrix()** in combination with one of the matrix transform generators in the **mat4** module:
+
+```
+local gl = require "gl"
+local draw2D = require "draw2D"
+local mat4 = require "mat4"
+
+function draw()
+	gl.PushMatrix()
+		gl.LoadMatrix(mat4.translate(-1, 0, 0))
+		gl.MultMatrix(mat4.scale(0.5, 0.5, 1))
+		
+		draw2D.color(1, 0, 0)
+		draw2D.rect(0, 0, 1, 1)
+	gl.PopMatrix()
+	
+	draw2D.color(1, 1, 0)
+	draw2D.ellipse(0, 0, 1, 1)
+end
+```
+
+## OpenGL 2 pipeline
 
 The typical task of an OpenGL program is to take as input some 3D geometry and other parameters, and render it by setting the color value for each pixel in the application window. This involves a series of transformations between [spaces](space.html), and different kinds of programming tasks at each stage of the transformation. Some of the earlier steps of these operations occur on the computer's CPU, while the later operations occur on the graphics hardware (GPU). The flow of data through this process is almost always unidirectional, hence it is sometimes called the 'rendering pipeline'. 
 
