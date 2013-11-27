@@ -312,6 +312,88 @@ The simplest model of a vibrating string was presented by Karplus and Strong:
 2. The delay line length defines the fundamental tone of the string. 
 3. The feedback path includes a filter to emulate the way energy is gradually dissipated from the string (usually removing higher frequencies more quickly than lower ones). The gain of the filter must be less than 1 to avoid saturated feedback.
 
+---
+
+## Granular synthesis and microsounds
+
+Granular synthesis is a basic sound synthesis method that operates by creating sonic events (often called "grains") at the microsound time scale.
+
+> Microsound includes all sounds on the time scale shorter than musical notes, the sound object time scale, and longer than the sample time scale. Typically this is shorter than one tenth of a second and longer than ten milliseconds, including the audio frequency range (20 Hz to 20 kHz) and the infrasonic frequency range (below 20 Hz, rhythm). 
+
+- [Microsound (Curtis Roads)](http://books.google.co.kr/books/about/Microsound.html) is the principal textbook
+
+Microsound was pioneered by physicist Denis Gabor and explored by composers Iannis Xenakis, [Curtis Roads](http://www.youtube.com/watch?v=0mQ8zRZOlrk), [Horacio Vaggione](http://www.youtube.com/watch?v=K-FjnKiDWQc), [Barry Truax](http://www.youtube.com/watch?v=X7FoPo-kyoM), [Trevor Wishart](http://www.youtube.com/watch?v=lekLl7o8yrc), and many more.
+
+Besides this, what is it useful for?
+
+- Impulse trains
+- Physical modeling of shaker-like instruments
+- Speech synthesis (e.g. FOF)
+- Wavelet analysis/resynthesis
+- Time/frequency resampling effects such as pitch-shifting and time-stretching
+- Separated processing of transients and stable waveforms, e.g. 
+- Cricket chirps, frog croaks, etc.
+- Many other sonic textures of variable density, color, quality, and stochastic distributions
+
+Implementing a granular synthesis techinque involves two challenges:
+
+1. **Specify the grain**: How to synthesize the individual samples of a grain (the *content*), how to specify the *duration*, what overall amplitude shape (the *envelope*) to apply, and how these can be parametrically controlled. 
+2. **Specify how grains are parameterized and laid out in time**: Whether to arrange grains at equal or unequal spacing, how densely they overlap, and so on; how to distribute parameter variations through the grains of a particular granular "cloud". Often clouds include stochastic distributions.
+
+### Grain content
+
+Any sound source can be turned into a grain, by limiting the duration and choosing the envelope shape. It could be a mathematical synthesis technique, from a pure sine wave or noise source to a complex timbre. Or it could be a routine to select portions out of an existing waveform or input stream ("granulation"). 
+
+With large populations of grains it can be very expensive to run complex routines for each grain. However as grain durations get shorter, there is less audible information stored in a grain and the exact synthesis algorithm becomes less important. Thus wavetable playback is often utilized.
+
+### Grain envelope
+
+Similarly, envelopes can be either computed dynamically, or read from precalculated wavetable data. The shape of an envelope becomes increasingly important in determining the perceived sound as durations get shorter. Most envelopes begin and end at zero amplitude. Denis Gabor originally suggesed a Gaussian envelope shape, but today applications can make use of many mathematical and procedural envelope shapes. 
+
+Often the envelope chosen is symmetric in time, rising from zero to peak at half-duration and falling back to zero; these shapes are frequently also used as **window** functions for signal analysis. The spectral properties of windows, represented by their Fourier transforms, are very significant in determining how well they suppress aliasing noise in the analysis (aliasing noise results from a time/space trade-off due to finite discretization). If we define "norm" as a ramp from 0 to 1 over the duration, and "snorm" as a ramp from -1 to 1 over the duration, we can define many classic window shapes:
+
+- Parabolic: 1 - snorm^2
+- Cosine/Welch: sin(pi*norm), 
+- Bartlett/Triangle: 2*min(norm, (1-norm))
+- Gaussian: exp(-0.5 * (n*snorm)^2)
+- Blackmann: 0.42-0.5*(cos(2*pi*norm)) + 0.08*cos(4*pi*norm)
+- Hamming: 0.53836 - 0.46164*cos(2*pi*norm)
+- Hann: 0.5*(1-cos(pi*2*norm))
+- Sinc/Lanczos: sin(pi*snorm)/(pi*snorm)
+- Nutall: 0.355768 - 0.487396*cos(2*pi*norm) + 0.144323*cos(4*pi*norm) - 0.012604*cos(6*pi*norm)
+- Blackman-Harris: 0.35875-0.48829*cos(2*pi*norm)+0.14128*cos(4*pi*norm)-0.01168*cos(6*pi*norm)
+- Blackman-Nutall: 0.3635819-0.4891775*cos(2*pi*norm)+0.1365995*cos(4*pi*norm)-0.0106411*cos(6*pi*norm)
+- FlatTop / Kaiser-Bessel: 0.22*(1-1.93*cos(2*pi*norm)+1.29*cos(4*pi*norm)-0.388*cos(6*pi*norm)+0.032*cos(8*pi*norm))
+- Bessel: 0.402-0.498*cos(2*pi*norm)+0.098*cos(4*pi*norm)-0.001*cos(6*pi*norm)
+
+These an many other more complex window shapes are detailed [on the wikipedia page](http://en.wikipedia.org/wiki/Window_function), including time and frequency domain representations.
+
+Other envelope shapes are non-symmetric, and will impart stronger percussive or reverse effects to the sounds:
+
+- Inc: norm, Dec: 1-norm, Saw: snorm
+- Expodec: (1-norm)^n, Rexpodec: norm^n (and logarithmic versions for n<0)
+- Attack-release, attack-sustain-release, attack-decay-sustain-release and more complex linear, bezier or spline-segment shapes (some inspired by [note-envelopes common to synthesizers](http://en.wikipedia.org/wiki/Synthesizer#ADSR_envelope))
+- Any symmetric window can be stretched by applying a non-symmetric transform to norm or snorm in advance.
+
+![ADSR](http://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/ADSR_parameter.svg/213px-ADSR_parameter.svg.png)
+
+In some cases an envelope is not needed at all, when the content can be arranged to have a natural intrinsic envelope shape.
+
+### Grain distribution
+
+The principal method of combining grains into a cloud is called "overlap-add". A *scheduler* maintains a list of grains to play, working through the list of grains (sorted by grain onset time) and playing each grain in turn. Each grain adds its samples to the output buffer, accumulating onto (rather than replacing) the samples of any other previously played grains with which it overlaps. This is essentially the same as mixing multiple musical notes together, only with much shorter durations (and more accurately placed onset times).
+
+> In our software we already have sample-accurate overlap-add capability via audio.play() and audio.go()/audio.wait(). 
+
+The great computer music problem appears again here: for populations of hundreds or thousands of grains, how to specify each grain's onset, duration, amplitude, spatial location and other parameters to create a meaningful result? Fortunately the situation for grains is more accessible than for individual samples.
+
+The spacing of grain onset times can be regular (*synchronous*) or irregular (*asynchronous*). Regular placement of grains can introduce another audible frequency effect. Holding the grain rate constant but varying the duration can achieve formant effects and simulate vocal sounds. With randomly distributed onset times however, density becomes a principal parameter. At longer time scales it can create [rhythmic](http://www.youtube.com/watch?v=uIeA2ct5Sew) or ["bouncing"]( http://www.youtube.com/watch?v=MA6ZXYIfLpA) effects.
+
+For granulation techniques, varying the start-point of the source waveform for each grain can be used to create time-stretching effects, or shifting the playback rate can be used to create pitch-shifting effects. Adding some random distribution to onset and duration can create a more organic, less metallic effect, but may weaken the strength of transients in the original. 
+
+More generally, all parameters of a stream or cloud can be held constant, gradually shifted, randomly selected from a set, or distributed randomly around a center value as desired, to create many different complex shapes. Beyond this level, the task is to arrange the grains, streams and clouds together over space in time to construct a meaningful musical space. Changing the shapes of distributions over time was an important composition method of Iannis Xenakis. Beyond regular and random distributions, we could also explore the use of more generative algorithms such as Markov-chains, swarm dynamics and evolutionary algorithms.
+
+
 ----
 
 ## Sounds as summations of cyclic rotations (Fourier)
