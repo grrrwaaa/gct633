@@ -3,6 +3,9 @@
 
 local gl = require "gl"
 local GL = gl
+
+local texture = require "texture"
+	
 local pi = math.pi
 local twopi = pi * 2
 local halfpi = pi/2
@@ -89,10 +92,32 @@ function draw2D.rect(x, y, w, h)
 	local x2 = x + w2
 	local y2 = y + h2
 	gl.Begin(GL.QUADS)
+		gl.TexCoord( 0,  0)
 		gl.Vertex2d(x1, y1)
+		gl.TexCoord( 1,  0)
 		gl.Vertex2d(x2, y1)
+		gl.TexCoord( 1,  1)
 		gl.Vertex2d(x2, y2)
+		gl.TexCoord( 0,  1)
 		gl.Vertex2d(x1, y2)
+	gl.End()
+end
+
+--- Draw a quad over four points
+-- @param x1 coordinate of first point (optional, defaults to 0)
+-- @param y1 coordinate of first point (optional, defaults to 0)
+-- @param x2 coordinate of second point (optional, defaults to 1)
+-- @param y2 coordinate of second point (optional, defaults to 0)
+-- @param x3 coordinate of third point (optional, defaults to 1)
+-- @param y3 coordinate of third point (optional, defaults to 1)
+-- @param x4 coordinate of fourth point (optional, defaults to 0)
+-- @param y4 coordinate of fourth point (optional, defaults to 1)
+function draw2D.quad(x1, y1, x2, y2, x3, y3, x4, y4)
+	gl.Begin(GL.QUADS)
+		gl.Vertex2d(x1 or 0, y1 or 0)
+		gl.Vertex2d(x2 or 1, y2 or 0)
+		gl.Vertex2d(x3 or 1, y3 or 1)
+		gl.Vertex2d(x4 or 0, y4 or 1)
 	gl.End()
 end
 
@@ -163,5 +188,26 @@ end
 -- @param alpha (opacity) value from 0 to 1 (optional, default 1)
 function draw2D.color(red, green, blue, alpha) end
 draw2D.color = gl.Color
+
+--- Load an image to draw
+-- @param the image file name/path
+-- @return image object
+function draw2D.loadImage(name)
+	local tex = texture.load(name)
+	
+	return tex
+end
+
+--- Draw an image at the point (x, y) with width w and height h
+-- @param img the image to use (created by loadImage())
+-- @param x coordinate of center (optional, defaults to 0)
+-- @param y coordinate of center (optional, defaults to 0)
+-- @param w width (optional, defaults to 1)
+-- @param h height (optional, defaults to 1)
+function draw2D.image(img, x, y, w, h)
+	img:bind()
+	draw2D.rect(x, y, w, h)
+	img:unbind()
+end
 
 return draw2D

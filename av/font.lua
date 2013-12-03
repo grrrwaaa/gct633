@@ -8,48 +8,6 @@ local texture = require "texture"
 local ffi = require "ffi"
 local C = ffi.C
 
-local function image(name)
-	local filetype = freeimage.GetFileType(name,0)
-	assert(freeimage.FIFSupportsReading(filetype), "cannot parse image type")
-	local flags = 0
-	local img = freeimage.Load(filetype, name, flags)
-	if img == nil then error("failed to load "..name) end
-	local res = freeimage.ConvertTo32Bits(img)
-	freeimage.Unload(img)
-	img = res
-	
-	local colortype = freeimage.GetColorType(img)
-	print("colortype", colortype)
-	if colortype == C.FIC_MINISWHITE or colortype == C.FIC_MINISBLACK then
-		print("greyscale")
-		local res = freeimage.ConvertToGreyscale(img)
-		freeimage.Unload(img)
-		img = res
-	end
-	
-	local w = freeimage.GetWidth(img)
-	local h = freeimage.GetHeight(img)
-	
-	local datatype = freeimage.GetImageType(img)
-	print("datatype", datatype, C.FIT_BITMAP)
-	assert(datatype == C.FIT_BITMAP, "only 8-bit unsigned image types yet")
-	local hdr = freeimage.GetInfoHeader(img)
-	print(hdr.biBitCount)
-	local pixels = freeimage.GetBits(img)
-	print(w, h, pixels)
-	
-	local tex = texture(w, h)
-	tex.data = pixels
-	
-	-- format depends on the file... 
-	--tex.format = gl.BGRA
-	
-	-- segfault.. probably need to copy the pixels... 
-	--freeimage.Unload(img)
-	
-	return tex
-end
-
 local textshader = shader([[
 
 varying vec4 color;
@@ -87,7 +45,7 @@ function font:load(name)
 	
 	name = name or "Roboto-Regular"
 	
-	fnt.texture = image("fonts/" .. name .. ".png")
+	fnt.texture = texture.load("fonts/" .. name .. ".png")
 	fnt.texture.clamp = gl.CLAMP_TO_BORDER
 	
 	local f = io.open("fonts/" .. name .. ".fnt")
