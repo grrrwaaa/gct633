@@ -194,7 +194,6 @@ draw2D.color = gl.Color
 -- @return image object
 function draw2D.loadImage(name)
 	local tex = texture.load(name)
-	
 	return tex
 end
 
