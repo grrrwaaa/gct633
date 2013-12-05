@@ -3,6 +3,7 @@
 
 local gl = require "gl"
 local GL = gl
+local displaylist = require "displaylist"
 
 local texture = require "texture"
 	
@@ -141,6 +142,14 @@ function draw2D.ellipse(x, y, w, h)
 	gl.End()
 end
 
+local circlelist = displaylist(function()
+	gl.Begin(GL.TRIANGLE_FAN)
+	for a = 0, twopi, 0.0436 do
+		gl.Vertex2d(cos(a), sin(a))
+	end
+	gl.End()
+end)	
+
 --- Draw an ellipse at the point (x, y) with horizontal diameter d
 -- @param x coordinate of center (optional, defaults to 0)
 -- @param y coordinate of center (optional, defaults to 0)
@@ -149,11 +158,11 @@ function draw2D.circle(x, y, d)
 	x = x or 0
 	y = y or 0
 	local r = d and d/2 or 0.5
-	gl.Begin(GL.TRIANGLE_FAN)
-	for a = 0, twopi, 0.0436 do
-		gl.Vertex2d(x + r * cos(a), y + r * sin(a))
-	end
-	gl.End()
+	gl.glPushMatrix()
+		gl.glTranslated(x, y, 0)
+		gl.glScaled(r, r, 1)
+		circlelist:draw()
+	gl.glPopMatrix()
 end
 
 --- Draw an arc at the point (x, y) with horizontal diameter d
