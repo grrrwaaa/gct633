@@ -263,7 +263,93 @@ You can draw platform surfaces into a space, on which balls can bounce. Each bou
 - currently selected surface / endpoint
 - configuration
 	- force of gravity	
-	
+
+### Challenges: 2D line intersection & bounce reflection
+
+We want to know if the path of a ball over one time step will cross a particular "surface" line. If there is an intersection then we want to know where, and at what angle, so that we can accurately represent the bounce. We also need to be careful for special cases: if the two lines share an endpoint, or if the two lines are parallel. 
+
+The line intersection discussion is borrowed from the pages at [Paul Bourke's excellent website](http://paulbourke.net/geometry/pointlineplane/). 
+
+[lines](http://paulbourke.net/geometry/pointlineplane/lineline1.gif)
+
+If we are given a line segment as two points P1, P2, then we can also represent it in terms of an origin plus a slope and scalar: "P1 + uD"; where the slope "D" is derived as "P2 - P1". For the ball, P1 is the current position and D is the velocity.
+
+This should also look familiar from linear interpolation we have seen before; the only difference is that now P1 and P2 are of type vec2:
+
+```
+-- return the linear interpolation of p1 and p2 by factor t:
+function lerp(P1, P2, u)
+	return P1 + u * (P2-P1)
+end
+```
+
+For two lines, we have:
+
+Pa = P1 + ua( P2 - P1 )
+Pb = P3 + ub( P4 - P3 )
+
+To derive the point where these lines meet, we must solve for Pa == Pb. Separating the X and Y components:
+
+x1 + ua (x2 - x1) = x3 + ub (x4 - x3)
+y1 + ua (y2 - y1) = y3 + ub (y4 - y3)
+
+[equations](http://paulbourke.net/geometry/pointlineplane/lineline2.gif)
+
+> Paul Bourke notes that if the denominators are the same for both equations. If it is zero, we have parallel lines which cannot intersect. [Here is his C code](http://paulbourke.net/geometry/pointlineplane/pdb.c)
+
+> For more optimzation, we'd like to abort the test as early as possible. One way is to make a *bounding box* (BB) check: does any point on the path of the ball lie within the bounding box of the surface? If not, no intersection can occur. A more optimal method is to use a sweep line method, as described [here](http://en.wikipedia.org/wiki/Line_segment_intersection). We might be able to simplify in our case knowing that the surface objects are "static": we can store them in a list that is sorted by X or Y position.
+
+One we derive ua, we can determine if it lies between the segment boundaries: if ua >= 0 and ua <= 1, we have a coordinate between P1 and P2, i.e. on the line segment. (Note that we only need to test one of the lines, not both). This will tell us how much bounce we need to add (1-ua). It also gives us the point of intersection itself:
+
+```
+-- point of intersection of the bounce:
+I = lerp(P1, P2, ua)
+-- amount of distance remaining to be applied in the bounce:
+speed = D1:length()
+remain = (1 - ua) * speed
+```
+
+For the bounce itself, we also need to calculate the reflection direction. [Paul Bourke also describes general reflection here](http://paulbourke.net/geometry/reflected/). 
+
+[img](http://paulbourke.net/geometry/reflected/diagram.gif)
+
+First we reverse D1, then convert it to a unit vector:
+
+```
+Ri = (-D1):normalize()
+```
+
+We also need a unit normal vector for the surface, which in 2D we can simply generate by an axis rotation followed by normalization:
+
+```
+N = vec2(D2.y, -D1.x):normalize()
+```
+
+> Note that this only needs to be calculated when the surface is created or modified; it thus makes sense to store the normal vector in the surface object itself.
+
+Then the reflection equation gives us a unit vector in the reflected direction:
+
+```
+Rr = Ri - 2 * N * Ri:dot(N)
+```
+
+So the final calculations for the bounce are:
+
+```
+-- new position of ball:
+B = I + Rr * remain
+-- new velocity of ball:
+V = Rr * speed
+```
+
+### Challenge: selecting endpoints, lines, and generators
+
+The mouse itself can be considered a point. The line endpoints and the generator can be considered a circle. So to detect if the mouse has been clicked on a particular object, we need to do a point-circle intersection test. This is simple: if the length of the line from the mouse to the center of the circle is less than the radius of the circle, the mouse is inside the circle.
+
+For the line segments, we have to do something more complex. Here it is almost impossible for the mouse to be exactly over the line. So our options are to either consider the mouse a circle and do line-circle intersection, or to find the nearest point to the line and test whether the distance is less than a certain threshold. Again, [Paul Bourke](http://paulbourke.net/geometry/pointlineplane/) gives a good explanation for calculating the minimum distance to a line.
+
+Once we know that a particular object is selected, we can redirect mouse drag events to update that object's position. If the object is a line endpoint, it should also cause the recalculation of the line's slope and normal. 
+
 ----
 
 # Movement, behavior, force and vectors
