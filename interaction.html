@@ -274,7 +274,9 @@ The line intersection discussion is borrowed from the pages at [Paul Bourke's ex
 
 ![lines](http://paulbourke.net/geometry/pointlineplane/lineline1.gif)
 
-If we are given a line segment as two points P1, P2, then we can also represent it in terms of an origin plus a slope and scalar: "P1 + uD"; where the slope "D" is derived as "P2 - P1". For the ball, P1 is the current position and D is the velocity.
+If we are given a line segment as two points P1, P2, then we can also represent it in terms of an origin plus a slope and scalar: "P1 + uD"; where the slope "D" is derived as "P2 - P1". 
+
+> For the ball, P1 is the current position and D is the velocity.
 
 This should also look familiar from linear interpolation we have seen before; the only difference is that now P1 and P2 are of type vec2:
 
@@ -287,19 +289,21 @@ end
 
 For two lines, we have:
 
-Pa = P1 + ua( P2 - P1 )
-Pb = P3 + ub( P4 - P3 )
+- Pa = P1 + ua( P2 - P1 )
+- Pb = P3 + ub( P4 - P3 )
 
 To derive the point where these lines meet, we must solve for Pa == Pb. Separating the X and Y components:
 
-x1 + ua (x2 - x1) = x3 + ub (x4 - x3)
-y1 + ua (y2 - y1) = y3 + ub (y4 - y3)
+- x1 + ua (x2 - x1) = x3 + ub (x4 - x3)
+- y1 + ua (y2 - y1) = y3 + ub (y4 - y3)
 
 ![The equations](http://paulbourke.net/geometry/pointlineplane/lineline2.gif)
 
 > Paul Bourke notes that if the denominators are the same for both equations. If it is zero, we have parallel lines which cannot intersect. [Here is his C code](http://paulbourke.net/geometry/pointlineplane/pdb.c)
 
-> For more optimzation, we'd like to abort the test as early as possible. One way is to make a *bounding box* (BB) check: does any point on the path of the ball lie within the bounding box of the surface? If not, no intersection can occur. A more optimal method is to use a sweep line method, as described [here](http://en.wikipedia.org/wiki/Line_segment_intersection). We might be able to simplify in our case knowing that the surface objects are "static": we can store them in a list that is sorted by X or Y position.
+For more optimzation, we'd like to abort the test as early as possible. One way is to make an **axis-aligned bounding box (AABB)** check: does any point on the path of the ball lie within the bounding box of the surface? If not, no intersection can occur. 
+
+> A more optimal method is to use a sweep line method, as described [here](http://en.wikipedia.org/wiki/Line_segment_intersection). We might be able to simplify in our case knowing that the surface objects are "static": we can store them in a list that is sorted by horizontal or vertical position, and quickly narrow our search to an appropriate subsection of this list. In Soundrop the the ball velocities are more likely to be greater in the vertical direction (because of gravity), so a horizontal sort probably makes more sense.
 
 One we derive ua, we can determine if it lies between the segment boundaries: if ua >= 0 and ua <= 1, we have a coordinate between P1 and P2, i.e. on the line segment. (Note that we only need to test one of the lines, not both). This will tell us how much bounce we need to add (1-ua). It also gives us the point of intersection itself:
 
