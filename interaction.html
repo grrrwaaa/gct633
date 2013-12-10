@@ -270,7 +270,7 @@ We want to know if the path of a ball over one time step will cross a particular
 
 The line intersection discussion is borrowed from the pages at [Paul Bourke's excellent website](http://paulbourke.net/geometry/pointlineplane/). 
 
-[lines](http://paulbourke.net/geometry/pointlineplane/lineline1.gif)
+![lines](http://paulbourke.net/geometry/pointlineplane/lineline1.gif)
 
 If we are given a line segment as two points P1, P2, then we can also represent it in terms of an origin plus a slope and scalar: "P1 + uD"; where the slope "D" is derived as "P2 - P1". For the ball, P1 is the current position and D is the velocity.
 
@@ -293,7 +293,7 @@ To derive the point where these lines meet, we must solve for Pa == Pb. Separati
 x1 + ua (x2 - x1) = x3 + ub (x4 - x3)
 y1 + ua (y2 - y1) = y3 + ub (y4 - y3)
 
-[equations](http://paulbourke.net/geometry/pointlineplane/lineline2.gif)
+![The equations](http://paulbourke.net/geometry/pointlineplane/lineline2.gif)
 
 > Paul Bourke notes that if the denominators are the same for both equations. If it is zero, we have parallel lines which cannot intersect. [Here is his C code](http://paulbourke.net/geometry/pointlineplane/pdb.c)
 
@@ -311,7 +311,7 @@ remain = (1 - ua) * speed
 
 For the bounce itself, we also need to calculate the reflection direction. [Paul Bourke also describes general reflection here](http://paulbourke.net/geometry/reflected/). 
 
-[img](http://paulbourke.net/geometry/reflected/diagram.gif)
+![Reflections](http://paulbourke.net/geometry/reflected/diagram.gif)
 
 First we reverse D1, then convert it to a unit vector:
 
