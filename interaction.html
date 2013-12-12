@@ -305,7 +305,7 @@ For more optimzation, we'd like to abort the test as early as possible. One way 
 
 > A more optimal method is to use a sweep line method, as described [here](http://en.wikipedia.org/wiki/Line_segment_intersection). We might be able to simplify in our case knowing that the surface objects are "static": we can store them in a list that is sorted by horizontal or vertical position, and quickly narrow our search to an appropriate subsection of this list. In Soundrop the the ball velocities are more likely to be greater in the vertical direction (because of gravity), so a horizontal sort probably makes more sense.
 
-One we derive ua, we can determine if it lies between the segment boundaries: if ua >= 0 and ua <= 1, we have a coordinate between P1 and P2, i.e. on the line segment. (Note that we only need to test one of the lines, not both). This will tell us how much bounce we need to add (1-ua). It also gives us the point of intersection itself:
+One we derive ua, we can determine if it lies between the segment boundaries: if ua >= 0 and ua <= 1, and ub >= and ub <= 1, we have a coordinate between P1 and P2, i.e. on the line segment. This will tell us how much bounce we need to add (1-ua). It also gives us the point of intersection itself:
 
 ```
 -- point of intersection of the bounce:
@@ -319,10 +319,10 @@ For the bounce itself, we also need to calculate the reflection direction. [Paul
 
 ![Reflections](http://paulbourke.net/geometry/reflected/diagram.gif)
 
-First we reverse D1, then convert it to a unit vector:
+First we convert D to a unit vector:
 
 ```
-Ri = (-D1):normalize()
+Ri = D1:normalizenew()
 ```
 
 We also need a unit normal vector for the surface, which in 2D we can simply generate by an axis rotation followed by normalization:
