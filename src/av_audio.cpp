@@ -184,7 +184,7 @@ AV_EXPORT av_Audio * av_audio_get() {
 		
 		audio.onframes = 0;
 		
-		audio.latency_seconds = 0.5;
+		audio.latency_seconds = 0.1;
 		audio.block_io_latency = 1 + int(audio.latency_seconds * audio.samplerate / audio.blocksize);
 		
 		// one second of ringbuffer:
