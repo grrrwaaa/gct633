@@ -3,6 +3,9 @@ local ffi = require 'ffi'
 local lib
 if ffi.os == "Linux" then
 	lib = ffi.load("freeimage")
+elseif ffi.os == "Windows" then
+	lib = ffi.load("FreeImage")
+	assert(lib ~= nil, "failed to load freeimage.dll")
 else
 	lib = ffi.C
 end	
