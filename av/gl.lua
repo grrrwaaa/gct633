@@ -41,10 +41,6 @@ elseif ffi.os == "OSX" then
 
 elseif ffi.os == "Windows" then
 	
-	ffi.cdef[[
-			void * wglGetProcAddress(const char *);
-	]]
-
 	lib = ffi.load("OPENGL32.DLL")
 	ffi.cdef[[
 		void * wglGetProcAddress(const char *);
