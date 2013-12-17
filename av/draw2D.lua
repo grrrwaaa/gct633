@@ -199,7 +199,7 @@ function draw2D.color(red, green, blue, alpha) end
 draw2D.color = gl.Color
 
 --- Load an image to draw
--- @param the image file name/path
+-- @param name the image file name/path
 -- @return image object
 function draw2D.loadImage(name)
 	local tex = texture.load(name)

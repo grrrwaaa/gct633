@@ -10,14 +10,16 @@ typedef struct av_Audio {
 	unsigned int indevice, outdevice;
 	unsigned int inchannels, outchannels;		
 	
-	double time;		// in seconds
-	double samplerate;
-	double lag;			// in seconds
+	double time;					// in seconds
+	double samplerate;				// in samples
+	double latency_seconds;			// in seconds
 	
 	// a big buffer for main-thread audio generation
 	float * buffer;
-	// the buffer alternates between channels at blocksize periods:
+	float * inbuffer;
+	
 	int blocks, blockread, blockwrite, blockstep;
+	int block_io_latency, dummy;
 	
 	// only access from audio thread:
 	float * input;
@@ -59,6 +61,13 @@ int av_rtaudio_callback(void *outputBuffer,
 	// copy in the buffers:
 	float * dst = audio.output;
 	float * src = audio.buffer + audio.blockread * audio.blocksize * audio.outchannels;
+	memcpy(dst, src, size * audio.outchannels);
+	
+	/*
+		If input goes into the same location, we probably won't get it until much later.
+	*/
+	dst = audio.inbuffer + ((audio.blockread + audio.block_io_latency) % audio.blocks) * audio.blocksize * audio.outchannels;
+	src = audio.input;
 	memcpy(dst, src, size * audio.outchannels);
 	// advance the read head:
 	audio.blockread++;
@@ -128,9 +137,19 @@ AV_EXPORT void av_audio_start() {
 			int blockspersecond = audio.samplerate / audio.blocksize;
 			audio.blocks = blockspersecond + 1;
 			audio.blockstep = audio.blocksize * audio.outchannels;
-			int len = audio.blockstep * audio.blocks;
+			
 			if (audio.buffer) free(audio.buffer);
+			int len = audio.blocksize * audio.outchannels * audio.blocks;
 			audio.buffer = (float *)calloc(len, sizeof(float));
+			
+			if (audio.inbuffer) free(audio.inbuffer);
+			len = audio.blocksize * audio.inchannels * audio.blocks;
+			audio.inbuffer = (float *)calloc(len, sizeof(float));
+			
+			audio.blockread = 0;
+			audio.blockwrite = 0;
+			
+			audio.block_io_latency = 1 + int(audio.latency_seconds * audio.samplerate / audio.blocksize);
 		}
 	
 		rta.openStream( &oParams, &iParams, RTAUDIO_FLOAT32, audio.samplerate, &audio.blocksize, &av_rtaudio_callback, NULL, &options );
@@ -155,7 +174,7 @@ AV_EXPORT av_Audio * av_audio_get() {
 		audio.inchannels = 2;
 		audio.outchannels = 2;
 		audio.time = 0;
-		audio.lag = 0.04;
+		audio.latency_seconds = 1;
 		audio.indevice = rta.getDefaultInputDevice();
 		audio.outdevice = rta.getDefaultOutputDevice();
 		//audio.msgbuffer.size = AV_AUDIO_MSGBUFFER_SIZE_DEFAULT;
@@ -165,15 +184,22 @@ AV_EXPORT av_Audio * av_audio_get() {
 		
 		audio.onframes = 0;
 		
+		audio.latency_seconds = 0.1;
+		audio.block_io_latency = 1 + int(audio.latency_seconds * audio.samplerate / audio.blocksize);
+		
 		// one second of ringbuffer:
 		int blockspersecond = audio.samplerate / audio.blocksize;
 		audio.blocks = blockspersecond + 1;
 		audio.blockstep = audio.blocksize * audio.outchannels;
-		int len = audio.blockstep * audio.blocks;
+		
+		int len = audio.blocksize * audio.outchannels * audio.blocks;
 		audio.buffer = (float *)calloc(len, sizeof(float));
+		
+		len = audio.blocksize * audio.inchannels * audio.blocks;
+		audio.inbuffer = (float *)calloc(len, sizeof(float));
+		
 		audio.blockread = 0;
 		audio.blockwrite = 0;
-		
 		//AL = av_init_lua();
 		
 		// unique to audio thread:

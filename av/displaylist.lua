@@ -1,7 +1,12 @@
 --- displaylist: A friendly wrapper for OpenGL display lists
+-- @module displaylist
 
 local gl = require "gl"
 local glu = require "glu"
+
+--- Create a displaylist
+-- @param func A Lua function containing OpenGL commands to store in the displaylist
+function displaylist(func) end
 
 local displaylist = {}
 displaylist.__index = displaylist
@@ -29,6 +34,7 @@ function displaylist:create()
 	end
 end
 
+--- Draw the contents of the displaylist
 function displaylist:draw()
 	self:create()
 	gl.CallList(self.id)

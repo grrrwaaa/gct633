@@ -53,8 +53,8 @@ end
 -- and calls tostring() on all non-table values
 -- Any nested functions will also be invoked, and conflat called on their results.
 -- @param v the item to concat (e.g. a list)
--- @sep a separator character between items (optional)
--- @ext an extension to the separator applied for nested sublists (optional)
+-- @param sep a separator character between items (optional)
+-- @param ext an extension to the separator applied for nested sublists (optional)
 -- @return string
 local function conflat(v, sep, ext)
 	local rope = {}

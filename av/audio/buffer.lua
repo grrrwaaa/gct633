@@ -48,6 +48,7 @@ end
 --- Create a new audio_buffer filled with silence.
 -- @tparam int frames The number of frames (sample length) of the buffer
 -- @tparam ?int channels The number of channels per frame
+-- @param ?samples An optional pointer to existing sample memory
 -- @treturn SNDFILE
 function buffer.create(frames, channels, samples) 
 	assert(frames and frames > 0, "buffer length (frames) required")

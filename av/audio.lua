@@ -17,14 +17,16 @@ typedef struct av_Audio {
 	unsigned int indevice, outdevice;
 	unsigned int inchannels, outchannels;		
 	
-	double time;		// in seconds
-	double samplerate;
-	double lag;			// in seconds
+	double time;					// in seconds
+	double samplerate;				// in samples
+	double latency_seconds;			// in seconds
 	
 	// a big buffer for main-thread audio generation
 	float * buffer;
-	// the buffer alternates between channels at blocksize periods:
+	float * inbuffer;
+	
 	int blocks, blockread, blockwrite, blockstep;
+	int block_io_latency, dummy;
 	
 	// only access from audio thread:
 	float * input;
@@ -51,29 +53,36 @@ local sched = scheduler.create()
 
 local audio = {
 	driver = driver,
-	
 	outbuffer = buffer(driver.blocks * driver.blocksize, driver.outchannels, driver.buffer),
-	
-	latency = 16, -- 16 blocks of 256 at 44.1kHz is about 100ms.
-	
-	go = sched.go,
-	wait = sched.wait,
-	now = sched.now,
-	event = sched.event,
-	
-	cancel = sched.cancel,
-	due = sched.due,
 }
 
--- to get a lower latency we would need to update() more frequently.
-print("audio script latency (seconds)", audio.latency * driver.blocksize / driver.samplerate)
+--- Add a coroutine to the audio scheduler
+-- @param delay (Optional) delay in seconds before starting the coroutine
+-- @param func The function to run as a coroutine
+-- @param args Zero or more arguments to pass to the function
+-- @return The coroutine created (which can be used by audio.cancel())
+function audio.go(delay, func, args) end
+audio.go = sched.go
 
-function audio.start()
-	if not pcall(lib.av_audio_start) then
-		print("unable to start audio")
-	end
-end
-audio.start()
+--- Cancel a scheduled coroutine
+-- @param co The coroutine to cancel
+function audio.cancel(co) end
+audio.cancel = sched.cancel
+
+--- Suspend a coroutine for a period or until an event occurs
+-- @param t A period (in seconds) or an event name (string) to wait for
+function audio.wait(t) end
+audio.wait = sched.wait
+
+--- Return the current scheduler time
+-- Returns seconds since the scheduler started
+function audio.now() end
+audio.now = sched.now
+
+--- Resume coroutines pending on an event name
+-- @param name The event name (string) to resume
+function audio.event(name) end
+audio.event = sched.event
 
 function audio.run(generate)
 	if generate then
@@ -81,7 +90,7 @@ function audio.run(generate)
 		local w = driver.blockwrite
 		local r = driver.blockread
 		local s = driver.blocks
-		local t = (r + audio.latency) % driver.blocks
+		local t = (r + driver.block_io_latency) % driver.blocks
 		local done = 0 -- how many blocks produced on this update
 	
 		if w > t then
@@ -139,9 +148,11 @@ local function addvoice(func, dur)
 		return self.dur > 0 or nil
 	end
 	
-	function voice:sablockfunc(out, outchannels, from, to)
+	function voice:sablockfunc(out, outchannels, inbuf, inchannels, from, to)
 		for i = from, to do
-			local l, r = func()
+			local l = inbuf[i*outchannels]
+			local r = inbuf[i*outchannels+1]
+			local l, r = func(l, r)
 			if l == nil and r == nil then 
 				return nil
 			end
@@ -155,14 +166,14 @@ local function addvoice(func, dur)
 	voices[voice] = true
 end
 
-local function dsp(out, outchannels, from, to)
+local function dsp(out, outchannels, inbuf, inchannels, from, to)
 	for i = from, to do
 		for c = 0, outchannels-1 do
 			out[i*outchannels+c] = 0
 		end
 	end		
 	for v in pairs(voices) do
-		voices[v] = v:sablockfunc(out, outchannels, from, to)
+		voices[v] = v:sablockfunc(out, outchannels, inbuf, inchannels, from, to)
 	end
 end
 
@@ -173,19 +184,23 @@ local function audio_schedloop()
 	local samplerate = driver.samplerate
 	local blocks = driver.blocks
 	local outchannels = driver.outchannels
+	local inchannels = driver.inchannels
 	
 	local w = driver.blockwrite
 	local r = driver.blockread
-	local target_block = (r + audio.latency) % blocks
+	local target_block = (r + driver.block_io_latency) % blocks
 	
 	local smax = blocks * blocksize
 	local isr = 1 / samplerate
 	
 	local t0 = s0 * isr	
 	
+	--print((blocksize + target_block - w) % blocksize)
+	
 	while w ~= target_block do
 		-- outbuffer for this block:
 		local out = driver.buffer
+		local inbuf = driver.inbuffer
 		
 		-- time at end of this block:
 		local s1 = s0 + blocksize
@@ -197,7 +212,7 @@ local function audio_schedloop()
 			local se = floor(s0 + (te - t0) * samplerate)
 			
 			-- dsp from s0 to se
-			dsp(out, outchannels, s0 % smax, se % smax)
+			dsp(out, outchannels, inbuf, inchannels, s0 % smax, se % smax)
 			
 			-- invoke event
 			sched.run_first()
@@ -208,7 +223,7 @@ local function audio_schedloop()
 		end
 		
 		-- dsp from s0 to s1
-		dsp(out, outchannels, s0 % smax, (s1 - 1) % smax)
+		dsp(out, outchannels, inbuf, inchannels, s0 % smax, (s1 - 1) % smax)
 		
 		-- advance clocks:
 		t0 = t1
@@ -219,6 +234,7 @@ local function audio_schedloop()
 	--print("done", r, w)
 end
 
+--[[
 local function audio_runloop()
 	local blocksize = driver.blocksize
 	local w = driver.blockwrite
@@ -257,21 +273,33 @@ local function audio_runloop()
 		driver.blockwrite = w
 	end
 end
+--]]
 
 local function start_audio_runloop()
-	audio.outbuffer.samples = driver.buffer
-
 	local runloop = require "runloop"
-	
-	--runloop.insert(audio_runloop)
 	runloop.insert(audio_schedloop)
 	is_audio_runloop_running = true
 end
 
 function audio.start()
+	if not pcall(lib.av_audio_start) then
+		print("unable to start audio")
+	end
+	print(string.format("Estimated audio latency: %.3f seconds", driver.block_io_latency * driver.blocksize / driver.samplerate))
+	
+	audio.outbuffer.samples = driver.buffer
+
 	if not is_audio_runloop_running then
 		start_audio_runloop()
 	end
+end
+
+--- Set the audio input/output latency
+-- The actual latency may be slightly higher, due to driver implementation and block size
+-- @param seconds The intended latency in seconds
+function audio.latency(seconds)
+	driver.latency_seconds = seconds
+	driver.block_io_latency = 1 + math.floor(seconds * driver.samplerate / driver.blocksize)
 end
 
 --- Play a function or audio_buffer.
@@ -407,5 +435,7 @@ function audio.scope()
 		--]]
 	end
 end
+
+audio.start()
 
 return audio

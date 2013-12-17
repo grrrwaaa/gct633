@@ -577,8 +577,8 @@ end
 -- @param a vector
 -- @param b vector
 -- @return magnitude of 3D cross product
-function vec2:cross(b)
-	return self.x*b.y - self.y*b.x
+function vec2.cross(a, b)
+	return a.x*b.y - a.y*b.x
 end
 
 function vec2:__tostring()

@@ -1,8 +1,11 @@
 local window = require "window"
+window.width = 500
+window.height = 100
 window:create()
 
 local audio = require "audio"
-audio.start()
+-- adjust this to set the IO latency (in seconds)
+--audio.latency(0.05)
 
 local shader = require "shader"
 local vbo = require "vbo"
@@ -41,22 +44,22 @@ void main() {
 -- create a shader program based on the GLSL above:
 local myshader = shader(vertexcode, fragmentcode)
 
-
 function testsound()
 	local p = 0
-	return function()
+	return function(l, r)
 		p = p + math.pi * 2 * 3 / 44100-- + (math.random()-0.5)*10 / 44100
 		local s = math.sin(p)
-		return s * math.sin(s * p * p), s * math.sin(s * p * (p-1))
+		--return l + s * math.sin(s * p * p), s * math.sin(s * p * (p-1))
+		return l + r
 	end
 end
 
 audio.play(testsound())
 
-local buf = audio.outbuffer
-
 -- rendering callback:
 function draw()
+
+	local buf = audio.outbuffer
 
 	gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
 
