@@ -40,11 +40,11 @@
 <ul>
   <li><strong>audio</strong></li>
   <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
-  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
   <li><a href="../modules/audio.sndfile.html">audio.sndfile</a></li>
   <li><a href="../modules/color.html">color</a></li>
   <li><a href="../modules/coroutine.html">coroutine</a></li>
   <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/displaylist.html">displaylist</a></li>
   <li><a href="../modules/draw2D.html">draw2D</a></li>
   <li><a href="../modules/expr.html">expr</a></li>
   <li><a href="../modules/field2D.html">field2D</a></li>
@@ -80,6 +80,32 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#go">go&nbsp;(delay, func, args)</a></td>
+	<td class="summary">Add a coroutine to the audio scheduler</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#cancel">cancel&nbsp;(co)</a></td>
+	<td class="summary">Cancel a scheduled coroutine</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#wait">wait&nbsp;(t)</a></td>
+	<td class="summary">Suspend a coroutine for a period or until an event occurs</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#now">now&nbsp;()</a></td>
+	<td class="summary">Return the current scheduler time
+ Returns seconds since the scheduler started</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#event">event&nbsp;(name)</a></td>
+	<td class="summary">Resume coroutines pending on an event name</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#latency">latency&nbsp;(seconds)</a></td>
+	<td class="summary">Set the audio input/output latency
+ The actual latency may be slightly higher, due to driver implementation and block size</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#play">play&nbsp;(content, duration)</a></td>
 	<td class="summary">Play a function or audio_buffer.</td>
 	</tr>
@@ -91,6 +117,120 @@
 
     <h2><a name="Functions"></a>Functions</h2>
     <dl class="function">
+    <dt>
+    <a name = "go"></a>
+    <strong>go&nbsp;(delay, func, args)</strong>
+    </dt>
+    <dd>
+    Add a coroutine to the audio scheduler
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">delay</span>
+         (Optional) delay in seconds before starting the coroutine</li>
+        <li><span class="parameter">func</span>
+         The function to run as a coroutine</li>
+        <li><span class="parameter">args</span>
+         Zero or more arguments to pass to the function</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The coroutine created (which can be used by audio.cancel())
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "cancel"></a>
+    <strong>cancel&nbsp;(co)</strong>
+    </dt>
+    <dd>
+    Cancel a scheduled coroutine
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">co</span>
+         The coroutine to cancel</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "wait"></a>
+    <strong>wait&nbsp;(t)</strong>
+    </dt>
+    <dd>
+    Suspend a coroutine for a period or until an event occurs
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         A period (in seconds) or an event name (string) to wait for</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "now"></a>
+    <strong>now&nbsp;()</strong>
+    </dt>
+    <dd>
+    Return the current scheduler time
+ Returns seconds since the scheduler started
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "event"></a>
+    <strong>event&nbsp;(name)</strong>
+    </dt>
+    <dd>
+    Resume coroutines pending on an event name
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         The event name (string) to resume</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "latency"></a>
+    <strong>latency&nbsp;(seconds)</strong>
+    </dt>
+    <dd>
+    Set the audio input/output latency
+ The actual latency may be slightly higher, due to driver implementation and block size
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">seconds</span>
+         The intended latency in seconds</li>
+    </ul>
+
+
+
+
+
+</dd>
     <dt>
     <a name = "play"></a>
     <strong>play&nbsp;(content, duration)</strong>

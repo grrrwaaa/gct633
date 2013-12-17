@@ -40,11 +40,11 @@
 <ul>
   <li><a href="../modules/audio.html">audio</a></li>
   <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
-  <li><a href="../modules/audio.buffer.html">audio.buffer</a></li>
   <li><a href="../modules/audio.sndfile.html">audio.sndfile</a></li>
   <li><a href="../modules/color.html">color</a></li>
   <li><a href="../modules/coroutine.html">coroutine</a></li>
   <li><a href="../modules/debug.html">debug</a></li>
+  <li><a href="../modules/displaylist.html">displaylist</a></li>
   <li><strong>draw2D</strong></li>
   <li><a href="../modules/expr.html">expr</a></li>
   <li><a href="../modules/field2D.html">field2D</a></li>
@@ -117,6 +117,10 @@
 	<td class="summary">Draw a rectangle at the point (x, y) with width w and height h</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#quad">quad&nbsp;(x1, y1, x2, y2, x3, y3, x4, y4)</a></td>
+	<td class="summary">Draw a quad over four points</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#ellipse">ellipse&nbsp;(x, y, w, h)</a></td>
 	<td class="summary">Draw an ellipse at the point (x, y) with horizontal diameter w and vertical diameter h</td>
 	</tr>
@@ -131,6 +135,14 @@
 	<tr>
 	<td class="name" nowrap><a href="#color">color&nbsp;(red, green, blue, alpha)</a></td>
 	<td class="summary">Set the rendering color</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#loadImage">loadImage&nbsp;(name)</a></td>
+	<td class="summary">Load an image to draw</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#image">image&nbsp;(img, x, y, w, h)</a></td>
+	<td class="summary">Draw an image at the point (x, y) with width w and height h</td>
 	</tr>
 </table>
 
@@ -299,6 +311,38 @@
 
 </dd>
     <dt>
+    <a name = "quad"></a>
+    <strong>quad&nbsp;(x1, y1, x2, y2, x3, y3, x4, y4)</strong>
+    </dt>
+    <dd>
+    Draw a quad over four points
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x1</span>
+         coordinate of first point (optional, defaults to 0)</li>
+        <li><span class="parameter">y1</span>
+         coordinate of first point (optional, defaults to 0)</li>
+        <li><span class="parameter">x2</span>
+         coordinate of second point (optional, defaults to 1)</li>
+        <li><span class="parameter">y2</span>
+         coordinate of second point (optional, defaults to 0)</li>
+        <li><span class="parameter">x3</span>
+         coordinate of third point (optional, defaults to 1)</li>
+        <li><span class="parameter">y3</span>
+         coordinate of third point (optional, defaults to 1)</li>
+        <li><span class="parameter">x4</span>
+         coordinate of fourth point (optional, defaults to 0)</li>
+        <li><span class="parameter">y4</span>
+         coordinate of fourth point (optional, defaults to 1)</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "ellipse"></a>
     <strong>ellipse&nbsp;(x, y, w, h)</strong>
     </dt>
@@ -389,6 +433,55 @@
          value from 0 to 1 (optional, default 0)</li>
         <li><span class="parameter">alpha</span>
          (opacity) value from 0 to 1 (optional, default 1)</li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "loadImage"></a>
+    <strong>loadImage&nbsp;(name)</strong>
+    </dt>
+    <dd>
+    Load an image to draw
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         the image file name/path</li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        image object
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "image"></a>
+    <strong>image&nbsp;(img, x, y, w, h)</strong>
+    </dt>
+    <dd>
+    Draw an image at the point (x, y) with width w and height h
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">img</span>
+         the image to use (created by loadImage())</li>
+        <li><span class="parameter">x</span>
+         coordinate of center (optional, defaults to 0)</li>
+        <li><span class="parameter">y</span>
+         coordinate of center (optional, defaults to 0)</li>
+        <li><span class="parameter">w</span>
+         width (optional, defaults to 1)</li>
+        <li><span class="parameter">h</span>
+         height (optional, defaults to 1)</li>
     </ul>
 
 
