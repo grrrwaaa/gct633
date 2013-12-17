@@ -41,10 +41,6 @@ local function image(name)
 	local tex = texture(w, h)
 	tex.data = pixels
 	
-	-- format depends on the file... 
-	--tex.format = gl.BGRA
-	
-	-- segfault.. probably need to copy the pixels... 
 	--freeimage.Unload(img)
 	
 	return tex
