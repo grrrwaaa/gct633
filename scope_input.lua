@@ -1,6 +1,6 @@
 local audio = require "audio"
 -- adjust this to set the IO latency (in seconds)
---audio.latency(0.05)
+audio.latency(0.03)
 
 -- this may cause feedback!!
 function route_input(l, r)
