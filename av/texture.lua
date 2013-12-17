@@ -1,5 +1,7 @@
 local gl = require "gl"
 local glu = require "glu"
+local ffi = require "ffi"
+local C = ffi.C
 
 local texture = {}
 texture.__index = texture
@@ -27,6 +29,66 @@ local function new(width, height, numtextures)
 		tex = nil,
 	}, texture)
 end
+
+--- Create a texture by loading in an image file
+-- PNG, JPG, GIF etc. should be ok (uses the FreeImage library)
+-- @param name image filename / path to load
+-- @return OpenGL texture object
+function texture.load(name)
+	local freeimage = require "freeimage"
+	
+	-- verify loadable:
+	local filetype = freeimage.GetFileType(name,0)
+	assert(freeimage.FIFSupportsReading(filetype), "cannot parse image type")
+	
+	-- load image:
+	local flags = 0
+	local img = freeimage.Load(filetype, name, flags)
+	if img == nil then error("failed to load "..name) end
+	
+	-- convert to 32bit:
+	local res = freeimage.ConvertTo32Bits(img)
+	freeimage.Unload(img)
+	img = res
+	
+	-- convert greyscale images:
+	local colortype = freeimage.GetColorType(img)
+	if colortype == C.FIC_MINISWHITE or colortype == C.FIC_MINISBLACK then
+		local res = freeimage.ConvertToGreyscale(img)
+		freeimage.Unload(img)
+		img = res
+	end
+	-- flip Y axis for GL:
+	freeimage.FlipVertical(img)
+	
+	-- get dimensions:
+	local w = freeimage.GetWidth(img)
+	local h = freeimage.GetHeight(img)
+	local scan_width = freeimage.GetPitch(img);
+	
+	-- verify:
+	local datatype = freeimage.GetImageType(img)
+	assert(datatype == C.FIT_BITMAP, "only 8-bit unsigned image types yet")
+	
+	-- create a texture:
+	local tex = new(w, h)
+	
+	-- copy data to our own buffer:
+	tex.data = ffi.new("uint8_t[?]", scan_width*h)
+	freeimage.ConvertToRawBits(
+		tex.data, img, 
+		scan_width, 32, 
+		1, 1, 1, 
+		1);
+		
+   	-- done with image now:
+   	freeimage.Unload(img)
+	
+	-- note that our image format is BGR:
+	tex.format = gl.BGRA
+	
+	return tex
+end	
 
 function texture:destroy()
 	gl.DeleteTextures(unpack(self.tex))
